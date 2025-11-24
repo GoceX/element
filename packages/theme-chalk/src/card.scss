@@ -14,6 +14,7 @@
   }
 
   @include when(hover-shadow) {
+
     &:hover,
     &:focus {
       box-shadow: $--box-shadow-light;
@@ -21,12 +22,14 @@
   }
 
   @include e(header) {
-    padding: #{$--card-padding - 2 $--card-padding};
+    padding: #{$--card-padding / 2 $--card-padding};
     border-bottom: 1px solid $--card-border-color;
     box-sizing: border-box;
+    font-size: $--font-size-base;
   }
 
   @include e(body) {
     padding: $--card-padding;
+    font-size: $--font-size-base;
   }
 }

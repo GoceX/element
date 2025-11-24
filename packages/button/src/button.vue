@@ -71,6 +71,12 @@
 
     methods: {
       handleClick(evt) {
+        // if (this.buttonDisabled || this.loading) {
+        //   if (evt && typeof evt.stopImmediatePropagation === 'function') {
+        //     evt.stopImmediatePropagation();
+        //   }
+        //   return;
+        // }
         this.$emit('click', evt);
       }
     }

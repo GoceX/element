@@ -2,16 +2,18 @@
   .el-dropdown {
     vertical-align: top;
 
-    & + .el-dropdown {
+    &+.el-dropdown {
       margin-left: 15px;
     }
   }
+
   .el-dropdown-link {
     cursor: pointer;
     color: #409eff;
   }
+
   .el-icon-arrow-down {
-    font-size: 12px;
+    // font-size: 12px;
   }
 }
 

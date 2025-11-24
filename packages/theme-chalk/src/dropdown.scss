@@ -11,6 +11,7 @@
 
   .el-button-group {
     display: block;
+
     .el-button {
       float: none;
     }
@@ -50,13 +51,17 @@
       padding-left: 0;
     }
   }
+
   @include e(icon) {
-    font-size: 12px;
+    font-size: $--font-size-base;
     margin: 0 3px;
   }
 
-  .el-dropdown-selfdefine { // 自定义
-    &:focus:active, &:focus:not(.focusing) {
+  .el-dropdown-selfdefine {
+
+    // 自定义
+    &:focus:active,
+    &:focus:not(.focusing) {
       outline-width: 0;
     }
   }
@@ -72,7 +77,7 @@
   top: 0;
   left: 0;
   z-index: 10;
-  padding: 10px 0;
+  padding: 6px 0;
   margin: 5px 0;
   background-color: $--color-white;
   border: 1px solid $--border-color-lighter;
@@ -81,14 +86,16 @@
 
   @include e(item) {
     list-style: none;
-    line-height: 36px;
+    line-height: 40px;
     padding: 0 20px;
     margin: 0;
     font-size: $--font-size-base;
     color: $--color-text-regular;
     cursor: pointer;
     outline: none;
-    &:not(.is-disabled):hover, &:focus {
+
+    &:not(.is-disabled):hover,
+    &:focus {
       background-color: $--dropdown-menuItem-hover-fill;
       color: $--dropdown-menuItem-hover-color;
     }
@@ -120,63 +127,83 @@
     }
   }
 
+  @include m(large) {
+    padding: 10px 0;
+
+    // @include e(item) {
+    //   line-height: 30px;
+    //   padding: 0 17px;
+    //   font-size: 14px;
+
+    //   &.el-dropdown-menu__item--divided {
+    //     $divided-offset: 6px;
+    //     margin-top: $divided-offset;
+
+    //     &:before {
+    //       height: $divided-offset;
+    //       margin: 0 -17px;
+    //     }
+    //   }
+    // }
+  }
+
   @include m(medium) {
-    padding: 6px 0;
+    padding: 8px 0;
 
-    @include e(item) {
-      line-height: 30px;
-      padding: 0 17px;
-      font-size: 14px;
+    // @include e(item) {
+    //   line-height: 30px;
+    //   padding: 0 17px;
+    //   font-size: 14px;
 
-      &.el-dropdown-menu__item--divided {
-        $divided-offset: 6px;
-        margin-top: $divided-offset;
+    //   &.el-dropdown-menu__item--divided {
+    //     $divided-offset: 6px;
+    //     margin-top: $divided-offset;
 
-        &:before {
-          height: $divided-offset;
-          margin: 0 -17px;
-        }
-      }
-    }
+    //     &:before {
+    //       height: $divided-offset;
+    //       margin: 0 -17px;
+    //     }
+    //   }
+    // }
   }
 
   @include m(small) {
     padding: 6px 0;
 
-    @include e(item) {
-      line-height: 27px;
-      padding: 0 15px;
-      font-size: 13px;
+    // @include e(item) {
+    //   line-height: 27px;
+    //   padding: 0 15px;
+    //   font-size: 13px;
 
-      &.el-dropdown-menu__item--divided {
-        $divided-offset: 4px;
-        margin-top: $divided-offset;
+    //   &.el-dropdown-menu__item--divided {
+    //     $divided-offset: 4px;
+    //     margin-top: $divided-offset;
 
-        &:before {
-          height: $divided-offset;
-          margin: 0 -15px;
-        }
-      }
-    }
+    //     &:before {
+    //       height: $divided-offset;
+    //       margin: 0 -15px;
+    //     }
+    //   }
+    // }
   }
 
   @include m(mini) {
     padding: 3px 0;
 
-    @include e(item) {
-      line-height: 24px;
-      padding: 0 10px;
-      font-size: 12px;
+    // @include e(item) {
+    //   line-height: 24px;
+    //   padding: 0 10px;
+    //   font-size: 12px;
 
-      &.el-dropdown-menu__item--divided {
-        $divided-offset: 3px;
-        margin-top: $divided-offset;
+    //   &.el-dropdown-menu__item--divided {
+    //     $divided-offset: 3px;
+    //     margin-top: $divided-offset;
 
-        &:before {
-          height: $divided-offset;
-          margin: 0 -10px;
-        }
-      }
-    }
+    //     &:before {
+    //       height: $divided-offset;
+    //       margin: 0 -10px;
+    //     }
+    //   }
+    // }
   }
 }

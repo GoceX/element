@@ -12,10 +12,9 @@
   display: inline-block;
   position: relative;
 
-  .el-select__tags
-    >span {
-      display: contents;
-    }
+  .el-select__tags>span {
+    display: contents;
+  }
 
   &:hover {
     .el-input__inner {
@@ -73,7 +72,7 @@
     }
   }
 
-  > .el-input {
+  >.el-input {
     display: block;
   }
 
@@ -87,6 +86,7 @@
     appearance: none;
     height: 28px;
     background-color: transparent;
+
     @include when(mini) {
       height: 14px;
     }

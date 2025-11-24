@@ -14,11 +14,12 @@
   box-sizing: content-box;
 
   @include e(content) {
-    font-size: 0;
+    font-size: $--font-size-medium;
     position: relative;
     overflow: hidden;
 
-    &::after, &::before {
+    &::after,
+    &::before {
       content: "";
       top: 50%;
       position: absolute;
@@ -74,7 +75,7 @@
     cursor: pointer;
     background-color: transparent;
     outline: none;
-    font-size: 12px;
+    font-size: $--font-size-medium;
     color: $--color-text-primary;
 
     &.confirm {

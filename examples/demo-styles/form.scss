@@ -2,8 +2,9 @@
   .el-select .el-input {
     width: 380px;
   }
+
   .el-form {
-    width: 460px;
+    width: auto;
   }
 
   .line {
@@ -11,7 +12,7 @@
   }
 
   .el-checkbox-group {
-    width: 320px;
+    width: auto;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -21,6 +22,7 @@
       content: " ";
       display: table;
     }
+
     &:after {
       clear: both;
       visibility: hidden;
@@ -30,36 +32,41 @@
 
     .el-checkbox {
       float: left;
-      width: 160px;
+      // width: 160px;
       padding-right: 20px;
-      margin: 0;
+      // margin: 0;
       padding: 0;
 
-      + .el-checkbox {
+      +.el-checkbox {
         margin-left: 0;
       }
     }
   }
+
   .demo-form-normal {
-    width: 460px;
+    width: auto;
   }
+
   .demo-form-inline {
     width: auto;
 
     .el-input {
       width: 150px;
     }
-    > * {
+
+    >* {
       margin-right: 10px;
     }
   }
+
   .demo-ruleForm {
-    width: 460px;
+    width: auto;
 
     .el-select .el-input {
       width: 360px;
     }
   }
+
   .demo-dynamic {
     .el-input {
       margin-right: 10px;
@@ -67,6 +74,7 @@
       vertical-align: top;
     }
   }
+
   .fr {
     float: right;
   }

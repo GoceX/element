@@ -36,7 +36,7 @@
   }
 }
 @include b(form-item) {
-  margin-bottom: 22px;
+  margin-bottom: 14px;
   @include utils-clearfix;
 
   & .el-form-item {
@@ -49,35 +49,36 @@
 
   @include m(medium) {
     .el-form-item__label {
-      line-height: 36px;
+      line-height: $--input-medium-height;
+      
     }
     .el-form-item__content {
-      line-height: 36px;
+      line-height: $--input-medium-height;
     }
   }
   @include m(small) {
     .el-form-item__label {
-      line-height: 32px;
+      line-height: $--input-small-height;
     }
     .el-form-item__content {
-      line-height: 32px;
+      line-height: $--input-small-height;
     }
     &.el-form-item {
-      margin-bottom: 18px;
+      margin-bottom: 14px;
     }
     .el-form-item__error {
-      padding-top: 2px;
+      padding-top: 1px;
     }
   }
   @include m(mini) {
     .el-form-item__label {
-      line-height: 28px;
+      line-height: $--input-mini-height;
     }
     .el-form-item__content {
-      line-height: 28px;
+      line-height: $--input-mini-height;
     }
     &.el-form-item {
-      margin-bottom: 18px;
+      margin-bottom: 14px;
     }
     .el-form-item__error {
       padding-top: 1px;
@@ -98,12 +99,12 @@
     float: left;
     font-size: $--form-label-font-size;
     color: $--color-text-regular;
-    line-height: 40px;
+    line-height: $--input-height;
     padding: 0 12px 0 0;
     box-sizing: border-box;
   }
   @include e(content) {
-    line-height: 40px;
+    line-height: $--input-height;
     position: relative;
     font-size: 14px;
     @include utils-clearfix;
@@ -116,7 +117,7 @@
     color: $--color-danger;
     font-size: 12px;
     line-height: 1;
-    padding-top: 4px;
+    padding-top: 1px;
     position: absolute;
     top: 100%;
     left: 0;

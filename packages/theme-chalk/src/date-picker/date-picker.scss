@@ -51,17 +51,17 @@
       padding-bottom: 12px;
       border-bottom: solid 1px $--border-color-lighter;
 
-      & + .el-picker-panel__content {
+      &+.el-picker-panel__content {
         margin-top: 0;
       }
     }
   }
 
   @include e(header-label) {
-    font-size: 16px;
+    font-size: $--font-size-medium;
     font-weight: 500;
     padding: 0 5px;
-    line-height: 22px;
+    line-height: 30px;
     text-align: center;
     cursor: pointer;
     color: $--color-text-regular;

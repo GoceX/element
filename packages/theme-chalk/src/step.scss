@@ -58,9 +58,9 @@
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    width: 24px;
-    height: 24px;
-    font-size: 14px;
+    width: #{$--font-size-base * 1.2};
+    height: #{$--font-size-base * 1.2};
+    font-size: $--font-size-base;
     box-sizing: border-box;
     background: $--color-white;
     transition: .15s ease-out;
@@ -118,8 +118,8 @@
   }
 
   @include e(title) {
-    font-size: 16px;
-    line-height: 38px;
+    font-size: $--font-size-base;
+    line-height: #{$--font-size-base * 1.5};
 
     @include when(process) {
       font-weight: bold;
@@ -146,7 +146,7 @@
   @include e(description) {
     padding-right: 10%;
     margin-top: -5px;
-    font-size: 12px;
+    font-size: $--font-size-medium;
     line-height: 20px;
     font-weight: normal;
 
@@ -176,7 +176,7 @@
 
     @include e(line) {
       height: 2px;
-      top: 11px;
+      top: #{($--font-size-base * 1.2) / 2};
       left: 0;
       right: 0;
     }
@@ -204,7 +204,7 @@
       width: 2px;
       top: 0;
       bottom: 0;
-      left: 11px;
+      left: #{($--font-size-base * 1.2) / 2};
     }
 
     @include e(icon) {
@@ -247,14 +247,14 @@
 
     @include e(icon) {
       background: transparent;
-      width: 16px;
-      height: 16px;
-      font-size: 12px;
+      width: #{$--font-size-base * 1.2};
+      height: #{$--font-size-base * 1.2};
+      font-size: $--font-size-base;
     }
 
     @include e(icon-inner) {
       &[class*=el-icon]:not(.is-status) {
-        font-size: 18px;
+        font-size: $--font-size-base;
       }
 
       &.is-status {
@@ -270,8 +270,8 @@
     }
 
     @include e(title) {
-      font-size: 16px;
-      line-height: 20px;
+      font-size: $--font-size-base;
+      line-height: #{$--font-size-base * 1.5};
     }
 
     @include pseudo('not(:last-of-type)') {

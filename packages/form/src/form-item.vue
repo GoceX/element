@@ -177,6 +177,11 @@
         return this.size || this._formSize;
       },
       sizeClass() {
+        if (this.label === '活动时间111') {
+  
+          console.log('::: ', this.label, this.size);
+          console.log('this.elFormItemSize || (this.$ELEMENT || {}).size::: ', this.elFormItemSize || (this.$ELEMENT || {}).size);
+        }
         return this.elFormItemSize || (this.$ELEMENT || {}).size;
       }
     },

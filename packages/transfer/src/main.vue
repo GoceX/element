@@ -12,6 +12,7 @@
     </transfer-panel>
     <div class="el-transfer__buttons">
       <el-button
+        size="mini"
         type="primary"
         :class="['el-transfer__button', hasButtonTexts ? 'is-with-texts' : '']"
         @click.native="addToLeft"
@@ -20,6 +21,7 @@
         <span v-if="buttonTexts[0] !== undefined">{{ buttonTexts[0] }}</span>
       </el-button>
       <el-button
+        size="mini"
         type="primary"
         :class="['el-transfer__button', hasButtonTexts ? 'is-with-texts' : '']"
         @click.native="addToRight"

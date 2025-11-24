@@ -36,7 +36,7 @@
   }
 
   @include e(arrow) {
-    font-size: 12px;
+    font-size: $--font-size-medium;
     color: $--color-text-secondary;
     position: absolute;
     left: 0;
@@ -89,7 +89,7 @@
   @include e(item) {
     height: 32px;
     line-height: 32px;
-    font-size: 12px;
+    font-size: $--font-size-medium;
     color: $--color-text-regular;
 
     &:hover:not(.disabled):not(.active) {

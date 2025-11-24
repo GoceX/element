@@ -7,12 +7,13 @@
   text-align: center;
   cursor: pointer;
   outline: none;
+
   @include e(input) {
     display: none;
   }
 
   @include e(tip) {
-    font-size: 12px;
+    font-size: $--font-size-medium;
     color: $--color-text-regular;
     margin-top: 7px;
   }
@@ -32,15 +33,16 @@
     border: 1px dashed #c0ccda;
     border-radius: 6px;
     box-sizing: border-box;
-    width: 148px;
-    height: 148px;
+    width: 128px;
+    height: 128px;
     cursor: pointer;
-    line-height: 146px;
+    line-height: 126px;
     vertical-align: top;
 
     i {
-      font-size: 28px;
+      font-size: #{$--font-size-base * 1.5};
       color: #8c939d;
+      line-height: 126px !important;
     }
 
     &:hover {
@@ -48,6 +50,7 @@
       color: $--color-primary;
     }
   }
+
   &:focus {
     border-color: $--color-primary;
     color: $--color-primary;
@@ -77,11 +80,11 @@
     line-height: 50px;
   }
 
-  + .el-upload__tip {
+  +.el-upload__tip {
     text-align: center;
   }
 
-  ~ .el-upload__files {
+  ~.el-upload__files {
     border-top: $--border-base;
     margin-top: 7px;
     padding-top: 5px;
@@ -89,7 +92,7 @@
 
   .el-upload__text {
     color: $--color-text-regular;
-    font-size: 14px;
+    font-size: $--font-size-medium;
     text-align: center;
 
     em {
@@ -114,7 +117,7 @@
   list-style: none;
 
   @include e(item) {
-    transition: all .5s cubic-bezier(.55,0,.1,1);
+    transition: all .5s cubic-bezier(.55, 0, .1, 1);
     font-size: 14px;
     color: $--color-text-regular;
     line-height: 1.8;
@@ -174,7 +177,7 @@
       opacity: 1;
       color: $--color-primary;
     }
-    
+
     &:hover {
       background-color: $--background-color-base;
 
@@ -192,25 +195,32 @@
         display: block;
       }
 
-      .el-upload-list__item-name:hover, .el-upload-list__item-name:focus {
+      .el-upload-list__item-name:hover,
+      .el-upload-list__item-name:focus {
         color: $--link-hover-color;
         cursor: pointer;
       }
 
-      &:focus:not(:hover) {  /* 键盘focus */
+      &:focus:not(:hover) {
+
+        /* 键盘focus */
         .el-icon-close-tip {
           display: inline-block;
         }
       }
 
-      &:not(.focusing):focus, &:active { /* click时 */
+      &:not(.focusing):focus,
+      &:active {
+        /* click时 */
         outline-width: 0;
+
         .el-icon-close-tip {
           display: none;
         }
       }
 
-      &:hover, &:focus {
+      &:hover,
+      &:focus {
         .el-upload-list__item-status-label {
           display: none;
         }
@@ -233,12 +243,16 @@
     text-overflow: ellipsis;
     transition: color .3s;
     white-space: nowrap;
+    font-size: $--font-size-medium;
+
+
 
     [class^="el-icon"] {
       height: 100%;
       margin-right: 7px;
       color: $--color-text-secondary;
       line-height: inherit;
+      font-size: $--font-size-medium;
     }
   }
 
@@ -274,8 +288,8 @@
       border: 1px solid #c0ccda;
       border-radius: 6px;
       box-sizing: border-box;
-      width: 148px;
-      height: 148px;
+      width: 128px;
+      height: 128px;
       margin: 0 8px 8px 0;
       display: inline-block;
 
@@ -287,6 +301,7 @@
       .el-icon-close {
         display: none;
       }
+
       &:hover {
         .el-upload-list__item-status-label {
           display: none;
@@ -316,7 +331,7 @@
       background: #13ce66;
       text-align: center;
       transform: rotate(45deg);
-      box-shadow: 0 0 1pc 1px rgba(0,0,0,0.2);
+      box-shadow: 0 0 1pc 1px rgba(0, 0, 0, 0.2);
 
       i {
         font-size: 12px;
@@ -338,6 +353,7 @@
       font-size: 20px;
       background-color: rgba(0, 0, 0, .5);
       transition: opacity .3s;
+
       &::after {
         display: inline-block;
         content: "";
@@ -350,7 +366,7 @@
         cursor: pointer;
       }
 
-      span + span {
+      span+span {
         margin-left: 15px;
       }
 
@@ -362,6 +378,7 @@
 
       &:hover {
         opacity: 1;
+
         span {
           display: inline-block;
         }
@@ -415,6 +432,7 @@
         .el-upload-list__item-name {
           line-height: 70px;
           margin-top: 0;
+
           i {
             display: none;
           }
@@ -459,7 +477,7 @@
       box-shadow: 0 1px 1px #ccc;
 
       i {
-        font-size: 12px;
+        font-size: $--font-size-medium;
         margin-top: 12px;
         transform: rotate(-45deg);
       }
@@ -498,7 +516,7 @@
     background: #13ce66;
     text-align: center;
     transform: rotate(45deg);
-    box-shadow: 0 0 1pc 1px rgba(0,0,0,0.2);
+    box-shadow: 0 0 1pc 1px rgba(0, 0, 0, 0.2);
 
     i {
       font-size: 12px;
@@ -514,7 +532,7 @@
     position: static;
     width: 243px;
 
-    + .el-upload__inner {
+    +.el-upload__inner {
       opacity: 0;
     }
   }
@@ -595,7 +613,7 @@
     color: $--color-text-primary;
   }
 
-  + .el-upload__inner {
+  +.el-upload__inner {
     opacity: 0;
     position: relative;
     z-index: 1;

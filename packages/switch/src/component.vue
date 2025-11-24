@@ -59,7 +59,7 @@
       },
       width: {
         type: Number,
-        default: 40
+        default: 50
       },
       activeIconClass: {
         type: String,
@@ -164,7 +164,7 @@
     },
     mounted() {
       /* istanbul ignore if */
-      this.coreWidth = this.width || 40;
+      this.coreWidth = this.width || 50;
       if (this.activeColor || this.inactiveColor) {
         this.setBackgroundColor();
       }

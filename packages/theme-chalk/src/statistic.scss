@@ -13,10 +13,11 @@
   list-style: none;
   font-feature-settings: "tnum";
   text-align: center;
+
   .head {
     margin-bottom: 4px;
     color: $--color-text-regular;
-    font-size: $--font-size-small;
+    font-size: $--font-size-base;
   }
 
   .con {
@@ -25,14 +26,21 @@
     justify-content: $statistic-justify;
     align-items: $statistic-align;
     color: $--color-text-primary;
+
     .number {
       font-size: $--font-size-extra-large;
       padding: 0 4px;
     }
+
     span {
       display: inline-block;
       margin: 0;
       line-height: 100%;
+    }
+
+    .prefix,
+    .suffix {
+      font-size: $--font-size-base;
     }
   }
 }

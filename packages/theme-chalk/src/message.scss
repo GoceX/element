@@ -68,12 +68,14 @@
 
   @include e(icon) {
     margin-right: 10px;
+    font-size: $--font-size-base;
   }
 
   @include e(content) {
     padding: 0;
-    font-size: 14px;
+    font-size: $--font-size-base;
     line-height: 1;
+
     &:focus {
       outline-width: 0;
     }
@@ -82,7 +84,7 @@
   @include e(closeBtn) {
     position: absolute;
     top: 50%;
-    right: 15px;
+    right: 12px;
     transform: translateY(-50%);
     cursor: pointer;
     color: $--message-close-icon-color;
@@ -91,6 +93,7 @@
     &:focus {
       outline-width: 0;
     }
+
     &:hover {
       color: $--message-close-hover-color;
     }

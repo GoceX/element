@@ -3,19 +3,20 @@
 
 @include b(page-header) {
   display: flex;
-  line-height: 24px;
+  line-height: #{$--font-size-base * 1.5};
 
   @include e(left) {
     display: flex;
     cursor: pointer;
     margin-right: 40px;
     position: relative;
+    color: $--color-text-regular;
 
     &::after {
       content: "";
       position: absolute;
       width: 1px;
-      height: 16px;
+      height: $--font-size-base;
       right: -20px;
       top: 50%;
       transform: translateY(-50%);
@@ -23,19 +24,19 @@
     }
 
     .el-icon-back {
-      font-size: 18px;
+      font-size: $--font-size-base;
       margin-right: 6px;
       align-self: center;
     }
 
     @include e(title) {
-      font-size: 14px;
-      font-weight: 500;
+      font-size: $--font-size-base;
     }
   }
 
   @include e(content) {
-    font-size: 18px;
+    font-size: $--font-size-base;
     color: $--color-text-primary;
+    font-weight: 500;
   }
 }

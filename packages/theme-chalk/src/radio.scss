@@ -1,199 +1,384 @@
+// 引入通用混合宏（BEM、响应式等）
 @import "mixins/mixins";
+// 引入工具类混合宏（清除浮动、禁用文本选择等）
 @import "mixins/utils";
+// 引入按钮相关混合宏（边框半径与尺寸复用）
 @import 'mixins/button';
+// 引入通用主题变量（颜色、字体、边框等）
 @import "common/var";
 
+// 定义 BEM 块 .el-radio 根样式
 @include b(radio) {
+  // 单选组件文本颜色
   color: $--radio-font-color;
+  // 单选组件字体粗细
   font-weight: $--radio-font-weight;
-  line-height: 1;
+  // 对齐方式：垂直居中
+  vertical-align: middle;
+  // 统一行高为 1，便于垂直对齐
+  // line-height: 1;
+  // 使用相对定位，方便内部伪元素定位
   position: relative;
+  // 显示为可点击手型指针
   cursor: pointer;
+  // 行内块元素，保持横向排列
   display: inline-block;
+  // 禁止自动换行
   white-space: nowrap;
+  // 去除浏览器默认的聚焦描边
   outline: none;
+  // 使用基础字号
   font-size: $--font-size-base;
-  margin-right: 30px;
+  // 默认右侧留出间距
+  margin-right: 14px;
+  // 禁止用户选择文本，避免误选
   @include utils-user-select(none);
 
+  // 修饰符 is-bordered：带边框的单选样式
   @include when(bordered) {
+    // 组件内边距
     padding: $--radio-bordered-padding;
+    // 圆角半径
     border-radius: $--border-radius-base;
+    // 基础边框样式
     border: $--border-base;
+    // 采用 border-box 参与尺寸计算
     box-sizing: border-box;
+    // 指定带边框的高度
     height: $--radio-bordered-height;
 
+    // 选中状态下高亮边框颜色
     &.is-checked {
+      // 使用主题主色作为边框色
       border-color: $--color-primary;
     }
 
+    // 禁用状态下样式变更
     &.is-disabled {
+      // 禁用时鼠标指针为不可用
       cursor: not-allowed;
+      // 边框颜色变浅
       border-color: $--border-color-lighter;
     }
 
-    & + .el-radio.is-bordered {
+    // 相邻的带边框单选之间的间距
+    &+.el-radio.is-bordered {
+      // 左侧增加 10px 间距
       margin-left: 10px;
     }
   }
 
+  // 尺寸修饰符 medium：中等尺寸
   @include m(medium) {
+
+    // 带边框的中等尺寸样式
     &.is-bordered {
+      // 中等尺寸内边距
       padding: $--radio-bordered-medium-padding;
+      // 中等尺寸圆角（复用按钮样式）
       border-radius: $--button-medium-border-radius;
+      // 中等尺寸高度
       height: $--radio-bordered-medium-height;
+
+      // 中等尺寸标签文字大小
       .el-radio__label {
+        // 中等尺寸字体
         font-size: $--button-medium-font-size;
       }
+
+      // 中等尺寸圆点大小
       .el-radio__inner {
+        // 圆点高度（medium）
         height: $--radio-bordered-medium-input-height;
+        // 圆点宽度（medium）
         width: $--radio-bordered-medium-input-width;
-      }
-    }
-  }
-  @include m(small) {
-    &.is-bordered {
-      padding: $--radio-bordered-small-padding;
-      border-radius: $--button-small-border-radius;
-      height: $--radio-bordered-small-height;
-      .el-radio__label {
-        font-size: $--button-small-font-size;
-      }
-      .el-radio__inner {
-        height: $--radio-bordered-small-input-height;
-        width: $--radio-bordered-small-input-width;
-      }
-    }
-  }
-  @include m(mini) {
-    &.is-bordered {
-      padding: $--radio-bordered-mini-padding;
-      border-radius: $--button-mini-border-radius;
-      height: $--radio-bordered-mini-height;
-      .el-radio__label {
-        font-size: $--button-mini-font-size;
-      }
-      .el-radio__inner {
-        height: $--radio-bordered-mini-input-height;
-        width: $--radio-bordered-mini-input-width;
+
+        // 内点伪元素显示
+        &::after {
+          // 内点宽度 4px
+          width: #{$--radio-bordered-medium-input-width - 7px};
+          // 内点高度 4px
+          height: #{$--radio-bordered-medium-input-height - 7px};
+        }
       }
     }
   }
 
+  // 尺寸修饰符 small：小尺寸
+  @include m(small) {
+
+    // 带边框的小尺寸样式
+    &.is-bordered {
+      // 小尺寸内边距
+      padding: $--radio-bordered-small-padding;
+      // 小尺寸圆角（复用按钮样式）
+      border-radius: $--button-small-border-radius;
+      // 小尺寸高度
+      height: $--radio-bordered-small-height;
+
+      // 小尺寸标签文字大小
+      .el-radio__label {
+        // 小尺寸字体
+        font-size: $--button-small-font-size;
+      }
+
+      // 小尺寸圆点大小
+      .el-radio__inner {
+        // 圆点高度（small）
+        height: $--radio-bordered-small-input-height;
+        // 圆点宽度（small）
+        width: $--radio-bordered-small-input-width; // 内点伪元素显示
+
+        &::after {
+          // 内点宽度 4px
+          width: #{$--radio-bordered-small-input-width - 7px};
+          // 内点高度 4px
+          height: #{$--radio-bordered-small-input-height - 7px};
+        }
+      }
+    }
+  }
+
+  // 尺寸修饰符 mini：迷你尺寸
+  @include m(mini) {
+
+    // 带边框的迷你尺寸样式
+    &.is-bordered {
+      // 迷你尺寸内边距
+      padding: $--radio-bordered-mini-padding;
+      // 迷你尺寸圆角（复用按钮样式）
+      border-radius: $--button-mini-border-radius;
+      // 迷你尺寸高度
+      height: $--radio-bordered-mini-height;
+
+      // 迷你尺寸标签文字大小
+      .el-radio__label {
+        // 迷你尺寸字体
+        font-size: $--button-mini-font-size;
+      }
+
+      // 迷你尺寸圆点大小
+      .el-radio__inner {
+        // 圆点高度（mini）
+        height: $--radio-bordered-mini-input-height;
+        // 圆点宽度（mini）
+        width: $--radio-bordered-mini-input-width;
+
+        // 内点伪元素显示
+        &::after {
+          // 内点宽度 4px
+          width: #{$--radio-bordered-mini-input-width - 6px};
+          // 内点高度 4px
+          height: #{$--radio-bordered-mini-input-height - 6px};
+        }
+      }
+    }
+  }
+
+  // 最后一个元素不再设置右侧外边距
   &:last-child {
+    // 移除右侧间距，避免额外空隙
     margin-right: 0;
   }
 
+  // 元素 el-radio__input：外层交互容器
   @include e(input) {
+    // 保持单行显示
     white-space: nowrap;
+    // 鼠标指针保持可点击
     cursor: pointer;
+    // 去除默认聚焦描边
     outline: none;
+    // 行内块元素
     display: inline-block;
-    line-height: 1;
+    // 行高 1，便于垂直对齐
+    line-height: 0;
+    // 相对定位，承载内部绝对定位元素
     position: relative;
+    // 垂直对齐为中部
     vertical-align: middle;
+    margin-top: -2px;
 
+    // 内部禁用状态样式
     @include when(disabled) {
+
+      // 禁用时圆点容器样式
       .el-radio__inner {
+        // 圆点背景色（禁用）
         background-color: $--radio-disabled-input-fill;
+        // 边框颜色（禁用）
         border-color: $--radio-disabled-input-border-color;
+        // 鼠标不可用
         cursor: not-allowed;
 
+        // 内点伪元素（禁用）
         &::after {
+          // 鼠标不可用
           cursor: not-allowed;
+          // 内点颜色（禁用）
           background-color: $--radio-disabled-icon-color;
         }
 
-        & + .el-radio__label {
+        // 相邻标签禁用
+        &+.el-radio__label {
+          // 标签不可点击
           cursor: not-allowed;
         }
       }
+
+      // 禁用且选中状态
       &.is-checked {
+
+        // 圆点样式（禁用且选中）
         .el-radio__inner {
+          // 背景填充（禁用选中）
           background-color: $--radio-disabled-checked-input-fill;
+          // 边框颜色（禁用选中）
           border-color: $--radio-disabled-checked-input-border-color;
 
+          // 内点颜色（禁用选中）
           &::after {
+            // 内点背景颜色（禁用且选中）
             background-color: $--radio-disabled-checked-icon-color;
           }
         }
       }
-      & + span.el-radio__label {
+
+      // 禁用时标签样式
+      &+span.el-radio__label {
+        // 标签文字使用占位色
         color: $--color-text-placeholder;
+        // 标签不可点击
         cursor: not-allowed;
       }
     }
 
+    // 选中状态样式
     @include when(checked) {
+
+      // 圆点容器（选中）
       .el-radio__inner {
+        // 边框颜色（选中高亮）
         border-color: $--radio-checked-input-border-color;
+        // 背景色（用于填充内点效果）
         background: $--radio-checked-icon-color;
 
+        // 内点伪元素显示
         &::after {
+          // 缩放至 1 显示内点
           transform: translate(-50%, -50%) scale(1);
         }
       }
 
-      & + .el-radio__label {
+      // 相邻标签文字选中高亮
+      &+.el-radio__label {
+        // 标签文字颜色（选中）
         color: $--radio-checked-font-color;
       }
     }
 
+    // 焦点态（键盘导航时）
     @include when(focus) {
+
+      // 焦点时边框颜色高亮
       .el-radio__inner {
+        // 使用 hover 边框色强调焦点
         border-color: $--radio-input-border-color-hover;
       }
     }
   }
+
+  // 元素 el-radio__inner：单选圆点自身样式
   @include e(inner) {
+    // 圆点边框样式
     border: $--radio-input-border;
+    // 圆点边框圆角
     border-radius: $--radio-input-border-radius;
+    // 圆点宽度
     width: $--radio-input-width;
+    // 圆点高度
     height: $--radio-input-height;
+    // 圆点背景颜色
     background-color: $--radio-input-background-color;
+    // 相对定位以承载伪元素
     position: relative;
+    // 鼠标可点击
     cursor: pointer;
+    // 行内块展示
     display: inline-block;
+    // 盒模型为 border-box
     box-sizing: border-box;
 
+    // 悬停时边框颜色高亮
     &:hover {
+      // 悬停边框色
       border-color: $--radio-input-border-color-hover;
     }
 
+    // 内点伪元素，表示选中态的小圆点
     &::after {
-      width: 4px;
-      height: 4px;
+      // 内点宽度 4px
+      width: #{$--radio-input-width - 8px};
+      // 内点高度 4px
+      height: #{$--radio-input-height - 8px};
+      // 内点圆角与外圈一致
       border-radius: $--radio-input-border-radius;
-      background-color: $--color-white;
+      // 内点背景色为白色
+      background-color: $--color-primary;
+      // 空内容
       content: "";
+      // 绝对定位到外圈中
       position: absolute;
+      // 水平居中（50%）
       left: 50%;
+      // 垂直居中（50%）
       top: 50%;
+      // 初始缩放为 0，隐藏内点
       transform: translate(-50%, -50%) scale(0);
+      // 选中时的缩放过渡动画
       transition: transform .15s ease-in;
     }
   }
 
+  // 元素 el-radio__original：隐藏的原生 input
   @include e(original) {
+    // 完全透明隐藏
     opacity: 0;
+    // 移除默认轮廓线
     outline: none;
+    // 绝对定位覆盖容器
     position: absolute;
+    // 置于容器之下避免遮挡
     z-index: -1;
+    // 顶部对齐
     top: 0;
+    // 左侧对齐
     left: 0;
+    // 右侧对齐
     right: 0;
+    // 底部对齐
     bottom: 0;
+    // 无外边距
     margin: 0;
   }
 
-  &:focus:not(.is-focus):not(:active):not(.is-disabled) { /*获得焦点时 样式提醒*/
+  // 外层获得焦点且非内部标记/非激活/非禁用时的提示样式
+  &:focus:not(.is-focus):not(:active):not(.is-disabled) {
+
+    // 焦点态样式提醒注释
+    /*获得焦点时 样式提醒*/
+    // 焦点时为内圈添加外发光阴影强调
     .el-radio__inner {
+      // 外发光阴影颜色取 hover 边框色
       box-shadow: 0 0 2px 2px $--radio-input-border-color-hover;
     }
   }
 
+  // 元素 el-radio__label：文字标签样式
   @include e(label) {
+    // 标签字体大小
     font-size: $--radio-font-size;
-    padding-left: 10px;
+    // 标签左侧内边距，控制与圆点距离
+    padding-left: 8px;
   }
 }

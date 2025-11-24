@@ -4,8 +4,8 @@
 @import "common/transition";
 
 @mixin menu-item {
-  height: 56px;
-  line-height: 56px;
+  height: #{$--menu-item-font-size * 2.5};
+  line-height: #{$--menu-item-font-size * 2.5};
   font-size: $--menu-item-font-size;
   color: $--menu-item-font-color;
   padding: 0 20px;
@@ -45,16 +45,18 @@
   padding-left: 0;
   background-color: $--menu-background-color;
   @include utils-clearfix;
+
   &.el-menu--horizontal {
     border-bottom: solid 1px #e6e6e6;
   }
 
   @include m(horizontal) {
     border-right: none;
-    & > .el-menu-item {
+
+    &>.el-menu-item {
       float: left;
-      height: 60px;
-      line-height: 60px;
+      height: #{$--menu-item-font-size * 2.5};
+      line-height: #{$--menu-item-font-size * 2.5};
       margin: 0;
       border-bottom: 2px solid transparent;
       color: $--color-text-secondary;
@@ -65,16 +67,18 @@
       }
 
       &:not(.is-disabled):hover,
-      &:not(.is-disabled):focus{
+      &:not(.is-disabled):focus {
         background-color: #fff;
       }
     }
-    & > .el-submenu {
+
+    &>.el-submenu {
       float: left;
 
       &:focus,
       &:hover {
         outline: none;
+
         .el-submenu__title {
           color: $--color-text-primary;
         }
@@ -88,8 +92,8 @@
       }
 
       & .el-submenu__title {
-        height: 60px;
-        line-height: 60px;
+        height: #{$--menu-item-font-size * 2.5};
+        line-height: #{$--menu-item-font-size * 2.5};
         border-bottom: 2px solid transparent;
         color: $--color-text-secondary;
 
@@ -97,6 +101,7 @@
           background-color: #fff;
         }
       }
+
       & .el-submenu__icon-arrow {
         position: static;
         vertical-align: middle;
@@ -104,45 +109,53 @@
         margin-top: -3px;
       }
     }
+
     & .el-menu {
+
       & .el-menu-item,
       & .el-submenu__title {
         background-color: $--color-white;
         float: none;
-        height: 36px;
-        line-height: 36px;
+        height: #{$--menu-item-font-size * 2};
+        line-height: #{$--menu-item-font-size * 2};
         padding: 0 10px;
         color: $--color-text-secondary;
       }
+
       & .el-menu-item.is-active,
-      & .el-submenu.is-active > .el-submenu__title {
+      & .el-submenu.is-active>.el-submenu__title {
         color: $--color-text-primary;
       }
     }
+
     & .el-menu-item:not(.is-disabled):hover,
     & .el-menu-item:not(.is-disabled):focus {
       outline: none;
       color: $--color-text-primary;
     }
-    & > .el-menu-item.is-active {
+
+    &>.el-menu-item.is-active {
       border-bottom: 2px solid $--color-primary;
       color: $--color-text-primary;
     }
   }
+
   @include m(collapse) {
     width: 64px;
 
-    > .el-menu-item,
-    > .el-submenu > .el-submenu__title {
+    >.el-menu-item,
+    >.el-submenu>.el-submenu__title {
       [class^="el-icon-"] {
         margin: 0;
         vertical-align: middle;
         width: 24px;
         text-align: center;
       }
+
       .el-submenu__icon-arrow {
         display: none;
       }
+
       span {
         height: 0;
         width: 0;
@@ -152,7 +165,7 @@
       }
     }
 
-    > .el-menu-item.is-active i {
+    >.el-menu-item.is-active i {
       color: inherit;
     }
 
@@ -162,6 +175,7 @@
 
     .el-submenu {
       position: relative;
+
       & .el-menu {
         position: absolute;
         margin-left: 5px;
@@ -174,12 +188,13 @@
       }
 
       &.is-opened {
-        > .el-submenu__title .el-submenu__icon-arrow {
+        >.el-submenu__title .el-submenu__icon-arrow {
           transform: none;
         }
       }
     }
   }
+
   @include m(popup) {
     z-index: 100;
     min-width: 200px;
@@ -191,12 +206,14 @@
     &-bottom-start {
       margin-top: 5px;
     }
+
     &-right-start {
       margin-left: 5px;
       margin-right: 5px;
     }
   }
 }
+
 @include b(menu-item) {
   @include menu-item;
 
@@ -204,17 +221,19 @@
     margin-right: 5px;
     width: 24px;
     text-align: center;
-    font-size: 18px;
+    font-size: $--menu-item-font-size;
     vertical-align: middle;
   }
+
   @include when(active) {
     color: $--color-primary;
+
     i {
       color: inherit;
     }
   }
 }
-  
+
 @include b(submenu) {
   list-style: none;
   margin: 0;
@@ -227,34 +246,41 @@
       background-color: $--menu-item-hover-fill;
     }
   }
+
   & .el-menu {
     border: none;
   }
+
   & .el-menu-item {
-    height: 50px;
-    line-height: 50px;
+    height: #{$--menu-item-font-size * 2.08};
+    line-height: #{$--menu-item-font-size * 2.08};
     padding: 0 45px;
     min-width: 200px;
   }
+
   @include e(icon-arrow) {
     position: absolute;
     top: 50%;
     right: 20px;
     margin-top: -7px;
     transition: transform .3s;
-    font-size: 12px;
+    font-size: $--font-size-medium;
   }
+
   @include when(active) {
     .el-submenu__title {
       border-bottom-color: $--color-primary;
     }
   }
+
   @include when(opened) {
-    > .el-submenu__title .el-submenu__icon-arrow {
+    >.el-submenu__title .el-submenu__icon-arrow {
       transform: rotateZ(180deg);
     }
   }
+
   @include when(disabled) {
+
     .el-submenu__title,
     .el-menu-item {
       opacity: 0.25;
@@ -262,23 +288,25 @@
       background: none !important;
     }
   }
+
   [class^="el-icon-"] {
     vertical-align: middle;
     margin-right: 5px;
     width: 24px;
     text-align: center;
-    font-size: 18px;
+    font-size: $--font-size-medium;
   }
 }
 
 @include b(menu-item-group) {
-  > ul {
+  >ul {
     padding: 0;
   }
+
   @include e(title) {
     padding: 7px 0 7px 20px;
     line-height: normal;
-    font-size: 12px;
+    font-size: $--menu-item-font-size;
     color: $--color-text-secondary;
   }
 }

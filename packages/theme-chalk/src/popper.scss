@@ -1,100 +1,158 @@
+// 引入 BEM 工具与主题变量
 @import "mixins/mixins";
 @import "common/var";
 
+// Popper 箭头与其伪元素的通用基础样式
 @include b(popper) {
+  // 箭头三角形的布局与可视化基础（本体与 ::after 伪元素）
   .popper__arrow,
   .popper__arrow::after {
+    // 绝对定位以便贴合 Popper 边缘
     position: absolute;
+    // 作为三角形显示块
     display: block;
+    // 通过 0 尺寸结合边框绘制三角形
     width: 0;
     height: 0;
+    // 默认透明，用边框指定方向颜色
     border-color: transparent;
     border-style: solid;
   }
 
+  // 箭头主体：控制边框宽度与阴影
   .popper__arrow {
+    // 箭头边框宽度（决定三角形大小）
     border-width: $--popover-arrow-size;
+    // 轻微投影，增强层次感
     filter: drop-shadow(0 2px 12px rgba(0, 0, 0, 0.03))
   }
 
+  // 箭头伪元素：用于填充内部颜色（与背景保持一致）
   .popper__arrow::after {
+    // 生成伪元素内容
     content: " ";
+    // 与主体保持一致的边框宽度，形成双层箭头
     border-width: $--popover-arrow-size;
   }
 
+  // 顶部方向：为箭头预留外边距空间
   &[x-placement^="top"] {
     margin-bottom: #{$--popover-arrow-size + 6};
   }
 
+  // 顶部方向的箭头定位与颜色
   &[x-placement^="top"] .popper__arrow {
+    // 箭头位于容器下边沿之外
     bottom: -$--popover-arrow-size;
+    // 水平居中
     left: 50%;
+    // 右侧间距，避免与提示箭头尺寸干扰
     margin-right: #{$--tooltip-arrow-size / 2};
+    // 顶部边框着色，形成向上的三角形
     border-top-color: $--popover-border-color;
+    // 移除底部边框
     border-bottom-width: 0;
 
     &::after {
+      // 轻微下移伪元素，使其与边框对齐
       bottom: 1px;
+      // 左移以对齐双层箭头
       margin-left: -$--popover-arrow-size;
+      // 伪元素填充为气泡背景色
       border-top-color: $--popover-background-color;
+      // 移除底部边框
       border-bottom-width: 0;
     }
   }
 
+  // 底部方向：为箭头预留外边距空间
   &[x-placement^="bottom"] {
     margin-top: #{$--popover-arrow-size + 6};
   }
 
+  // 底部方向的箭头定位与颜色
   &[x-placement^="bottom"] .popper__arrow {
+    // 箭头位于容器上边沿之外
     top: -$--popover-arrow-size;
+    // 水平居中
     left: 50%;
+    // 右侧间距，避免与提示箭头尺寸干扰
     margin-right: #{$--tooltip-arrow-size / 2};
+    // 移除顶部边框
     border-top-width: 0;
+    // 底部边框着色，形成向下的三角形
     border-bottom-color: $--popover-border-color;
 
     &::after {
+      // 轻微上移伪元素，使其与边框对齐
       top: 1px;
+      // 左移以对齐双层箭头
       margin-left: -$--popover-arrow-size;
+      // 移除顶部边框
       border-top-width: 0;
+      // 伪元素填充为气泡背景色
       border-bottom-color: $--popover-background-color;
     }
   }
 
+  // 右侧方向：为箭头预留外边距空间
   &[x-placement^="right"] {
     margin-left: #{$--popover-arrow-size + 6};
   }
 
+  // 右侧方向的箭头定位与颜色
   &[x-placement^="right"] .popper__arrow {
+    // 垂直居中
     top: 50%;
+    // 箭头位于容器左边沿之外
     left: -$--popover-arrow-size;
+    // 下方间距，避免与提示箭头尺寸干扰
     margin-bottom: #{$--tooltip-arrow-size / 2};
+    // 右侧边框着色，形成向右的三角形
     border-right-color: $--popover-border-color;
+    // 移除左侧边框
     border-left-width: 0;
 
     &::after {
+      // 伪元素位置微调以对齐边框
       bottom: -$--popover-arrow-size;
+      // 向右轻移
       left: 1px;
+      // 伪元素填充为气泡背景色
       border-right-color: $--popover-background-color;
+      // 移除左侧边框
       border-left-width: 0;
     }
   }
 
+  // 左侧方向：为箭头预留外边距空间
   &[x-placement^="left"] {
     margin-right: #{$--popover-arrow-size + 6};
   }
 
+  // 左侧方向的箭头定位与颜色
   &[x-placement^="left"] .popper__arrow {
+    // 垂直居中
     top: 50%;
+    // 箭头位于容器右边沿之外
     right: -$--popover-arrow-size;
+    // 下方间距，避免与提示箭头尺寸干扰
     margin-bottom: #{$--tooltip-arrow-size / 2};
+    // 移除右侧边框
     border-right-width: 0;
+    // 左侧边框着色，形成向左的三角形
     border-left-color: $--popover-border-color;
 
     &::after {
+      // 伪元素位置微调以对齐边框
       right: 1px;
+      // 伪元素位于容器外侧
       bottom: -$--popover-arrow-size;
+      // 左移以对齐双层箭头
       margin-left: -$--popover-arrow-size;
+      // 移除右侧边框
       border-right-width: 0;
+      // 伪元素填充为气泡背景色
       border-left-color: $--popover-background-color;
     }
   }

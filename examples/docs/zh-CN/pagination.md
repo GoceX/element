@@ -56,8 +56,10 @@
 ```html
 <el-pagination
   small
-  layout="prev, pager, next"
-  :total="50">
+  :page-sizes="[10, 20, 50, 100]"
+  :page-size="10"
+  layout="total, sizes, prev, pager, next, jumper"
+  :total="500">
 </el-pagination>
 ```
 :::
@@ -100,7 +102,7 @@
       @current-change="handleCurrentChange"
       :current-page.sync="currentPage3"
       :page-size="100"
-      layout="prev, pager, next, jumper"
+      layout="prev, pager, next, sizes, jumper"
       :total="1000">
     </el-pagination>
   </div>

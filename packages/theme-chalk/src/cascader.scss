@@ -31,7 +31,7 @@
 
     .el-icon-arrow-down {
       transition: transform .3s;
-      font-size: 14px;
+      font-size: $--font-size-medium;
 
       @include when(reverse) {
         transform: rotateZ(180deg);
@@ -104,7 +104,7 @@
         border-color: transparent;
       }
 
-      > span {
+      >span {
         flex: 1;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -139,13 +139,14 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 34px;
+    height: 45px;
     padding: 0 15px;
     text-align: left;
     outline: none;
     cursor: pointer;
 
-    &:hover, &:focus {
+    &:hover,
+    &:focus {
       background: $--cascader-node-background-hover;
     }
 
@@ -154,7 +155,7 @@
       font-weight: bold;
     }
 
-    > span {
+    >span {
       margin-right: 10px;
     }
   }

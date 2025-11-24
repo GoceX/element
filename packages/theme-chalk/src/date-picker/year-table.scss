@@ -1,7 +1,7 @@
 @import "../common/var";
 
 @include b(year-table) {
-  font-size: 12px;
+  font-size: $--font-size-medium;
   margin: -1px;
   border-collapse: collapse;
 

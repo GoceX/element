@@ -10,7 +10,9 @@
   font-size: $--font-size-base;
 
   @include e(buttons) {
-    display: inline-block;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: stretch;
     vertical-align: middle;
     padding: 0 30px;
   }
@@ -23,6 +25,10 @@
     color: $--color-white;
     background-color: $--color-primary;
     font-size: 0;
+
+    +.el-button {
+      margin-left: 0px !important;
+    }
 
     @include when(with-texts) {
       border-radius: $--border-radius-base;
@@ -48,11 +54,12 @@
       margin: 0;
     }
 
-    i, span {
-      font-size: 14px;
+    i,
+    span {
+      font-size: $--font-size-medium;
     }
 
-    & [class*="el-icon-"] + span {
+    & [class*="el-icon-"]+span {
       margin-left: 0;
     }
   }
@@ -66,6 +73,8 @@
   display: inline-block;
   vertical-align: middle;
   width: $--transfer-panel-width;
+  min-width: $--transfer-panel-mine-width;
+  max-width: 40%;
   max-height: 100%;
   box-sizing: border-box;
   position: relative;
@@ -98,7 +107,7 @@
     padding-left: 15px;
     display: block !important;
 
-    & + .el-transfer-panel__item {
+    &+.el-transfer-panel__item {
       margin-left: 0;
     }
 
@@ -110,37 +119,37 @@
       color: $--color-primary;
     }
 
-    &.el-checkbox .el-checkbox__label {
-      width: 100%;
-      @include utils-ellipsis;
-      display: block;
-      box-sizing: border-box;
-      padding-left: 24px;
-      line-height: $--transfer-item-height;
-    }
+    // &.el-checkbox .el-checkbox__label {
+    //   width: 100%;
+    //   @include utils-ellipsis;
+    //   display: block;
+    //   box-sizing: border-box;
+    //   padding-left: 24px;
+    //   line-height: $--transfer-item-height;
+    // }
 
-    .el-checkbox__input {
-      position: absolute;
-      top: 8px;
-    }
+    // .el-checkbox__input {
+    //   position: absolute;
+    //   top: 8px;
+    // }
   }
 
   @include e(filter) {
     text-align: center;
-    margin: 15px;
+    margin: 14px;
     box-sizing: border-box;
     display: block;
     width: auto;
 
     .el-input__inner {
-      height: $--transfer-filter-height;
+      // height: $--transfer-filter-height;
       width: 100%;
-      font-size: 12px;
+      // font-size: 12px;
       display: inline-block;
       box-sizing: border-box;
-      border-radius: #{$--transfer-filter-height / 2};
-      padding-right: 10px;
-      padding-left: 30px;
+      // border-radius: #{$--transfer-filter-height / 2};
+      // padding-right: 10px;
+      // padding-left: 30px;
     }
 
     .el-input__icon {
@@ -164,10 +173,10 @@
 
     .el-checkbox {
       display: block;
-      line-height: 40px;
+      line-height: $--transfer-panel-header-height;
 
       .el-checkbox__label {
-        font-size: 16px;
+        font-size: $--font-size-base;
         color: $--color-text-primary;
         font-weight: normal;
 
@@ -175,7 +184,7 @@
           position: absolute;
           right: 15px;
           color: $--color-text-secondary;
-          font-size: 12px;
+          font-size: $--font-size-medium;
           font-weight: normal;
         }
       }
@@ -215,13 +224,14 @@
   }
 
   .el-checkbox__inner {
-    height: 14px;
-    width: 14px;
+    height: $--checkbox-input-height;
+    width: $--checkbox-input-width;
     border-radius: 3px;
-    &::after {
-      height: 6px;
-      width: 3px;
-      left: 4px;
-    }
+
+    // &::after {
+    //   height: 6px;
+    //   width: 3px;
+    //   left: 4px;
+    // }
   }
 }

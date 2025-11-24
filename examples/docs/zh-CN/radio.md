@@ -152,9 +152,9 @@
     </el-radio-group>
   </div>
   <div style="margin-top: 20px">
-    <el-radio-group v-model="radio4" size="mini" disabled>
+    <el-radio-group v-model="radio4" size="mini" >
       <el-radio label="1" border>备选项1</el-radio>
-      <el-radio label="2" border>备选项2</el-radio>
+      <el-radio label="2" border disabled>备选项2</el-radio>
     </el-radio-group>
   </div>
 </template>

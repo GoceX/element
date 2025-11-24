@@ -1,472 +1,754 @@
 /* Element Chalk Variables */
+// 元素主题变量定义
 
-// Special comment for theme configurator
+// Special comment for theme configurator // 主题配置器专用注释
 // type|skipAutoTranslation|Category|Order
 // skipAutoTranslation 1
 
 /* Transition
 -------------------------- */
-$--all-transition: all .3s cubic-bezier(.645,.045,.355,1) !default;
+// 全局属性过渡
+$--all-transition: all .3s cubic-bezier(.645, .045, .355, 1) !default;
+// 透明度淡入淡出过渡
 $--fade-transition: opacity 300ms cubic-bezier(0.23, 1, 0.32, 1) !default;
+// 线性透明度过渡
 $--fade-linear-transition: opacity 200ms linear !default;
+// 位移与透明过渡组合
 $--md-fade-transition: transform 300ms cubic-bezier(0.23, 1, 0.32, 1), opacity 300ms cubic-bezier(0.23, 1, 0.32, 1) !default;
-$--border-transition-base: border-color .2s cubic-bezier(.645,.045,.355,1) !default;
-$--color-transition-base: color .2s cubic-bezier(.645,.045,.355,1) !default;
+// 边框颜色过渡
+$--border-transition-base: border-color .2s cubic-bezier(.645, .045, .355, 1) !default;
+// 文本颜色过渡
+$--color-transition-base: color .2s cubic-bezier(.645, .045, .355, 1) !default;
 
 /* Color
 -------------------------- */
 /// color|1|Brand Color|0
-$--color-primary: #409EFF !default;
+// 主题色
+$--color-primary: #0183FF !default;
 /// color|1|Background Color|4
+// 白色
 $--color-white: #FFFFFF !default;
 /// color|1|Background Color|4
+// 黑色
 $--color-black: #000000 !default;
-$--color-primary-light-1: mix($--color-white, $--color-primary, 10%) !default; /* 53a8ff */
-$--color-primary-light-2: mix($--color-white, $--color-primary, 20%) !default; /* 66b1ff */
-$--color-primary-light-3: mix($--color-white, $--color-primary, 30%) !default; /* 79bbff */
-$--color-primary-light-4: mix($--color-white, $--color-primary, 40%) !default; /* 8cc5ff */
-$--color-primary-light-5: mix($--color-white, $--color-primary, 50%) !default; /* a0cfff */
-$--color-primary-light-6: mix($--color-white, $--color-primary, 60%) !default; /* b3d8ff */
-$--color-primary-light-7: mix($--color-white, $--color-primary, 70%) !default; /* c6e2ff */
-$--color-primary-light-8: mix($--color-white, $--color-primary, 80%) !default; /* d9ecff */
-$--color-primary-light-9: mix($--color-white, $--color-primary, 90%) !default; /* ecf5ff */
+// 主色浅 1
+$--color-primary-light-1: mix($--color-white, $--color-primary, 10%) !default;
+/* 53a8ff */
+// 主色浅 2
+$--color-primary-light-2: mix($--color-white, $--color-primary, 20%) !default;
+/* 66b1ff */
+// 主色浅 3
+$--color-primary-light-3: mix($--color-white, $--color-primary, 30%) !default;
+/* 79bbff */
+// 主色浅 4
+$--color-primary-light-4: mix($--color-white, $--color-primary, 40%) !default;
+/* 8cc5ff */
+// 主色浅 5
+$--color-primary-light-5: mix($--color-white, $--color-primary, 50%) !default;
+/* a0cfff */
+// 主色浅 6
+$--color-primary-light-6: mix($--color-white, $--color-primary, 60%) !default;
+/* b3d8ff */
+// 主色浅 7
+$--color-primary-light-7: mix($--color-white, $--color-primary, 70%) !default;
+/* c6e2ff */
+// 主色浅 8
+$--color-primary-light-8: mix($--color-white, $--color-primary, 80%) !default;
+/* d9ecff */
+// 主色浅 9
+$--color-primary-light-9: mix($--color-white, $--color-primary, 90%) !default;
+/* ecf5ff */
 /// color|1|Functional Color|1
-$--color-success: #67C23A !default;
+// 成功色
+$--color-success: #00BA64 !default;
 /// color|1|Functional Color|1
-$--color-warning: #E6A23C !default;
+// 警告色
+$--color-warning: #FF5F00 !default;
 /// color|1|Functional Color|1
-$--color-danger: #F56C6C !default;
+// 危险色
+$--color-danger: #D31213 !default;
 /// color|1|Functional Color|1
+// 信息色
 $--color-info: #909399 !default;
 
+// 成功色浅色
 $--color-success-light: mix($--color-white, $--color-success, 80%) !default;
+// 警告色浅色
 $--color-warning-light: mix($--color-white, $--color-warning, 80%) !default;
+// 危险色浅色
 $--color-danger-light: mix($--color-white, $--color-danger, 80%) !default;
+// 信息色浅色
 $--color-info-light: mix($--color-white, $--color-info, 80%) !default;
 
+// 成功色更浅
 $--color-success-lighter: mix($--color-white, $--color-success, 90%) !default;
+// 警告色更浅
 $--color-warning-lighter: mix($--color-white, $--color-warning, 90%) !default;
+// 危险色更浅
 $--color-danger-lighter: mix($--color-white, $--color-danger, 90%) !default;
+// 信息色更浅
 $--color-info-lighter: mix($--color-white, $--color-info, 90%) !default;
 /// color|1|Font Color|2
-$--color-text-primary: #303133 !default;
+// 主要文字颜色
+$--color-text-primary: #333333 !default;
 /// color|1|Font Color|2
-$--color-text-regular: #606266 !default;
+// 常规文字颜色
+$--color-text-regular: #777777 !default;
 /// color|1|Font Color|2
-$--color-text-secondary: #909399 !default;
+// 次要文字颜色
+$--color-text-secondary: #999999 !default;
 /// color|1|Font Color|2
+// 占位文字颜色
 $--color-text-placeholder: #C0C4CC !default;
 /// color|1|Border Color|3
-$--border-color-base: #DCDFE6 !default;
+// 基础边框色
+$--border-color-base: #BFBFBF !default;
 /// color|1|Border Color|3
+// 浅边框色
 $--border-color-light: #E4E7ED !default;
 /// color|1|Border Color|3
+// 更浅边框色
 $--border-color-lighter: #EBEEF5 !default;
 /// color|1|Border Color|3
+// 极浅边框色
 $--border-color-extra-light: #F2F6FC !default;
 
 // Background
 /// color|1|Background Color|4
+// 基础背景色
 $--background-color-base: #F5F7FA !default;
 
 /* Link
 -------------------------- */
+// 链接文字颜色
 $--link-color: $--color-primary-light-2 !default;
+// 链接悬停颜色
 $--link-hover-color: $--color-primary !default;
 
 /* Border
 -------------------------- */
+// 基础边框宽度
 $--border-width-base: 1px !default;
+// 基础边框样式
 $--border-style-base: solid !default;
+// 边框悬停颜色
 $--border-color-hover: $--color-text-placeholder !default;
+// 基础边框组合
 $--border-base: $--border-width-base $--border-style-base $--border-color-base !default;
+/// fontSize||Font|1
+$--border-base-double: 2px $--border-style-base $--border-color-base !default;
+
 /// borderRadius|1|Radius|0
-$--border-radius-base: 4px !default;
+// 基础圆角
+$--border-radius-base: 6px !default;
 /// borderRadius|1|Radius|0
+// 小圆角
 $--border-radius-small: 2px !default;
 /// borderRadius|1|Radius|0
+// 圆形圆角
 $--border-radius-circle: 100% !default;
 /// borderRadius|1|Radius|0
+// 无圆角
 $--border-radius-zero: 0 !default;
 
 // Box-shadow
 /// boxShadow|1|Shadow|1
+// 基础阴影
 $--box-shadow-base: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04) !default;
 // boxShadow|1|Shadow|1
+// 深色阴影
 $--box-shadow-dark: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .12) !default;
 /// boxShadow|1|Shadow|1
+// 浅色阴影
 $--box-shadow-light: 0 2px 12px 0 rgba(0, 0, 0, 0.1) !default;
 
 /* Fill
 -------------------------- */
+// 基础填充色
 $--fill-base: $--color-white !default;
 
 /* Typography
 -------------------------- */
+// 字体文件路径
 $--font-path: 'fonts' !default;
+// 字体显示策略
 $--font-display: 'auto' !default;
 /// fontSize|1|Font Size|0
-$--font-size-extra-large: 20px !default;
+// 基础字号
+$--font-size-base: 18px !default;
 /// fontSize|1|Font Size|0
-$--font-size-large: 18px !default;
+// 特大字号
+$--font-size-extra-large: #{$--font-size-base * 1.2} !default;
 /// fontSize|1|Font Size|0
-$--font-size-medium: 16px !default;
+// 大字号
+$--font-size-large: #{$--font-size-base * 1.1} !default;
 /// fontSize|1|Font Size|0
-$--font-size-base: 14px !default;
+// 中字号
+$--font-size-medium: #{$--font-size-base * 0.75} !default;
 /// fontSize|1|Font Size|0
-$--font-size-small: 13px !default;
+// 小字号
+$--font-size-small: #{$--font-size-base * 0.6} !default;
 /// fontSize|1|Font Size|0
-$--font-size-extra-small: 12px !default;
+// 特小字号
+$--font-size-extra-small: #{$--font-size-base * 0.5} !default;
 /// fontWeight|1|Font Weight|1
+// 主要字重
 $--font-weight-primary: 500 !default;
 /// fontWeight|1|Font Weight|1
+// 次要字重
 $--font-weight-secondary: 100 !default;
 /// fontLineHeight|1|Line Height|2
-$--font-line-height-primary: 24px !default;
+// 主要行高
+$--font-line-height-primary: $--font-size-base !default;
 /// fontLineHeight|1|Line Height|2
-$--font-line-height-secondary: 16px !default;
+// 次要行高
+$--font-line-height-secondary: #{$--font-size-base * 0.75} !default;
+// 禁用文字颜色
 $--font-color-disabled-base: #bbb !default;
 /* Size
 -------------------------- */
+// 基础尺寸
 $--size-base: 14px !default;
 
 /* z-index
 -------------------------- */
+// 普通层级
 $--index-normal: 1 !default;
+// 顶层层级
 $--index-top: 1000 !default;
+// 弹层层级
 $--index-popper: 2000 !default;
 
 /* Disable base
 -------------------------- */
+// 禁用态背景
 $--disabled-fill-base: $--background-color-base !default;
+// 禁用态文字
 $--disabled-color-base: $--color-text-placeholder !default;
+// 禁用态边框
 $--disabled-border-base: $--border-color-light !default;
 
 /* Icon
 -------------------------- */
+// 图标默认颜色
 $--icon-color: #666 !default;
+// 图标基础颜色
 $--icon-color-base: $--color-info !default;
 
-/* Checkbox
+/* Checkbox 多选框
 -------------------------- */
+// 复选框字体大小
 /// fontSize||Font|1
-$--checkbox-font-size: 14px !default;
+$--checkbox-font-size: $--font-size-base !default;
+// 复选框字体粗细
 /// fontWeight||Font|1
 $--checkbox-font-weight: $--font-weight-primary !default;
+// 复选框文字颜色
 /// color||Color|0
 $--checkbox-font-color: $--color-text-regular !default;
-$--checkbox-input-height: 14px !default;
-$--checkbox-input-width: 14px !default;
+// 复选框圆角
 /// borderRadius||Border|2
 $--checkbox-border-radius: $--border-radius-small !default;
+// 复选框背景色
 /// color||Color|0
 $--checkbox-background-color: $--color-white !default;
-$--checkbox-input-border: $--border-base !default;
+// 复选框边框样式
+$--checkbox-input-border: $--border-base-double !default;
 
+// 复选框禁用边框色
 /// color||Color|0
 $--checkbox-disabled-border-color: $--border-color-base !default;
+// 复选框禁用填充色
 $--checkbox-disabled-input-fill: #edf2fc !default;
+// 复选框禁用图标色
 $--checkbox-disabled-icon-color: $--color-text-placeholder !default;
 
+// 复选框禁用且选中填充色
 $--checkbox-disabled-checked-input-fill: $--border-color-extra-light !default;
+// 复选框禁用且选中边框色
 $--checkbox-disabled-checked-input-border-color: $--border-color-base !default;
+// 复选框禁用且选中图标色
 $--checkbox-disabled-checked-icon-color: $--color-text-placeholder !default;
 
+// 复选框选中文字色
 /// color||Color|0
 $--checkbox-checked-font-color: $--color-primary !default;
+// 复选框选中边框色
 $--checkbox-checked-input-border-color: $--color-primary !default;
+// 复选框选中背景色
 /// color||Color|0
 $--checkbox-checked-background-color: $--color-primary !default;
+// 复选框选中图标色
 $--checkbox-checked-icon-color: $--fill-base !default;
 
+// 复选框悬停边框色
 $--checkbox-input-border-color-hover: $--color-primary !default;
+// 复选框带边框的高度
 /// height||Other|4
-$--checkbox-bordered-height: 40px !default;
+$--checkbox-bordered-height: auto !default;
+// 复选框输入高度
+$--checkbox-input-height: 20px !default;
+// 复选框输入宽度
+$--checkbox-input-width: 20px !default;
+// 复选框带边框的内边距
 /// padding||Spacing|3
-$--checkbox-bordered-padding: 9px 20px 9px 10px !default;
-/// padding||Spacing|3
-$--checkbox-bordered-medium-padding: 7px 20px 7px 10px !default;
-/// padding||Spacing|3
-$--checkbox-bordered-small-padding: 5px 15px 5px 10px !default;
-/// padding||Spacing|3
-$--checkbox-bordered-mini-padding: 3px 15px 3px 10px !default;
-$--checkbox-bordered-medium-input-height: 14px !default;
-$--checkbox-bordered-medium-input-width: 14px !default;
-/// height||Other|4
-$--checkbox-bordered-medium-height: 36px !default;
-$--checkbox-bordered-small-input-height: 12px !default;
-$--checkbox-bordered-small-input-width: 12px !default;
-/// height||Other|4
-$--checkbox-bordered-small-height: 32px !default;
-$--checkbox-bordered-mini-input-height: 12px !default;
-$--checkbox-bordered-mini-input-width: 12px !default;
-/// height||Other|4
-$--checkbox-bordered-mini-height: 28px !default;
+$--checkbox-bordered-padding: 8px 24px !default;
 
+// 中号复选框总高度
+/// height||Other|4
+$--checkbox-bordered-medium-height: auto !default;
+// 中号复选框输入高度
+$--checkbox-bordered-medium-input-height: 16px !default;
+// 中号复选框输入宽度
+$--checkbox-bordered-medium-input-width: 16px !default;
+// 中号复选框边框内边距
+/// padding||Spacing|3
+$--checkbox-bordered-medium-padding: 6px 18px !default;
+
+
+// 小号复选框总高度
+/// height||Other|4
+$--checkbox-bordered-small-height: auto !default;
+// 小号复选框输入高度
+$--checkbox-bordered-small-input-height: 14px !default;
+// 小号复选框输入宽度
+$--checkbox-bordered-small-input-width: 14px !default;
+// 小号复选框边框内边距
+/// padding||Spacing|3
+$--checkbox-bordered-small-padding: 4px 8px !default;
+
+
+// 迷你复选框总高度
+/// height||Other|4
+$--checkbox-bordered-mini-height: auto !default;
+// 迷你复选框输入高度
+$--checkbox-bordered-mini-input-height: 12px !default;
+// 迷你复选框输入宽度
+$--checkbox-bordered-mini-input-width: 12px !default;
+// 迷你复选框边框内边距
+/// padding||Spacing|3
+$--checkbox-bordered-mini-padding: 2px 6px !default;
+
+// 复选按钮选中背景色
 /// color||Color|0
 $--checkbox-button-checked-background-color: $--color-primary !default;
+// 复选按钮选中文字色
 /// color||Color|0
 $--checkbox-button-checked-font-color: $--color-white !default;
+// 复选按钮选中边框色
 /// color||Color|0
 $--checkbox-button-checked-border-color: $--color-primary !default;
 
 
 
-/* Radio
+/* Radio 单选框
 -------------------------- */
 /// fontSize||Font|1
+// 单选框字体大小
 $--radio-font-size: $--font-size-base !default;
 /// fontWeight||Font|1
+// 单选框字体粗细
 $--radio-font-weight: $--font-weight-primary !default;
 /// color||Color|0
+// 单选框文字颜色
 $--radio-font-color: $--color-text-regular !default;
-$--radio-input-height: 14px !default;
-$--radio-input-width: 14px !default;
+// 单选框输入高度
+$--radio-input-height: 20px !default;
+// 单选框输入宽度
+$--radio-input-width: 20px !default;
 /// borderRadius||Border|2
+// 单选框圆角
 $--radio-input-border-radius: $--border-radius-circle !default;
 /// color||Color|0
+// 单选框背景色
 $--radio-input-background-color: $--color-white !default;
-$--radio-input-border: $--border-base !default;
+// 单选框边框样式
+$--radio-input-border: $--border-base-double !default;
 /// color||Color|0
+// 单选框边框颜色
 $--radio-input-border-color: $--border-color-base !default;
 /// color||Color|0
+// 单选图标颜色
 $--radio-icon-color: $--color-white !default;
 
+// 禁用边框色
 $--radio-disabled-input-border-color: $--disabled-border-base !default;
+// 禁用填充色
 $--radio-disabled-input-fill: $--disabled-fill-base !default;
+// 禁用图标色
 $--radio-disabled-icon-color: $--disabled-fill-base !default;
 
+// 禁用选中边框色
 $--radio-disabled-checked-input-border-color: $--disabled-border-base !default;
+// 禁用选中填充色
 $--radio-disabled-checked-input-fill: $--disabled-fill-base !default;
+// 禁用选中图标色
 $--radio-disabled-checked-icon-color: $--color-text-placeholder !default;
 
 /// color||Color|0
+// 选中文字色
 $--radio-checked-font-color: $--color-primary !default;
 /// color||Color|0
+// 选中边框色
 $--radio-checked-input-border-color: $--color-primary !default;
 /// color||Color|0
+// 选中背景色
 $--radio-checked-input-background-color: $--color-white !default;
 /// color||Color|0
-$--radio-checked-icon-color: $--color-primary !default;
+// 选中图标色
+$--radio-checked-icon-color: $--color-white !default;
 
+// 悬停边框色
 $--radio-input-border-color-hover: $--color-primary !default;
 
-$--radio-bordered-height: 40px !default;
-$--radio-bordered-padding: 12px 20px 0 10px !default;
-$--radio-bordered-medium-padding: 10px 20px 0 10px !default;
-$--radio-bordered-small-padding: 8px 15px 0 10px !default;
-$--radio-bordered-mini-padding: 6px 15px 0 10px !default;
-$--radio-bordered-medium-input-height: 14px !default;
-$--radio-bordered-medium-input-width: 14px !default;
-$--radio-bordered-medium-height: 36px !default;
-$--radio-bordered-small-input-height: 12px !default;
-$--radio-bordered-small-input-width: 12px !default;
-$--radio-bordered-small-height: 32px !default;
+// 带边框高度
+$--radio-bordered-height: auto !default;
+// 带边框内边距
+$--radio-bordered-padding: 8px 24px !default;
+
+// 中号总高度
+$--radio-bordered-medium-height: auto !default;
+// 中号边框内边距
+$--radio-bordered-medium-padding: 6px 18px !default;
+// 中号输入高度
+$--radio-bordered-medium-input-height: 16px !default;
+// 中号输入宽度
+$--radio-bordered-medium-input-width: 16px !default;
+
+// 小号总高度
+$--radio-bordered-small-height: auto !default;
+// 小号边框内边距
+$--radio-bordered-small-padding: 4px 8px !default;
+// 小号输入高度
+$--radio-bordered-small-input-height: 14px !default;
+// 小号输入宽
+$--radio-bordered-small-input-width: 14px !default;
+
+
+// 迷你总高度
+$--radio-bordered-mini-height: auto !default;
+// 迷你边框内边距
+$--radio-bordered-mini-padding: 2px 6px !default;
+// 迷你输入高度
 $--radio-bordered-mini-input-height: 12px !default;
+// 迷你输入宽度
 $--radio-bordered-mini-input-width: 12px !default;
-$--radio-bordered-mini-height: 28px !default;
 
 /// fontSize||Font|1
+// 单选按钮字体大小
 $--radio-button-font-size: $--font-size-base !default;
 /// color||Color|0
+// 选中背景色
 $--radio-button-checked-background-color: $--color-primary !default;
 /// color||Color|0
+// 选中文字色
 $--radio-button-checked-font-color: $--color-white !default;
 /// color||Color|0
+// 选中边框色
 $--radio-button-checked-border-color: $--color-primary !default;
+// 禁用选中填充色
 $--radio-button-disabled-checked-fill: $--border-color-extra-light !default;
 
-/* Select
+/* Select 选择器
 -------------------------- */
+// 选择器悬停边框色
 $--select-border-color-hover: $--border-color-hover !default;
+// 选择器禁用边框
 $--select-disabled-border: $--disabled-border-base !default;
 /// fontSize||Font|1
+// 选择器字体大小
 $--select-font-size: $--font-size-base !default;
+// 关闭图标悬停色
 $--select-close-hover-color: $--color-text-secondary !default;
 
+// 输入文字颜色
 $--select-input-color: $--color-text-placeholder !default;
+// 多选输入颜色
 $--select-multiple-input-color: #666 !default;
 /// color||Color|0
+// 输入聚焦边框色
 $--select-input-focus-border-color: $--color-primary !default;
 /// fontSize||Font|1
-$--select-input-font-size: 14px !default;
+// 输入字号
+$--select-input-font-size: #{$--font-size-base * 0.8} !default;
 
+// 选项文字颜色
 $--select-option-color: $--color-text-regular !default;
+// 禁用选项文字颜色
 $--select-option-disabled-color: $--color-text-placeholder !default;
+// 禁用选项背景
 $--select-option-disabled-background: $--color-white !default;
 /// height||Other|4
-$--select-option-height: 34px !default;
+// 选项高度
+$--select-option-height: 45px !default;
+// 选项悬停背景
 $--select-option-hover-background: $--background-color-base !default;
 /// color||Color|0
+// 选中选项文字色
 $--select-option-selected-font-color: $--color-primary !default;
+// 选中选项悬停背景
 $--select-option-selected-hover: $--background-color-base !default;
 
+// 分组标题颜色
 $--select-group-color: $--color-info !default;
-$--select-group-height: 30px !default;
-$--select-group-font-size: 12px !default;
+// 分组标题高度
+$--select-group-height: 40px !default;
+// 分组标题字号
+$--select-group-font-size: $--font-size-base !default;
 
+// 下拉背景色
 $--select-dropdown-background: $--color-white !default;
+// 下拉阴影
 $--select-dropdown-shadow: $--box-shadow-light !default;
+// 空状态文字色
 $--select-dropdown-empty-color: #999 !default;
 /// height||Other|4
+// 下拉最大高度
 $--select-dropdown-max-height: 274px !default;
+// 下拉内边距
 $--select-dropdown-padding: 6px 0 !default;
+// 空状态内边距
 $--select-dropdown-empty-padding: 10px 0 !default;
+// 下拉边框
 $--select-dropdown-border: solid 1px $--border-color-light !default;
 
-/* Alert
+/* Alert 警告
 -------------------------- */
+// 警告组件内边距
 $--alert-padding: 8px 16px !default;
 /// borderRadius||Border|2
+// 警告组件圆角
 $--alert-border-radius: $--border-radius-base !default;
 /// fontSize||Font|1
-$--alert-title-font-size: 13px !default;
+// 警告标题字号
+$--alert-title-font-size: $--font-size-base !default;
 /// fontSize||Font|1
-$--alert-description-font-size: 12px !default;
+// 警告描述字号
+$--alert-description-font-size: $--font-size-medium !default;
 /// fontSize||Font|1
-$--alert-close-font-size: 12px !default;
+// 关闭按钮字号
+$--alert-close-font-size: $--font-size-base !default;
 /// fontSize||Font|1
-$--alert-close-customed-font-size: 13px !default;
+// 自定义关闭按钮字号
+$--alert-close-customed-font-size: $--font-size-small !default;
 
+// 成功背景色
 $--alert-success-color: $--color-success-lighter !default;
+// 信息背景色
 $--alert-info-color: $--color-info-lighter !default;
+// 警告背景色
 $--alert-warning-color: $--color-warning-lighter !default;
+// 危险背景色
 $--alert-danger-color: $--color-danger-lighter !default;
 
 /// height||Other|4
-$--alert-icon-size: 16px !default;
+// 图标尺寸
+$--alert-icon-size: $--font-size-base !default;
 /// height||Other|4
-$--alert-icon-large-size: 28px !default;
+// 大图标尺寸
+$--alert-icon-large-size: $--font-size-extra-large !default;
 
 /* MessageBox
 -------------------------- */
 /// color||Color|0
+// 弹框标题颜色
 $--messagebox-title-color: $--color-text-primary !default;
+// 弹框宽度
 $--msgbox-width: 420px !default;
+// 弹框圆角
 $--msgbox-border-radius: 4px !default;
 /// fontSize||Font|1
+// 弹框标题字号
 $--messagebox-font-size: $--font-size-large !default;
 /// fontSize||Font|1
+// 弹框内容字号
 $--messagebox-content-font-size: $--font-size-base !default;
 /// color||Color|0
+// 弹框内容颜色
 $--messagebox-content-color: $--color-text-regular !default;
 /// fontSize||Font|1
+// 错误信息字号
 $--messagebox-error-font-size: 12px !default;
+// 主体内边距
 $--msgbox-padding-primary: 15px !default;
 /// color||Color|0
+/// color||Color|0
+/// color||Color|0
+/// color||Color|0
+// 成功色
 $--messagebox-success-color: $--color-success !default;
-/// color||Color|0
+// 信息色
 $--messagebox-info-color: $--color-info !default;
-/// color||Color|0
+// 警告色
 $--messagebox-warning-color: $--color-warning !default;
-/// color||Color|0
+// 危险色
 $--messagebox-danger-color: $--color-danger !default;
 
-/* Message
+/* Message 消息提示
 -------------------------- */
+// 消息框阴影
 $--message-shadow: $--box-shadow-base !default;
+// 消息最小宽度
 $--message-min-width: 380px !default;
+// 消息背景色
 $--message-background-color: #edf2fc !default;
-$--message-padding: 15px 15px 15px 20px !default;
+// 消息内边距
+$--message-padding: 15px 12px 15px 15px !default;
 /// color||Color|0
+// 关闭图标颜色
 $--message-close-icon-color: $--color-text-placeholder !default;
 /// height||Other|4
-$--message-close-size: 16px !default;
+// 关闭图标尺寸
+$--message-close-size: $--font-size-base !default;
 /// color||Color|0
+// 关闭图标悬停色
 $--message-close-hover-color: $--color-text-secondary !default;
 
 /// color||Color|0
+// 成功消息文字色
 $--message-success-font-color: $--color-success !default;
 /// color||Color|0
+// 信息消息文字色
 $--message-info-font-color: $--color-info !default;
 /// color||Color|0
+// 警告消息文字色
 $--message-warning-font-color: $--color-warning !default;
 /// color||Color|0
+// 危险消息文字色
 $--message-danger-font-color: $--color-danger !default;
 
-/* Notification
+/* Notification 通知
 -------------------------- */
+// 通知宽度
 $--notification-width: 330px !default;
 /// padding||Spacing|3
+// 通知内边距
 $--notification-padding: 14px 26px 14px 13px !default;
+// 通知圆角
 $--notification-radius: 8px !default;
+// 通知阴影
 $--notification-shadow: $--box-shadow-light !default;
 /// color||Color|0
+// 通知边框色
 $--notification-border-color: $--border-color-lighter !default;
-$--notification-icon-size: 24px !default;
+// 图标尺寸
+$--notification-icon-size: $--font-size-large !default;
+// 关闭字号
 $--notification-close-font-size: $--message-close-size !default;
+// 左边距
 $--notification-group-margin-left: 13px !default;
+// 右边距
 $--notification-group-margin-right: 8px !default;
 /// fontSize||Font|1
-$--notification-content-font-size: $--font-size-base !default;
+// 内容字号
+$--notification-content-font-size: $--font-size-medium !default;
 /// color||Color|0
+// 内容文字色
 $--notification-content-color: $--color-text-regular !default;
 /// fontSize||Font|1
-$--notification-title-font-size: 16px !default;
+// 标题字号
+$--notification-title-font-size: $--message-close-size !default;
 /// color||Color|0
+// 标题颜色
 $--notification-title-color: $--color-text-primary !default;
 
 /// color||Color|0
+// 关闭按钮颜色
 $--notification-close-color: $--color-text-secondary !default;
 /// color||Color|0
+// 关闭按钮悬停色
 $--notification-close-hover-color: $--color-text-regular !default;
 
 /// color||Color|0
+// 成功图标色
 $--notification-success-icon-color: $--color-success !default;
 /// color||Color|0
+// 信息图标色
 $--notification-info-icon-color: $--color-info !default;
 /// color||Color|0
+// 警告图标色
 $--notification-warning-icon-color: $--color-warning !default;
 /// color||Color|0
+// 危险图标色
 $--notification-danger-icon-color: $--color-danger !default;
 
-/* Input
+/* Input 输入框
 -------------------------- */
-$--input-font-size: $--font-size-base !default;
+$--input-height: 45px !default;
 /// color||Color|0
+// 输入框文字颜色
 $--input-font-color: $--color-text-regular !default;
-/// height||Other|4
-$--input-height: 40px !default;
+// 输入框边框样式
 $--input-border: $--border-base !default;
+// 输入框边框颜色
 $--input-border-color: $--border-color-base !default;
 /// borderRadius||Border|2
+// 输入框圆角
 $--input-border-radius: $--border-radius-base !default;
+// 悬停边框色
 $--input-border-color-hover: $--border-color-hover !default;
 /// color||Color|0
+// 输入框背景色
 $--input-background-color: $--color-white !default;
+// 禁用背景
 $--input-fill-disabled: $--disabled-fill-base !default;
+// 禁用文字
 $--input-color-disabled: $--font-color-disabled-base !default;
 /// color||Color|0
+// 图标颜色
 $--input-icon-color: $--color-text-placeholder !default;
 /// color||Color|0
+// 占位文字色
 $--input-placeholder-color: $--color-text-placeholder !default;
+// 最大宽度
 $--input-max-width: 314px !default;
 
+// 悬停边框（简写）
 $--input-hover-border: $--border-color-hover !default;
+// 清空图标悬停色
 $--input-clear-hover-color: $--color-text-secondary !default;
 
+// 聚焦边框色
 $--input-focus-border: $--color-primary !default;
+// 聚焦背景
 $--input-focus-fill: $--color-white !default;
 
+// 禁用背景（冗余）
 $--input-disabled-fill: $--disabled-fill-base !default;
+// 禁用边框
 $--input-disabled-border: $--disabled-border-base !default;
+// 禁用文字
 $--input-disabled-color: $--disabled-color-base !default;
+// 禁用占位文字
 $--input-disabled-placeholder-color: $--color-text-placeholder !default;
 
-/// fontSize||Font|1
-$--input-medium-font-size: 14px !default;
+// 输入框字体大小
+$--input-font-size: $--font-size-base !default;
 /// height||Other|4
+// 输入框高度
+
+/// fontSize||Font|1
+// 中号输入字号
+$--input-medium-font-size: $--font-size-base !default;
+/// height||Other|4
+// 中号输入高度
 $--input-medium-height: 36px !default;
 /// fontSize||Font|1
-$--input-small-font-size: 13px !default;
+/// 
+// 小号输入字号
+$--input-small-font-size: $--font-size-base !default;
 /// height||Other|4
+// 小号输入高度
 $--input-small-height: 32px !default;
+
 /// fontSize||Font|1
-$--input-mini-font-size: 12px !default;
+// 迷你输入字号
+$--input-mini-font-size: $--font-size-base !default;
 /// height||Other|4
+// 迷你输入高度
 $--input-mini-height: 28px !default;
 
-/* Cascader
+/* Cascader 级联选择器
 -------------------------- */
 /// color||Color|0
 $--cascader-menu-font-color: $--color-text-regular !default;
@@ -478,8 +760,8 @@ $--cascader-menu-radius: $--border-radius-base !default;
 $--cascader-menu-border: solid 1px $--border-color-light !default;
 $--cascader-menu-shadow: $--box-shadow-light !default;
 $--cascader-node-background-hover: $--background-color-base !default;
-$--cascader-node-color-disabled:$--color-text-placeholder !default;
-$--cascader-color-empty:$--color-text-placeholder !default;
+$--cascader-node-color-disabled: $--color-text-placeholder !default;
+$--cascader-color-empty: $--color-text-placeholder !default;
 $--cascader-tag-background: #f0f2f5;
 
 /* Group
@@ -491,7 +773,7 @@ $--group-title-color: $--color-black !default;
 $--group-title-font-size: $--font-size-base !default;
 $--group-title-width: 66px !default;
 
-/* Tab
+/* Tabs 标签页
 -------------------------- */
 $--tab-font-size: $--font-size-base !default;
 $--tab-border-line: 1px solid #e4e4e4 !default;
@@ -504,525 +786,784 @@ $--tab-vertical-header-width: 90px !default;
 $--tab-vertical-header-count-color: $--color-white !default;
 $--tab-vertical-header-count-fill: $--color-text-secondary !default;
 
-/* Button
+/* Button 按钮
 -------------------------- */
-/// fontSize||Font|1
-$--button-font-size: $--font-size-base !default;
+$--button-height-base: 40px !default;
 /// fontWeight||Font|1
+// 按钮文字字重
 $--button-font-weight: $--font-weight-primary !default;
+/// fontSize||Font|1
+/// 
+// 大号按钮字体大小
+$--button-large-font-size: $--font-size-base !default;
 /// borderRadius||Border|2
-$--button-border-radius: $--border-radius-base !default;
+// 大号按钮圆角半径
+$--button-large-border-radius: $--border-radius-base !default;
 /// padding||Spacing|3
-$--button-padding-vertical: 12px !default;
+// 大号按钮垂直内边距
+$--button-large-padding-vertical: 0px !default;
 /// padding||Spacing|3
-$--button-padding-horizontal: 20px !default;
+// 大号按钮水平内边距，影响按钮宽度
+$--button-large-padding-horizontal: 152px !default;
 
 /// fontSize||Font|1
+// 中号按钮字体大小
 $--button-medium-font-size: $--font-size-base !default;
 /// borderRadius||Border|2
+// 中号按钮圆角半径
 $--button-medium-border-radius: $--border-radius-base !default;
 /// padding||Spacing|3
-$--button-medium-padding-vertical: 10px !default;
+// 中号按钮垂直内边距
+$--button-medium-padding-vertical: 0px !default;
 /// padding||Spacing|3
-$--button-medium-padding-horizontal: 20px !default;
+// 中号按钮水平内边距
+$--button-medium-padding-horizontal: 82px !default;
 
 /// fontSize||Font|1
-$--button-small-font-size: 12px !default;
+// 小号按钮字体大小  ---   默认
+$--button-small-font-size: $--font-size-base !default;
+$--button-font-size: $--font-size-base !default;
+// 小号按钮圆角半径
 $--button-small-border-radius: #{$--border-radius-base - 1} !default;
+$--button-border-radius: #{$--border-radius-base - 1} !default;
 /// padding||Spacing|3
-$--button-small-padding-vertical: 9px !default;
+// 小号按钮垂直内边距
+$--button-small-padding-vertical: 0px !default;
+$--button-padding-vertical: 0px !default;
 /// padding||Spacing|3
-$--button-small-padding-horizontal: 15px !default;
+// 小号按钮水平内边距
+$--button-small-padding-horizontal: 38px !default;
+$--button-padding-horizontal: 38px !default;
+
 /// fontSize||Font|1
-$--button-mini-font-size: 12px !default;
+// 迷你按钮字体大小
+$--button-mini-font-size: $--font-size-base !default;
+// 迷你按钮圆角半径
 $--button-mini-border-radius: #{$--border-radius-base - 1} !default;
 /// padding||Spacing|3
-$--button-mini-padding-vertical: 7px !default;
+// 迷你按钮垂直内边距
+$--button-mini-padding-vertical: 0px !default;
 /// padding||Spacing|3
+// 迷你按钮水平内边距
 $--button-mini-padding-horizontal: 15px !default;
 
 /// color||Color|0
+// 默认按钮字体颜色
 $--button-default-font-color: $--color-text-regular !default;
 /// color||Color|0
+// 默认按钮背景色
 $--button-default-background-color: $--color-white !default;
 /// color||Color|0
+// 默认按钮边框色
 $--button-default-border-color: $--border-color-base !default;
 
 /// color||Color|0
+// 禁用状态字体颜色
 $--button-disabled-font-color: $--color-text-placeholder !default;
 /// color||Color|0
+// 禁用状态背景色
 $--button-disabled-background-color: $--color-white !default;
 /// color||Color|0
+// 禁用状态边框色
 $--button-disabled-border-color: $--border-color-lighter !default;
 
 /// color||Color|0
+// 主要按钮边框色
 $--button-primary-border-color: $--color-primary !default;
 /// color||Color|0
+// 主要按钮字体颜色
 $--button-primary-font-color: $--color-white !default;
 /// color||Color|0
+// 主要按钮背景色
 $--button-primary-background-color: $--color-primary !default;
 /// color||Color|0
+// 成功按钮边框色
 $--button-success-border-color: $--color-success !default;
 /// color||Color|0
+// 成功按钮字体颜色
 $--button-success-font-color: $--color-white !default;
 /// color||Color|0
+// 成功按钮背景色
 $--button-success-background-color: $--color-success !default;
 /// color||Color|0
+// 警告按钮边框色
 $--button-warning-border-color: $--color-warning !default;
 /// color||Color|0
+// 警告按钮字体颜色
 $--button-warning-font-color: $--color-white !default;
 /// color||Color|0
+// 警告按钮背景色
 $--button-warning-background-color: $--color-warning !default;
 /// color||Color|0
+// 危险按钮边框色
 $--button-danger-border-color: $--color-danger !default;
 /// color||Color|0
+// 危险按钮字体颜色
 $--button-danger-font-color: $--color-white !default;
 /// color||Color|0
+// 危险按钮背景色
 $--button-danger-background-color: $--color-danger !default;
 /// color||Color|0
+// 信息按钮边框色
 $--button-info-border-color: $--color-info !default;
 /// color||Color|0
+// 信息按钮字体颜色
 $--button-info-font-color: $--color-white !default;
 /// color||Color|0
+// 信息按钮背景色
 $--button-info-background-color: $--color-info !default;
 
+// 悬停时浅色化百分比
 $--button-hover-tint-percent: 20% !default;
+// 按下时加深百分比
 $--button-active-shade-percent: 10% !default;
 
 
 /* cascader
 -------------------------- */
+// 级联选择弹窗最大高度
 $--cascader-height: 200px !default;
 
-/* Switch
+/* Switch 开关
 -------------------------- */
 /// color||Color|0
+// 开启状态颜色
 $--switch-on-color: $--color-primary !default;
 /// color||Color|0
+// 关闭状态颜色
 $--switch-off-color: $--border-color-base !default;
 /// fontSize||Font|1
+// 开关文字字号
 $--switch-font-size: $--font-size-base !default;
-$--switch-core-border-radius: 10px !default;
+// 轨道圆角半径
+$--switch-core-border-radius: 15px !default;
 // height||Other|4 TODO: width 代码写死的40px 所以下面这三个属性都没意义
-$--switch-width: 40px !default;
+// 开关整体宽度（当前实现固定 50px）
+$--switch-width: 50px !default;
 // height||Other|4
-$--switch-height: 20px !default;
+// 开关整体高度
+$--switch-height: 30px !default;
 // height||Other|4
-$--switch-button-size: 16px !default;
+// 滑块直径
+$--switch-button-size: 26px !default;
 
-/* Dialog
+/* Dialog 对话框
 -------------------------- */
+// 弹窗背景色
 $--dialog-background-color: $--color-white !default;
+$--dialog-header-background-color: $--color-primary-light-8 !default;
+$--dialog-footer-background-color: $--color-primary-light-8 !default;
+
+// 弹窗阴影
 $--dialog-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !default;
 /// fontSize||Font|1
+// 标题字号
 $--dialog-title-font-size: $--font-size-large !default;
 /// fontSize||Font|1
+// 正文字号
 $--dialog-content-font-size: 14px !default;
 /// fontLineHeight||LineHeight|2
+// 文本行高
 $--dialog-font-line-height: $--font-line-height-primary !default;
 /// padding||Spacing|3
+// 弹窗内边距
 $--dialog-padding-primary: 20px !default;
 
-/* Table
+/* Table 表格
 -------------------------- */
 /// color||Color|0
+// 表格边框颜色
 $--table-border-color: $--border-color-lighter !default;
+// 表格边框样式
 $--table-border: 1px solid $--table-border-color !default;
 /// color||Color|0
+// 表格文字颜色
 $--table-font-color: $--color-text-regular !default;
 /// color||Color|0
+// 表头文字颜色
 $--table-header-font-color: $--color-text-secondary !default;
 /// color||Color|0
+// 行悬停背景色
 $--table-row-hover-background-color: $--background-color-base !default;
+// 当前行高亮背景色
 $--table-current-row-background-color: $--color-primary-light-9 !default;
 /// color||Color|0
+// 表头背景色
 $--table-header-background-color: $--color-white !default;
+// 固定列阴影
 $--table-fixed-box-shadow: 0 0 10px rgba(0, 0, 0, .12) !default;
 
-/* Pagination
+/* Pagination 分页
 -------------------------- */
 /// fontSize||Font|1
-$--pagination-font-size: 13px !default;
+// 分页文字字号
+$--pagination-font-size: $--font-size-base !default;
 /// color||Color|0
+// 分页容器背景色
 $--pagination-background-color: $--color-white !default;
 /// color||Color|0
-$--pagination-font-color: $--color-text-primary !default;
+// 分页文字颜色
+$--pagination-font-color: $--color-text-regular !default;
+// 分页项目圆角半径
 $--pagination-border-radius: 3px !default;
 /// color||Color|0
+// 按钮文字颜色
 $--pagination-button-color: $--color-text-primary !default;
 /// height||Other|4
-$--pagination-button-width: 35.5px !default;
+// 分页按钮宽度
+$--pagination-button-width: 40px !default;
 /// height||Other|4
-$--pagination-button-height: 28px !default;
+// 分页按钮高度
+$--pagination-button-height: 40px !default;
 /// color||Color|0
+// 按钮禁用文字颜色
 $--pagination-button-disabled-color: $--color-text-placeholder !default;
 /// color||Color|0
+// 按钮禁用背景色
 $--pagination-button-disabled-background-color: $--color-white !default;
 /// color||Color|0
+// 悬停高亮颜色
 $--pagination-hover-color: $--color-primary !default;
 
 /* Popup
 -------------------------- */
 /// color||Color|0
+// 遮罩背景色
 $--popup-modal-background-color: $--color-black !default;
 /// opacity||Other|1
+// 遮罩透明度
 $--popup-modal-opacity: 0.5 !default;
 
-/* Popover
+/* Popover 弹出框
 -------------------------- */
 /// color||Color|0
+// 气泡背景色
 $--popover-background-color: $--color-white !default;
 /// fontSize||Font|1
+// 气泡文字字号
 $--popover-font-size: $--font-size-base !default;
 /// color||Color|0
+// 气泡边框颜色
 $--popover-border-color: $--border-color-lighter !default;
+// 箭头大小
 $--popover-arrow-size: 6px !default;
 /// padding||Spacing|3
+// 内容内边距
 $--popover-padding: 12px !default;
+// 大号内边距
 $--popover-padding-large: 18px 20px !default;
 /// fontSize||Font|1
-$--popover-title-font-size: 16px !default;
+// 标题字号
+$--popover-title-font-size: $--font-size-large !default;
 /// color||Color|0
+// 标题颜色
 $--popover-title-font-color: $--color-text-primary !default;
 
-/* Tooltip
+/* Tooltip 文字提示
 -------------------------- */
 /// color|1|Color|0
+// 气泡填充色
 $--tooltip-fill: $--color-text-primary !default;
 /// color|1|Color|0
+// 提示文字颜色
 $--tooltip-color: $--color-white !default;
 /// fontSize||Font|1
-$--tooltip-font-size: 12px !default;
+// 提示文字字号
+$--tooltip-font-size: $--font-size-medium !default;
 /// color||Color|0
+// 边框颜色
 $--tooltip-border-color: $--color-text-primary !default;
+// 箭头大小
 $--tooltip-arrow-size: 6px !default;
 /// padding||Spacing|3
+// 内边距
 $--tooltip-padding: 10px !default;
 
-/* Tag
+/* Tag 标签
 -------------------------- */
 /// color||Color|0
+// Info 标签颜色
 $--tag-info-color: $--color-info !default;
 /// color||Color|0
+// Primary 标签颜色
 $--tag-primary-color: $--color-primary !default;
 /// color||Color|0
+// Success 标签颜色
 $--tag-success-color: $--color-success !default;
 /// color||Color|0
+// Warning 标签颜色
 $--tag-warning-color: $--color-warning !default;
 /// color||Color|0
+// Danger 标签颜色
 $--tag-danger-color: $--color-danger !default;
 /// fontSize||Font|1
-$--tag-font-size: 12px !default;
+// 标签文字字号
+$--tag-font-size: #{$--font-size-base * 0.8} !default;
+// 标签圆角半径
 $--tag-border-radius: 4px !default;
+// 标签内边距
 $--tag-padding: 0 10px !default;
 
-/* Tree
+/* Tree 树形控件
 -------------------------- */
 /// color||Color|0
+// 树节点悬停背景
 $--tree-node-hover-background-color: $--background-color-base !default;
 /// color||Color|0
+// 树文字颜色
 $--tree-font-color: $--color-text-regular !default;
 /// color||Color|0
+// 展开图标颜色
 $--tree-expand-icon-color: $--color-text-placeholder !default;
 
-/* Dropdown
+/* Dropdown 下拉菜单
 -------------------------- */
+// 下拉菜单阴影
 $--dropdown-menu-box-shadow: $--box-shadow-light !default;
+// 菜单项悬停背景
 $--dropdown-menuItem-hover-fill: $--color-primary-light-9 !default;
+// 菜单项悬停文字颜色
 $--dropdown-menuItem-hover-color: $--link-color !default;
 
-/* Badge
+/* Badge 标记
 -------------------------- */
 /// color||Color|0
+// 徽章背景色
 $--badge-background-color: $--color-danger !default;
+// 徽章圆角
 $--badge-radius: 10px !default;
 /// fontSize||Font|1
-$--badge-font-size: 12px !default;
+// 徽章字号
+$--badge-font-size: $--font-size-small !default;
 /// padding||Spacing|3
+// 徽章内边距
 $--badge-padding: 6px !default;
 /// height||Other|4
+// 徽章尺寸
 $--badge-size: 18px !default;
 
-/* Card
+/* Card 卡片
 --------------------------*/
 /// color||Color|0
+// 卡片边框色
 $--card-border-color: $--border-color-lighter !default;
+// 卡片圆角
 $--card-border-radius: 4px !default;
 /// padding||Spacing|3
+// 卡片内边距
 $--card-padding: 20px !default;
 
 /* Slider
 --------------------------*/
 /// color||Color|0
-$--slider-main-background-color: $--color-primary !default;
 /// color||Color|0
+// 主轨道背景
+$--slider-main-background-color: $--color-primary !default;
+// 轨道背景
 $--slider-runway-background-color: $--border-color-light !default;
+// 拖拽按钮悬停色
 $--slider-button-hover-color: mix($--color-primary, black, 97%) !default;
+// 阶段标记背景
 $--slider-stop-background-color: $--color-white !default;
+// 禁用颜色
 $--slider-disable-color: $--color-text-placeholder !default;
+// 上下外边距
 $--slider-margin: 16px 0 !default;
+// 圆角
 $--slider-border-radius: 3px !default;
 /// height|1|Other|4
+// 轨道高度
 $--slider-height: 6px !default;
 /// height||Other|4
+// 拖拽按钮尺寸
 $--slider-button-size: 16px !default;
+// 拖拽按钮包裹尺寸
 $--slider-button-wrapper-size: 36px !default;
+// 包裹偏移量
 $--slider-button-wrapper-offset: -15px !default;
 
-/* Steps
+/* Steps 步骤条
 --------------------------*/
+// 步骤条边框色
 $--steps-border-color: $--disabled-border-base !default;
+// 步骤条圆角
 $--steps-border-radius: 4px !default;
-$--steps-padding: 20px !default;
+// 步骤条内边距
+$--steps-padding: 10px !default;
 
-/* Menu
+/* Menu 导航菜单
 --------------------------*/
 /// fontSize||Font|1
+// 菜单项字号
 $--menu-item-font-size: $--font-size-base !default;
 /// color||Color|0
+// 菜单项文字色
 $--menu-item-font-color: $--color-text-primary !default;
 /// color||Color|0
+// 菜单背景色
 $--menu-background-color: $--color-white !default;
+// 菜单项悬停背景
 $--menu-item-hover-fill: $--color-primary-light-9 !default;
 
-/* Rate
+/* Rate 评分
 --------------------------*/
+// 评分组件高度
 $--rate-height: 20px !default;
 /// fontSize||Font|1
+// 评分字号
 $--rate-font-size: $--font-size-base !default;
+// 图标尺寸
+$--rate-icon-size: #{$--font-size-base * 1} !default;
 /// height||Other|3
-$--rate-icon-size: 18px !default;
 /// margin||Spacing|2
+// 图标间距
 $--rate-icon-margin: 6px !default;
+// 未选中图标色
 $--rate-icon-color: $--color-text-placeholder !default;
 
-/* DatePicker
+/* DatePicker 日期选择器
 --------------------------*/
+// 日期文字颜色
 $--datepicker-font-color: $--color-text-regular !default;
 /// color|1|Color|0
+// 非当前月文字色
 $--datepicker-off-font-color: $--color-text-placeholder !default;
 /// color||Color|0
+// 头部文字色
 $--datepicker-header-font-color: $--color-text-regular !default;
+// 图标颜色
 $--datepicker-icon-color: $--color-text-primary !default;
+// 外边框颜色
 $--datepicker-border-color: $--disabled-border-base !default;
+// 内边框颜色
 $--datepicker-inner-border-color: #e4e4e4 !default;
 /// color||Color|0
+// 选中范围背景
 $--datepicker-inrange-background-color: $--border-color-extra-light !default;
 /// color||Color|0
+// 选中范围悬停背景
 $--datepicker-inrange-hover-background-color: $--border-color-extra-light !default;
-/// color||Color|0
+// 激活颜色
 $--datepicker-active-color: $--color-primary !default;
 /// color||Color|0
+// 悬停文字色
 $--datepicker-hover-font-color: $--color-primary !default;
+/// color||Color|0
+// 单元格悬停背景
 $--datepicker-cell-hover-color: #fff !default;
 
-/* Loading
+/* Loading 加载
 --------------------------*/
 /// height||Other|4
-$--loading-spinner-size: 42px !default;
+// 加载图标尺寸
+$--loading-spinner-size: #{$--font-size-base * 2.2} !default;
 /// height||Other|4
-$--loading-fullscreen-spinner-size: 50px !default;
+// 全屏加载图标尺寸
+$--loading-fullscreen-spinner-size: #{$--font-size-base * 2.8} !default;
 
 /* Scrollbar
 --------------------------*/
+// 滚动条背景
 $--scrollbar-background-color: rgba($--color-text-secondary, .3) !default;
+// 滚动条悬停背景
 $--scrollbar-hover-background-color: rgba($--color-text-secondary, .5) !default;
 
-/* Carousel
+/* Carousel 走马灯
 --------------------------*/
 /// fontSize||Font|1
-$--carousel-arrow-font-size: 12px !default;
-$--carousel-arrow-size: 36px !default;
+// 箭头字号
+$--carousel-arrow-font-size: $--font-size-base !default;
+// 箭头尺寸
+$--carousel-arrow-size: #{$--font-size-base * 1.5} !default;
+// 箭头背景
 $--carousel-arrow-background: rgba(31, 45, 61, 0.11) !default;
+// 箭头悬停背景
 $--carousel-arrow-hover-background: rgba(31, 45, 61, 0.23) !default;
 /// width||Other|4
+// 指示器宽度
 $--carousel-indicator-width: 30px !default;
 /// height||Other|4
+// 指示器高度
 $--carousel-indicator-height: 2px !default;
+// 指示器水平内边距
 $--carousel-indicator-padding-horizontal: 4px !default;
+// 指示器垂直内边距
 $--carousel-indicator-padding-vertical: 12px !default;
+// 指示器外框颜色
 $--carousel-indicator-out-color: $--border-color-hover !default;
 
-/* Collapse
+/* Collapse 折叠面板
 --------------------------*/
 /// color||Color|0
+// 折叠面板边框色
 $--collapse-border-color: $--border-color-lighter !default;
 /// height||Other|4
-$--collapse-header-height: 48px !default;
+// 标题高度
+$--collapse-header-height: #{$--font-size-base * 2} !default;
 /// color||Color|0
+// 标题背景
 $--collapse-header-background-color: $--color-white !default;
 /// color||Color|0
+// 标题文字色
 $--collapse-header-font-color: $--color-text-primary !default;
 /// fontSize||Font|1
-$--collapse-header-font-size: 13px !default;
+// 标题字号
+$--collapse-header-font-size: $--font-size-base !default;
 /// color||Color|0
+// 内容背景
 $--collapse-content-background-color: $--color-white !default;
 /// fontSize||Font|1
-$--collapse-content-font-size: 13px !default;
+// 内容字号
+$--collapse-content-font-size: $--font-size-base !default;
 /// color||Color|0
+// 内容文字色
 $--collapse-content-font-color: $--color-text-primary !default;
 
-/* Transfer
+/* Transfer 穿梭框
 --------------------------*/
+// 穿梭框边框色
 $--transfer-border-color: $--border-color-lighter !default;
+// 穿梭框圆角
 $--transfer-border-radius: $--border-radius-base !default;
 /// height||Other|4
-$--transfer-panel-width: 200px !default;
+// 面板宽度
+$--transfer-panel-width: auto !default;
+$--transfer-panel-mine-width: 300px !default;
 /// height||Other|4
-$--transfer-panel-header-height: 40px !default;
+// 头部高度
+$--transfer-panel-header-height: 65px !default;
 /// color||Color|0
+// 头部背景
 $--transfer-panel-header-background-color: $--background-color-base !default;
 /// height||Other|4
-$--transfer-panel-footer-height: 40px !default;
+// 底部高度
+$--transfer-panel-footer-height: 65px !default;
 /// height||Other|4
-$--transfer-panel-body-height: 246px !default;
+// 主体高度
+$--transfer-panel-body-height: 583px !default;
 /// height||Other|4
-$--transfer-item-height: 30px !default;
+// 列表项高度
+$--transfer-item-height: 45px !default;
 /// height||Other|4
-$--transfer-filter-height: 32px !default;
+// 搜索框高度
+$--transfer-filter-height: 45px !default;
 
 /* Header
   --------------------------*/
+// 头部内边距
 $--header-padding: 0 20px !default;
 
 /* Footer
 --------------------------*/
+// 底部内边距
 $--footer-padding: 0 20px !default;
 
 /* Main
 --------------------------*/
+// 主体内边距
 $--main-padding: 20px !default;
 
-/* Timeline
+/* Timeline 时间线
 --------------------------*/
-$--timeline-node-size-normal: 12px !default;
-$--timeline-node-size-large: 14px !default;
+// 时间线节点普通尺寸
+$--timeline-node-size-normal: $--font-size-base !default;
+// 时间线节点大尺寸
+$--timeline-node-size-large: $--font-size-extra-large !default;
+// 时间线节点颜色
 $--timeline-node-color: $--border-color-light !default;
 
-/* Backtop
+/* Backtop 回到顶部
 --------------------------*/
 /// color||Color|0
+// 回到顶部背景色
 $--backtop-background-color: $--color-white !default;
 /// color||Color|0
+// 回到顶部文字色
 $--backtop-font-color: $--color-primary !default;
 /// color||Color|0
+// 悬停背景
 $--backtop-hover-background-color: $--border-color-extra-light !default;
 
 /* Link
 --------------------------*/
 /// fontSize||Font|1
+// 链接字号
 $--link-font-size: $--font-size-base !default;
 /// fontWeight||Font|1
+// 链接字重
 $--link-font-weight: $--font-weight-primary !default;
 /// color||Color|0
+// 默认链接文字色
 $--link-default-font-color: $--color-text-regular !default;
 /// color||Color|0
+// 默认链接激活色
 $--link-default-active-color: $--color-primary !default;
 /// color||Color|0
+// 链接禁用文字色
 $--link-disabled-font-color: $--color-text-placeholder !default;
 /// color||Color|0
+// 主链接文字色
 $--link-primary-font-color: $--color-primary !default;
 /// color||Color|0
+// 成功链接文字色
 $--link-success-font-color: $--color-success !default;
 /// color||Color|0
+// 警告链接文字色
 $--link-warning-font-color: $--color-warning !default;
 /// color||Color|0
+// 危险链接文字色
 $--link-danger-font-color: $--color-danger !default;
 /// color||Color|0
+// 信息链接文字色
 $--link-info-font-color: $--color-info !default;
-/* Calendar
+/* Calendar 日历
 --------------------------*/
 /// border||Other|4
+// 日历边框
 $--calendar-border: $--table-border !default;
 /// color||Other|4
+// 选中背景色
 $--calendar-selected-background-color: #F2F8FE !default;
+// 单元格宽度
 $--calendar-cell-width: 85px !default;
 
 /* Form
 -------------------------- */
 /// fontSize||Font|1
+// 表单标签字号
 $--form-label-font-size: $--font-size-base !default;
 
 /* Avatar
 --------------------------*/
 /// color||Color|0
+// 头像文字颜色
 $--avatar-font-color: #fff !default;
 /// color||Color|0
+// 头像背景颜色
 $--avatar-background-color: #C0C4CC !default;
 /// fontSize||Font Size|1
+// 头像文字字号
 $--avatar-text-font-size: 14px !default;
 /// fontSize||Font Size|1
+// 头像图标字号
 $--avatar-icon-font-size: 18px !default;
 /// borderRadius||Border|2
+// 头像圆角
 $--avatar-border-radius: $--border-radius-base !default;
 /// size|1|Avatar Size|3
+// 大号头像尺寸
 $--avatar-large-size: 40px !default;
 /// size|1|Avatar Size|3
+// 中号头像尺寸
 $--avatar-medium-size: 36px !default;
 /// size|1|Avatar Size|3
+// 小号头像尺寸
 $--avatar-small-size: 28px !default;
 
 /* Empty
 -------------------------- */
+// 空态内边距
 $--empty-padding: 40px 0 !default;
+// 空态图片宽度
 $--empty-image-width: 160px !default;
+// 描述上边距
 $--empty-description-margin-top: 20px !default;
+// 底部上边距
 $--empty-bottom-margin-top: 20px !default;
 
-/* Descriptions
+/* Descriptions 描述列表
 -------------------------- */
-$--descriptions-header-margin-bottom: 20px !default;
-$--descriptions-title-font-size: 16px !default;
+// 标题下边距
+$--descriptions-header-margin-bottom: 14px !default;
+// 标题字号
+$--descriptions-title-font-size: $--font-size-base !default;
+// 表格边框
 $--descriptions-table-border: 1px solid $--border-color-lighter !default;
+// 标签背景
 $--descriptions-item-bordered-label-background: #fafafa !default;
 
 /* Skeleton 
 --------------------------*/
+// 骨架屏渐变起始色
 $--skeleton-color: #f2f2f2 !default;
+// 骨架屏渐变结束色
 $--skeleton-to-color: #e6e6e6 !default;
 
 /* Svg
 --------------- */
+// SVG 单色灰
 $--svg-monochrome-grey: #DCDDE0 !default;
 
 /* Result
 -------------------------- */
+// 结果页内边距
 $--result-padding: 40px 30px !default;
+// 图标尺寸
 $--result-icon-font-size: 64px !default;
+// 标题字号
 $--result-title-font-size: 20px !default;
+// 标题上边距
 $--result-title-margin-top: 20px !default;
+// 副标题上边距
 $--result-subtitle-margin-top: 10px !default;
+// 操作区上边距
 $--result-extra-margin-top: 30px !default;
+// 信息色
 $--result-info-color: $--color-info !default;
+// 成功色
 $--result-success-color: $--color-success !default;
+// 警告色
 $--result-warning-color: $--color-warning !default;
+// 危险色
 $--result-danger-color: $--color-danger !default;
 
 /* Break-point
 --------------------------*/
+// 小屏断点
 $--sm: 768px !default;
+// 中屏断点
 $--md: 992px !default;
+// 大屏断点
 $--lg: 1200px !default;
+// 超大屏断点
 $--xl: 1920px !default;
 
+// 响应式断点定义
 $--breakpoints: (
   'xs' : (max-width: $--sm - 1),
+  // 超小屏
   'sm' : (min-width: $--sm),
+  // 小屏及以上
   'md' : (min-width: $--md),
+  // 中屏及以上
   'lg' : (min-width: $--lg),
+  // 大屏及以上
+  // 超大屏及以上
   'xl' : (min-width: $--xl)
 );
 
+// 响应式断点细则
 $--breakpoints-spec: (
   'xs-only' : (max-width: $--sm - 1),
+  // 仅超小屏
   'sm-and-up' : (min-width: $--sm),
+  // 小屏及以上
   'sm-only': "(min-width: #{$--sm}) and (max-width: #{$--md - 1})",
+  // 仅小屏
   'sm-and-down': (max-width: $--md - 1),
+  // 小屏及以下
   'md-and-up' : (min-width: $--md),
+  // 中屏及以上
   'md-only': "(min-width: #{$--md}) and (max-width: #{$--lg - 1})",
+  // 仅中屏
   'md-and-down': (max-width: $--lg - 1),
+  // 中屏及以下
   'lg-and-up' : (min-width: $--lg),
+  // 大屏及以上
   'lg-only': "(min-width: #{$--lg}) and (max-width: #{$--xl - 1})",
+  // 仅大屏
   'lg-and-down': (max-width: $--xl - 1),
+  // 大屏及以下
   'xl-only' : (min-width: $--xl),
+  // 仅超大屏
 );

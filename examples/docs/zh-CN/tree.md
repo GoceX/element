@@ -523,7 +523,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    font-size: 14px;
+    /* font-size: 14px; */
     padding-right: 8px;
   }
 </style>

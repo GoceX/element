@@ -38,7 +38,9 @@
     },
     methods: {
       handleClose(done) {
-        this.$confirm('确认关闭？')
+        this.$confirm('确认关闭？','',{
+          center: true
+        })
           .then(_ => {
             done();
           })

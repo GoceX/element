@@ -3,7 +3,7 @@
 @import "common/var";
 
 @include b(breadcrumb) {
-  font-size: 14px;
+  font-size: $--font-size-base;
   line-height: 1;
   @include utils-clearfix;
 
@@ -24,7 +24,8 @@
     @include e(inner) {
       color: $--color-text-regular;
 
-      &.is-link, & a {
+      &.is-link,
+      & a {
         font-weight: bold;
         text-decoration: none;
         transition: $--color-transition-base;
@@ -38,9 +39,12 @@
     }
 
     &:last-child {
+
       .el-breadcrumb__inner,
       .el-breadcrumb__inner a {
-        &, &:hover {
+
+        &,
+        &:hover {
           font-weight: normal;
           color: $--color-text-regular;
           cursor: text;

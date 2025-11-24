@@ -13,6 +13,7 @@
   }
 
   @include m((monthrange)) {
+
     &.el-input,
     &.el-input__inner {
       width: 300px;
@@ -20,6 +21,7 @@
   }
 
   @include m((daterange, timerange)) {
+
     &.el-input,
     &.el-input__inner {
       width: 350px;
@@ -27,6 +29,7 @@
   }
 
   @include m(datetimerange) {
+
     &.el-input,
     &.el-input__inner {
       width: 400px;
@@ -45,7 +48,7 @@
   }
 
   .el-range__icon {
-    font-size: 14px;
+    font-size: $--font-size-medium;
     margin-left: -5px;
     color: $--color-text-placeholder;
     float: left;
@@ -76,8 +79,8 @@
     padding: 0 5px;
     margin: 0;
     text-align: center;
-    line-height: 32px;
-    font-size: 14px;
+    line-height: 37px;
+    font-size: $--font-size-medium;
     width: 5%;
     color: $--color-text-primary;
   }
@@ -177,7 +180,8 @@
     color: $--input-disabled-color;
     cursor: not-allowed;
 
-    &:hover, &:focus {
+    &:hover,
+    &:focus {
       border-color: $--input-disabled-border;
     }
 
@@ -185,6 +189,7 @@
       background-color: $--input-disabled-fill;
       color: $--input-disabled-color;
       cursor: not-allowed;
+
       &::placeholder {
         color: $--input-disabled-placeholder-color;
       }

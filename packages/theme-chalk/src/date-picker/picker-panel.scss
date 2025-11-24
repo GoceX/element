@@ -36,8 +36,8 @@
     width: 100%;
     border: 0;
     background-color: transparent;
-    line-height: 28px;
-    font-size: 14px;
+    line-height: 35px;
+    font-size: $--font-size-medium;
     color: $--datepicker-font-color;
     padding-left: 12px;
     text-align: left;
@@ -72,13 +72,13 @@
   }
 
   @include e(icon-btn) {
-    font-size: 12px;
+    font-size: $--font-size-medium;
     color: $--datepicker-icon-color;
     border: 0;
     background: transparent;
     cursor: pointer;
     outline: none;
-    margin-top: 8px;
+    line-height: 30px;
 
     &:hover {
       color: $--datepicker-hover-font-color;
@@ -111,7 +111,7 @@
   overflow: auto;
 }
 
-.el-picker-panel *[slot=sidebar] + .el-picker-panel__body,
-.el-picker-panel__sidebar + .el-picker-panel__body {
+.el-picker-panel *[slot=sidebar]+.el-picker-panel__body,
+.el-picker-panel__sidebar+.el-picker-panel__body {
   margin-left: 110px;
 }
