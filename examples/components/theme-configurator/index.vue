@@ -90,6 +90,9 @@ export default {
     getActionDisplayName(key) {
       return getActionDisplayName(key);
     },
+    getFallbackDefaultConfig() {
+      return [ ];
+    },
     showConfigurator() {
       if (this.init) return;
       this.$nextTick(() => {
@@ -102,6 +105,7 @@ export default {
             defaultConfig = res;
           })
           .catch(err => {
+            defaultConfig = this.getFallbackDefaultConfig();
             this.onError && this.onError(err);
           })
           .then(() => {

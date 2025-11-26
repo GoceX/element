@@ -23,7 +23,10 @@
   export default {
     data() {
       return {
-        fileList: [{name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}, {name: 'food2.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}]
+        fileList: [
+          { name: 'food.jpeg', url: '../../assets/images/element-demo.jpeg' },
+          { name: 'food2.jpeg', url: '../../assets/images/element-demo.jpeg' }
+        ]
       };
     },
     methods: {
@@ -241,7 +244,10 @@
   export default {
     data() {
       return {
-        fileList: [{name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}, {name: 'food2.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}]
+        fileList: [
+          { name: 'food.jpeg', url: '../../assets/images/element-demo.jpeg' },
+          { name: 'food2.jpeg', url: '../../assets/images/element-demo.jpeg' }
+        ]
       };
     },
     methods: {
@@ -275,13 +281,10 @@
   export default {
     data() {
       return {
-        fileList: [{
-          name: 'food.jpeg',
-          url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
-        }, {
-          name: 'food2.jpeg',
-          url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
-        }]
+        fileList: [
+          { name: 'food.jpeg', url: '../../assets/images/element-demo.jpeg' },
+          { name: 'food2.jpeg', url: '../../assets/images/element-demo.jpeg' }
+        ]
       };
     },
     methods: {
@@ -330,7 +333,10 @@
   export default {
     data() {
       return {
-        fileList: [{name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}, {name: 'food2.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}]
+        fileList: [
+          { name: 'food.jpeg', url: '../../assets/images/element-demo.jpeg' },
+          { name: 'food2.jpeg', url: '../../assets/images/element-demo.jpeg' }
+        ]
       };
     },
     methods: {
@@ -371,7 +377,7 @@
 | before-remove | 删除文件之前的钩子，参数为上传的文件和文件列表，若返回 false 或者返回 Promise 且被 reject，则停止删除。| function(file, fileList) | — | — |
 | list-type | 文件列表的类型 | string | text/picture/picture-card | text |
 | auto-upload | 是否在选取文件后立即进行上传 | boolean | — | true |
-| file-list | 上传的文件列表, 例如: [{name: 'food.jpg', url: 'https://xxx.cdn.com/xxx.jpg'}] | array | — | [] |
+| file-list | 上传的文件列表, 例如: [{name: 'food.jpg', url: '../../assets/images/element-demo.jpeg'}] | array | — | [] |
 | http-request | 覆盖默认的上传行为，可以自定义上传的实现 | function | — | — |
 | disabled | 是否禁用 | boolean | — | false |
 | limit | 最大允许上传个数 |  number | — | — |

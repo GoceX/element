@@ -1,0 +1,286 @@
+{
+  "zh-CN": [
+    {
+      "name": "Basic 基础组件",
+      "children": [
+        {
+          "path": "/typography",
+          "title": "Typography 字体"
+        },
+        {
+          "path": "/color",
+          "title": "Color 色彩"
+        },
+        {
+          "path": "/button",
+          "title": "Button 按钮"
+        },
+        {
+          "path": "/border",
+          "title": "Border 边框"
+        },
+        {
+          "path": "/icon",
+          "title": "Icon 图标"
+        },
+        {
+          "path": "/link",
+          "title": "Link 文字链接"
+        },
+        {
+          "path": "/infiniteScroll",
+          "title": "InfiniteScroll 无限滚动"
+        },
+        {
+          "path": "/container",
+          "title": "Container 布局容器"
+        },
+        {
+          "path": "/layout",
+          "title": "Layout 布局"
+        }
+      ]
+    },
+    {
+      "name": "Form 表单组件",
+      "children": [
+        {
+          "path": "/input",
+          "title": "Input 输入框"
+        },
+        {
+          "path": "/input-number",
+          "title": "InputNumber 数字输入框"
+        },
+        {
+          "path": "/radio",
+          "title": "Radio 单选框"
+        },
+        {
+          "path": "/checkbox",
+          "title": "Checkbox 多选框"
+        },
+        {
+          "path": "/select",
+          "title": "Select 选择器"
+        },
+        {
+          "path": "/cascader",
+          "title": "Cascader 级联选择器"
+        },
+        {
+          "path": "/switch",
+          "title": "Switch 开关"
+        },
+        {
+          "path": "/slider",
+          "title": "Slider 滑块"
+        },
+        {
+          "path": "/time-picker",
+          "title": "TimePicker 时间选择器"
+        },
+        {
+          "path": "/date-picker",
+          "title": "DatePicker 日期选择器"
+        },
+        {
+          "path": "/datetime-picker",
+          "title": "DateTimePicker 日期时间选择器"
+        },
+        {
+          "path": "/upload",
+          "title": "Upload 上传"
+        },
+        {
+          "path": "/rate",
+          "title": "Rate 评分"
+        },
+        {
+          "path": "/color-picker",
+          "title": "ColorPicker 颜色选择器"
+        },
+        {
+          "path": "/transfer",
+          "title": "Transfer 穿梭框"
+        },
+        {
+          "path": "/form",
+          "title": "Form 表单"
+        },
+        {
+          "path": "/basic-form",
+          "title": "BasicForm 基础表单"
+        }
+      ]
+    },
+    {
+      "name": "Data 数据展示",
+      "children": [
+        {
+          "path": "/avatar",
+          "title": "Avatar 头像"
+        },
+        {
+          "path": "/image",
+          "title": "Image 图片"
+        },
+        {
+          "path": "/badge",
+          "title": "Badge 标记"
+        },
+        {
+          "path": "/tag",
+          "title": "Tag 标签"
+        },
+        {
+          "path": "/progress",
+          "title": "Progress 进度条"
+        },
+        {
+          "path": "/tree",
+          "title": "Tree 树形控件"
+        },
+        {
+          "path": "/pagination",
+          "title": "Pagination 分页"
+        },
+        {
+          "path": "/skeleton",
+          "title": "Skeleton 骨架屏"
+        },
+        {
+          "path": "/empty",
+          "title": "Empty 空状态"
+        },
+        {
+          "path": "/collapse",
+          "title": "Collapse 折叠面板"
+        },
+        {
+          "path": "/card",
+          "title": "Card 卡片"
+        },
+        {
+          "path": "/descriptions",
+          "title": "Descriptions 描述列表"
+        },
+        {
+          "path": "/carousel",
+          "title": "Carousel 走马灯"
+        },
+        {
+          "path": "/calendar",
+          "title": "Calendar 日历"
+        },
+        {
+          "path": "/timeline",
+          "title": "Timeline 时间线"
+        },
+        {
+          "path": "/result",
+          "title": "Result 结果"
+        },
+        {
+          "path": "/statistic",
+          "title": "Statistic 统计数值"
+        },
+        {
+          "path": "/table",
+          "title": "Table 表格"
+        },
+        {
+          "path": "/basic-table",
+          "title": "BasicTable 基础表格"
+        }
+      ]
+    },
+    {
+      "name": "Navigation 导航",
+      "children": [
+        {
+          "path": "/menu",
+          "title": "NavMenu 导航菜单"
+        },
+        {
+          "path": "/tabs",
+          "title": "Tabs 标签页"
+        },
+        {
+          "path": "/breadcrumb",
+          "title": "Breadcrumb 面包屑"
+        },
+        {
+          "path": "/page-header",
+          "title": "PageHeader 页头"
+        },
+        {
+          "path": "/dropdown",
+          "title": "Dropdown 下拉菜单"
+        },
+        {
+          "path": "/steps",
+          "title": "Steps 步骤条"
+        },
+        {
+          "path": "/backtop",
+          "title": "Backtop 回到顶部"
+        }
+      ]
+    },
+    {
+      "name": "Feedback 反馈组件",
+      "children": [
+        {
+          "path": "/alert",
+          "title": "Alert 警告"
+        },
+        {
+          "path": "/notification",
+          "title": "Notification 通知"
+        },
+        {
+          "path": "/message",
+          "title": "Message 消息提示"
+        },
+        {
+          "path": "/loading",
+          "title": "Loading 加载"
+        },
+        {
+          "path": "/tooltip",
+          "title": "Tooltip 文字提示"
+        },
+        {
+          "path": "/popover",
+          "title": "Popover 弹出框"
+        },
+        {
+          "path": "/popconfirm",
+          "title": "Popconfirm 气泡确认框"
+        },
+        {
+          "path": "/dialog",
+          "title": "Dialog 对话框"
+        },
+        {
+          "path": "/message-box",
+          "title": "MessageBox 弹框"
+        },
+        {
+          "path": "/drawer",
+          "title": "Drawer 抽屉"
+        }
+      ]
+    },
+    {
+      "name": "Others 其他",
+      "children": [
+        {
+          "path": "/divider",
+          "title": "Divider 分割线"
+        }
+      ]
+    }
+  ]
+}

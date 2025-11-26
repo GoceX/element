@@ -43,10 +43,10 @@ fileSave(path.join(__dirname, '../../examples/i18n/route.json'))
   .write(JSON.stringify(routeFile, null, '  '), 'utf8')
   .end('\n');
 
-// 添加到 nav.config.json
-const navFile = require('../../examples/nav.config.json');
+// 添加到 component.router.json
+const navFile = require('../../examples/component.router.json');
 navFile[lang] = navFile['en-US'];
-fileSave(path.join(__dirname, '../../examples/nav.config.json'))
+fileSave(path.join(__dirname, '../../examples/component.router.json'))
   .write(JSON.stringify(navFile, null, '  '), 'utf8')
   .end('\n');
 

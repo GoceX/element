@@ -61,7 +61,7 @@
 </style>
 
 <script>
-  import navConfig from '../nav.config.json';
+  import navConfig from '../component.router.json';
 
   export default {
     data() {
@@ -89,11 +89,19 @@
 
     methods: {
       setNav() {
-        let nav = navConfig[this.lang];
-        this.nav = [nav[0]].concat(nav[3].children);
-        nav[4].groups.map(group => group.list).forEach(list => {
-          this.nav = this.nav.concat(list);
+        const nav = navConfig[this.lang] || [];
+        let flat = [];
+        nav.forEach(section => {
+          if (section.children) {
+            flat = flat.concat(section.children);
+          }
+          if (section.groups) {
+            section.groups.forEach(group => {
+              if (group.list) flat = flat.concat(group.list);
+            });
+          }
         });
+        this.nav = flat;
       },
 
       updateNav() {

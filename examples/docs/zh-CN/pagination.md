@@ -79,6 +79,7 @@
       @current-change="handleCurrentChange"
       :current-page.sync="currentPage1"
       :page-size="100"
+      :pager-count="5"
       layout="total, prev, pager, next"
       :total="1000">
     </el-pagination>

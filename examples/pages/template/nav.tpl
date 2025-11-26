@@ -87,10 +87,10 @@
     <div class="block">
       <h3><%= 5 ></h3>
       <el-row :gutter="20">
-        <el-col :span="9">
+        <el-col :span="24">
           <p><%= 6 ></p>
         </el-col>
-        <el-col :span="15" class="nav-demos">
+        <el-col :span="24" class="nav-demos">
           <img src="~examples/assets/images/navbar_1.png" alt="<%= 7 >" @click="enlarge(846, $event)">
           <h5><%= 7 ></h5>
           <p><%= 8 ></p>
@@ -106,10 +106,10 @@
     <div class="block">
       <h3><%= 13 ></h3>
       <el-row>
-        <el-col :span="10">
+        <el-col :span="24">
           <p><%= 14 ></p>
         </el-col>
-        <el-col :span="14" class="nav-demos">
+        <el-col :span="24" class="nav-demos">
           <img src="~examples/assets/images/navbar_0.png" alt="" @click="enlarge(846, $event)">
           <p><%= 15 ></p>
         </el-col>

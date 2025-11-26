@@ -1,6 +1,6 @@
 <style>
   .page-guide {
-    padding: 55px 30px 95px;
+    padding: 55px 30px 35px;
     box-sizing: border-box;
 
     .content {
@@ -62,7 +62,7 @@
   <div class="page-container page-guide">
     <el-row>
       <el-col :xs="24" :sm="5">
-        <side-nav :data="navsData" :base="`/${ lang }/guide`"></side-nav>
+        <side-nav :data="navsData[lang]" :base="`/${ lang }/guide`"></side-nav>
       </el-col>
       <el-col :xs="24" :sm="19">
         <router-view class="content"></router-view>
@@ -71,20 +71,12 @@
   </div>
 </template>
 <script>
+  import guideNavsData from '../../guide.router.json';
   export default {
     data() {
       return {
         lang: this.$route.meta.lang,
-        navsData: [
-          {
-            path: '/design',
-            name: '<%= 1 >'
-          },
-          {
-            path: '/nav',
-            name: '<%= 2 >'
-          }
-        ]
+        navsData: guideNavsData
       };
     }
   };

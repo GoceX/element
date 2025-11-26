@@ -1,0 +1,27 @@
+[
+  {
+    "label": "上海",
+    "value": "shanghai"
+  },
+  {
+    "label": "北京",
+    "value": "beijing"
+  },
+  {
+    "label": "广州",
+    "value": "guangzhou"
+  },
+  {
+    "label": "热门城市",
+    "children": [
+      {
+        "label": "深圳",
+        "value": "shenzhen"
+      },
+      {
+        "label": "杭州",
+        "value": "hangzhou"
+      }
+    ]
+  }
+]

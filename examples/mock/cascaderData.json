@@ -1,0 +1,36 @@
+[
+  {
+    "label": "中国",
+    "value": "china",
+    "children": [
+      {
+        "label": "浙江省",
+        "value": "zhejiang",
+        "children": [
+          {
+            "label": "杭州市",
+            "value": "hangzhou"
+          },
+          {
+            "label": "宁波市",
+            "value": "ningbo"
+          }
+        ]
+      },
+      {
+        "label": "广东省",
+        "value": "guangdong",
+        "children": [
+          {
+            "label": "广州市",
+            "value": "guangzhou"
+          },
+          {
+            "label": "深圳市",
+            "value": "shenzhen"
+          }
+        ]
+      }
+    ]
+  }
+]

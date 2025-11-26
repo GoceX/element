@@ -41,6 +41,12 @@ export default {
       });
       this.lastApply = time;
     },
+    applyLocalFallback() {
+      const time = +new Date();
+      this.updateDocs(() => {
+        this.lastApply = time;
+      });
+    },
     onDownload(themeConfig, themeName) {
       this.triggertProgressBar(true);
       updateVars(
@@ -65,6 +71,7 @@ export default {
           this.applyStyle(res, time);
         })
         .catch(err => {
+          this.applyLocalFallback();
           this.onError(err);
         })
         .then(() => {

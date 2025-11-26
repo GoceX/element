@@ -2,7 +2,9 @@
 
 var fs = require('fs');
 var path = require('path');
-var langConfig = require('../../examples/i18n/page.json');
+var pageLangConfig = require('../../examples/i18n/page.json');
+var routeLangs = require('../../examples/i18n/route.json');
+var langConfig = pageLangConfig.filter(cfg => routeLangs.some(r => r.lang === cfg.lang));
 
 langConfig.forEach(lang => {
   try {

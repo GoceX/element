@@ -135,8 +135,8 @@ Files.forEach(file => {
     .end('\n');
 });
 
-// 添加到 nav.config.json
-const navConfigFile = require('../../examples/nav.config.json');
+// 添加到 component.router.json
+const navConfigFile = require('../../examples/component.router.json');
 
 Object.keys(navConfigFile).forEach(lang => {
   let groups = navConfigFile[lang][4].groups;
@@ -148,7 +148,7 @@ Object.keys(navConfigFile).forEach(lang => {
   });
 });
 
-fileSave(path.join(__dirname, '../../examples/nav.config.json'))
+fileSave(path.join(__dirname, '../../examples/component.router.json'))
   .write(JSON.stringify(navConfigFile, null, '  '), 'utf8')
   .end('\n');
 

@@ -6,7 +6,7 @@ Element 默认提供一套主题，CSS 命名采用 BEM 的风格，方便使用
 
 也可以使用[主题编辑器 Chrome 插件](https://chrome.google.com/webstore/detail/element-theme-roller/lifkjlojflekabbmlddfccdkphlelmim)，在任何使用 Element 开发的网站上配置并实时预览主题。
 
-<img src="https://shadow.elemecdn.com/app/sns-client/element-theme-editor2.e16c6a01-806d-11e9-bc23-21435c54c509.png" style="width: 100%;margin: 30px auto 0;display: block;">
+<img src="../../assets/images/theme-intro.png" style="width: 100%;margin: 30px auto 0;display: block;">
 
 ### 仅替换主题色
 如果仅希望更换 Element 的主题色，推荐使用[在线主题生成工具](https://elementui.github.io/theme-chalk-preview)。Element 默认的主题色是鲜艳、友好的蓝色。通过替换主题色，能够让 Element 的视觉更加符合具体项目的定位。

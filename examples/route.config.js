@@ -1,4 +1,5 @@
-import navConfig from './nav.config';
+import navConfig from './component.router';
+import guideNavs from './guide.router';
 import langs from './i18n/route';
 
 const LOAD_MAP = {
@@ -6,21 +7,6 @@ const LOAD_MAP = {
     return r => require.ensure([], () =>
       r(require(`./pages/zh-CN/${name}.vue`)),
     'zh-CN');
-  },
-  'en-US': name => {
-    return r => require.ensure([], () =>
-      r(require(`./pages/en-US/${name}.vue`)),
-    'en-US');
-  },
-  'es': name => {
-    return r => require.ensure([], () =>
-      r(require(`./pages/es/${name}.vue`)),
-    'es');
-  },
-  'fr-FR': name => {
-    return r => require.ensure([], () =>
-      r(require(`./pages/fr-FR/${name}.vue`)),
-    'fr-FR');
   }
 };
 
@@ -33,21 +19,6 @@ const LOAD_DOCS_MAP = {
     return r => require.ensure([], () =>
       r(require(`./docs/zh-CN${path}.md`)),
     'zh-CN');
-  },
-  'en-US': path => {
-    return r => require.ensure([], () =>
-      r(require(`./docs/en-US${path}.md`)),
-    'en-US');
-  },
-  'es': path => {
-    return r => require.ensure([], () =>
-      r(require(`./docs/es${path}.md`)),
-    'es');
-  },
-  'fr-FR': path => {
-    return r => require.ensure([], () =>
-      r(require(`./docs/fr-FR${path}.md`)),
-    'fr-FR');
   }
 };
 
@@ -55,13 +26,31 @@ const loadDocs = function(lang, path) {
   return LOAD_DOCS_MAP[lang](path);
 };
 
+const getFirstComponentPath = (lang) => {
+  const navs = navConfig[lang] || [];
+  for (let i = 0; i < navs.length; i++) {
+    const section = navs[i];
+    if (section.groups && section.groups.length) {
+      for (let j = 0; j < section.groups.length; j++) {
+        const group = section.groups[j];
+        if (group.list && group.list.length) return group.list[0].path;
+      }
+    }
+    if (section.children && section.children.length) {
+      return section.children[0].path;
+    }
+  }
+  return '/installation';
+};
+
 const registerRoute = (navConfig) => {
   let route = [];
-  Object.keys(navConfig).forEach((lang, index) => {
-    let navs = navConfig[lang];
+  const langList = langs.map(l => l.lang);
+  langList.forEach((lang, index) => {
+    let navs = navConfig[lang] || [];
     route.push({
       path: `/${ lang }/component`,
-      redirect: `/${ lang }/component/installation`,
+      redirect: `/${ lang }/component${ getFirstComponentPath(lang) }`,
       component: load(lang, 'component'),
       children: []
     });
@@ -123,6 +112,30 @@ const generateMiscRoutes = function(lang) {
     }]
   };
 
+  const guideList = guideNavs[lang] || [];
+  guideList.forEach(item => {
+    if (item.children && item.children.length) {
+      item.children.forEach(child => {
+        const childPath = child.path.slice(1);
+        guideRoute.children.push({
+          path: childPath,
+          name: `guide-${childPath}-${lang}`,
+          meta: { lang },
+          component: loadDocs(lang, child.path)
+        });
+      });
+    } else if (item.path) {
+      const p = item.path.slice(1);
+      const isChangelog = item.path === '/changelog';
+      guideRoute.children.push({
+        path: p,
+        name: `guide-${p}-${lang}`,
+        meta: { lang },
+        component: isChangelog ? load(lang, 'changelog') : loadDocs(lang, item.path)
+      });
+    }
+  });
+
   let themeRoute = {
     path: `/${ lang }/theme`,
     component: load(lang, 'theme-nav'),
@@ -168,15 +181,7 @@ route.push({
   component: require('./play/index.vue')
 });
 
-let userLanguage = localStorage.getItem('ELEMENT_LANGUAGE') || window.navigator.language || 'en-US';
-let defaultPath = '/en-US';
-if (userLanguage.indexOf('zh-') !== -1) {
-  defaultPath = '/zh-CN';
-} else if (userLanguage.indexOf('es') !== -1) {
-  defaultPath = '/es';
-} else if (userLanguage.indexOf('fr') !== -1) {
-  defaultPath = '/fr-FR';
-}
+let defaultPath = '/zh-CN';
 
 route = route.concat([{
   path: '/',
