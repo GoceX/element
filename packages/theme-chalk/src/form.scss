@@ -8,6 +8,7 @@
       text-align: left;
     }
   }
+
   @include m(label-top) {
     & .el-form-item__label {
       float: none;
@@ -16,25 +17,30 @@
       padding: 0 0 10px 0;
     }
   }
+
   @include m(inline) {
     & .el-form-item {
       display: inline-block;
       margin-right: 10px;
       vertical-align: top;
     }
+
     & .el-form-item__label {
       float: none;
       display: inline-block;
     }
+
     & .el-form-item__content {
       display: inline-block;
       vertical-align: top;
     }
+
     &.el-form--label-top .el-form-item__content {
       display: block;
     }
   }
 }
+
 @include b(form-item) {
   margin-bottom: 14px;
   @include utils-clearfix;
@@ -50,36 +56,45 @@
   @include m(medium) {
     .el-form-item__label {
       line-height: $--input-medium-height;
-      
+
     }
+
     .el-form-item__content {
       line-height: $--input-medium-height;
     }
   }
+
   @include m(small) {
     .el-form-item__label {
       line-height: $--input-small-height;
     }
+
     .el-form-item__content {
       line-height: $--input-small-height;
     }
+
     &.el-form-item {
       margin-bottom: 14px;
     }
+
     .el-form-item__error {
       padding-top: 1px;
     }
   }
+
   @include m(mini) {
     .el-form-item__label {
       line-height: $--input-mini-height;
     }
+
     .el-form-item__content {
       line-height: $--input-mini-height;
     }
+
     &.el-form-item {
       margin-bottom: 14px;
     }
+
     .el-form-item__error {
       padding-top: 1px;
     }
@@ -87,6 +102,7 @@
 
   @include e(label-wrap) {
     float: left;
+
     .el-form-item__label {
       display: inline-block;
       float: none;
@@ -103,16 +119,18 @@
     padding: 0 12px 0 0;
     box-sizing: border-box;
   }
+
   @include e(content) {
-    line-height: $--input-height;
+    // line-height: $--input-height;
     position: relative;
-    font-size: 14px;
+    // font-size: $--form-label-font-size;
     @include utils-clearfix;
 
     .el-input-group {
       vertical-align: top;
     }
   }
+
   @include e(error) {
     color: $--color-danger;
     font-size: 12px;
@@ -133,8 +151,9 @@
 
   @include when(required) {
     @include pseudo('not(.is-no-asterisk)') {
-      & > .el-form-item__label:before,
-      & .el-form-item__label-wrap > .el-form-item__label:before {
+
+      &>.el-form-item__label:before,
+      & .el-form-item__label-wrap>.el-form-item__label:before {
         content: '*';
         color: $--color-danger;
         margin-right: 4px;
@@ -143,18 +162,23 @@
   }
 
   @include when(error) {
+
     & .el-input__inner,
     & .el-textarea__inner {
-      &, &:focus {
+
+      &,
+      &:focus {
         border-color: $--color-danger;
       }
     }
+
     & .el-input-group__append,
     & .el-input-group__prepend {
       & .el-input__inner {
         border-color: transparent;
       }
     }
+
     .el-input__validateIcon {
       color: $--color-danger;
     }

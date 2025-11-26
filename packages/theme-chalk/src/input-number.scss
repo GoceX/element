@@ -5,7 +5,8 @@
 @include b(input-number) {
   position: relative;
   display: inline-block;
-  width: 180px;
+  min-width: 150px;
+  width: auto;
   line-height: #{$--input-height - 2};
 
   .el-input {
@@ -34,7 +35,7 @@
     &:hover {
       color: $--color-primary;
 
-      &:not(.is-disabled) ~ .el-input .el-input__inner:not(.is-disabled) {
+      &:not(.is-disabled)~.el-input .el-input__inner:not(.is-disabled) {
         border-color: $--input-focus-border;
       }
     }
@@ -160,19 +161,25 @@
     }
 
     &[class*=medium] {
-      [class*=increase], [class*=decrease] {
+
+      [class*=increase],
+      [class*=decrease] {
         line-height: #{($--input-medium-height - 2) / 2};
       }
     }
 
     &[class*=small] {
-      [class*=increase], [class*=decrease] {
+
+      [class*=increase],
+      [class*=decrease] {
         line-height: #{($--input-small-height - 2) / 2};
       }
     }
 
     &[class*=mini] {
-      [class*=increase], [class*=decrease] {
+
+      [class*=increase],
+      [class*=decrease] {
         line-height: #{($--input-mini-height - 2) / 2};
       }
     }

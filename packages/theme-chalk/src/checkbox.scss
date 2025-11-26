@@ -35,89 +35,100 @@
       margin-left: 10px;
     }
 
+    /* ====================
+       MEDIUM SIZE
+       ==================== */
     &.el-checkbox--medium {
       padding: $--checkbox-bordered-medium-padding;
       border-radius: $--button-medium-border-radius;
       height: $--checkbox-bordered-medium-height;
 
       .el-checkbox__label {
-        // line-height: 17px;
         font-size: $--button-medium-font-size;
       }
 
       .el-checkbox__inner {
-        height: $--checkbox-bordered-medium-input-height;
-        width: $--checkbox-bordered-medium-input-width;
+        height: $--checkbox-medium-input-height;
+        width: $--checkbox-medium-input-width;
 
         &::before {
-          top: #{($--checkbox-bordered-medium-input-height - 2px) / 2};
+          top: #{($--checkbox-medium-input-height - 2px) / 2};
         }
 
+        /* 自动居中的对勾 */
         &::after {
-          left: #{($--checkbox-bordered-medium-input-width - 4px) / 3.5};
-          top: #{($--checkbox-bordered-medium-input-height - 4px) / 12};
-          width: #{($--checkbox-bordered-medium-input-width - 4px) / 3};
-          height: #{($--checkbox-bordered-medium-input-height - 4px) / 3 * 2};
+          width: #{($--checkbox-medium-input-width - 4px) / 3.5};
+          height: #{($--checkbox-medium-input-height - 4px) / 3 * 2};
+          left: #{($--checkbox-medium-input-width - 4px) * 5 / 14};
+          top: #{($--checkbox-medium-input-height - 4px) / 9};
         }
       }
-
     }
 
+    /* ====================
+       SMALL SIZE
+       ==================== */
     &.el-checkbox--small {
       padding: $--checkbox-bordered-small-padding;
       border-radius: $--button-small-border-radius;
       height: $--checkbox-bordered-small-height;
 
       .el-checkbox__label {
-        // line-height: 15px;
         font-size: $--button-small-font-size;
       }
 
       .el-checkbox__inner {
-        height: $--checkbox-bordered-small-input-height;
-        width: $--checkbox-bordered-small-input-width;
+        height: $--checkbox-small-input-height;
+        width: $--checkbox-small-input-width;
 
         &::before {
-          top: #{($--checkbox-bordered-small-input-height - 2px) / 2};
+          top: #{($--checkbox-small-input-height - 2px) / 2};
         }
 
+        /* 自动居中的对勾 */
         &::after {
-          left: #{($--checkbox-bordered-small-input-width - 4px) / 4};
-          top: #{($--checkbox-bordered-small-input-height - 4px) / 12};
-          width: #{($--checkbox-bordered-small-input-width - 4px) / 3};
-          height: #{($--checkbox-bordered-small-input-height - 4px) / 3 * 2};
+          width: #{($--checkbox-small-input-width - 4px) / 3.5};
+          height: #{($--checkbox-small-input-height - 4px) / 3 * 2};
+          left: #{($--checkbox-small-input-width - 4px) * 5 / 14};
+          top: #{($--checkbox-small-input-height - 4px) / 9};
         }
       }
     }
 
+    /* ====================
+       MINI SIZE
+       ==================== */
     &.el-checkbox--mini {
       padding: $--checkbox-bordered-mini-padding;
       border-radius: $--button-mini-border-radius;
       height: $--checkbox-bordered-mini-height;
 
       .el-checkbox__label {
-        // line-height: 12px;
         font-size: $--button-mini-font-size;
       }
 
       .el-checkbox__inner {
-        height: $--checkbox-bordered-mini-input-height;
-        width: $--checkbox-bordered-mini-input-width;
+        height: $--checkbox-mini-input-height;
+        width: $--checkbox-mini-input-width;
 
         &::before {
-          top: #{($--checkbox-bordered-mini-input-height - 2px) / 2};
+          top: #{($--checkbox-mini-input-height - 2px) / 2};
         }
 
+        /* 自动居中的对勾 */
         &::after {
-          left: #{($--checkbox-bordered-mini-input-width - 4px) / 4};
-          top: #{($--checkbox-bordered-mini-input-height - 4px) / 12};
-          width: #{($--checkbox-bordered-mini-input-width - 4px) / 3};
-          height: #{($--checkbox-bordered-mini-input-height - 4px) / 3 * 2};
+          width: #{($--checkbox-mini-input-width - 4px) / 3.5};
+          height: #{($--checkbox-mini-input-height - 4px) / 3 * 2};
+          left: #{($--checkbox-mini-input-width - 4px) * 5 / 14};
+          top: #{($--checkbox-mini-input-height - 4px) / 9};
         }
       }
     }
   }
 
+  /* ======================
+     INPUT
+     ====================== */
   @include e(input) {
     white-space: nowrap;
     cursor: pointer;
@@ -189,8 +200,6 @@
     }
 
     @include when(focus) {
-
-      /*focus时 视觉上区分*/
       .el-checkbox__inner {
         border-color: $--checkbox-input-border-color-hover;
       }
@@ -220,6 +229,9 @@
     }
   }
 
+  /* ======================
+     INNER (核心对勾在这里)
+     ====================== */
   @include e(inner) {
     display: inline-block;
     position: relative;
@@ -237,20 +249,25 @@
       border-color: $--checkbox-input-border-color-hover;
     }
 
+    /* ===== 自动响应式对勾 ===== */
     &::after {
       box-sizing: content-box;
       content: "";
       border: 1.5px solid $--checkbox-checked-icon-color;
       border-left: 0;
       border-top: 0;
-      left: #{($--checkbox-input-width - 4px) / 3.2};
       position: absolute;
-      top: #{($--checkbox-input-height - 4px) / 12};
-      transform: rotate(45deg) scaleY(0);
+
       width: #{($--checkbox-input-width - 4px) / 3.5};
       height: #{($--checkbox-input-height - 4px) / 3 * 2};
-      transition: transform .15s ease-in .05s;
+
+      /* 完全自动居中，旋转不会影响中心 */
+      left: #{($--checkbox-input-width - 4px) * 5 / 14};
+      top: #{($--checkbox-input-height - 4px) / 9};
+
+      transform: rotate(45deg) scaleY(0);
       transform-origin: center;
+      transition: transform .15s ease-in .05s;
     }
   }
 
@@ -267,7 +284,6 @@
   @include e(label) {
     display: inline-block;
     padding-left: 8px;
-    // line-height: 19px;
     font-size: $--checkbox-font-size;
   }
 
