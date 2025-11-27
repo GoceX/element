@@ -4,7 +4,7 @@
 
 <script>
 import Cascader from '../../cascader/src/cascader.vue';
-import { getValueByPath } from 'element-ui/src/utils/util';
+import { getValueByPath } from 'rowinself-ui/src/utils/util';
 
 export default {
   name: 'ElApiCascader',

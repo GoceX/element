@@ -29,10 +29,10 @@
       ],
       "plugins": [
         ["module-resolver", {
-          "root": ["rowinself-element-ui"],
+          "root": ["rowinself-ui"],
           "alias": {
-            "element-ui/src": "rowinself-element-ui/lib",
-            "element-ui/lib": "rowinself-element-ui/lib"
+            "rowinself-ui/src": "rowinself-ui/lib",
+            "rowinself-ui/lib": "rowinself-ui/lib"
           }
         }]
       ]

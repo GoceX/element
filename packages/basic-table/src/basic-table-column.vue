@@ -1,7 +1,7 @@
 <script>
 // 列渲染子组件：封装 el-table-column 属性映射与默认溢出处理（Hover 展示完整文本）
-import ElTableColumn from 'element-ui/packages/table-column';
-import ElPopover from 'element-ui/packages/popover';
+import ElTableColumn from 'rowinself-ui/packages/table-column';
+import ElPopover from 'rowinself-ui/packages/popover';
 import OverflowCell from './overflow-cell.js';
 
 export default {

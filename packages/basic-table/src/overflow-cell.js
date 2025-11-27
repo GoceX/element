@@ -1,5 +1,5 @@
 // 溢出单元格：仅当文本溢出时通过 Popover 展示完整内容
-import ElPopover from 'element-ui/packages/popover';
+import ElPopover from 'rowinself-ui/packages/popover';
 
 export default {
   name: 'ElBasicTableOverflowCell',

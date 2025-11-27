@@ -12,12 +12,12 @@ package-lock.json
 lib
 .idea
 .vscode
-examples/element-ui
+examples/rowinself-ui
 examples/pages/en-US
 examples/pages/zh-CN
 examples/pages/es
 examples/pages/fr-FR
-fe.element/element-ui
+fe.element/rowinself-ui
 .npmrc
 coverage
 waiter.config.js

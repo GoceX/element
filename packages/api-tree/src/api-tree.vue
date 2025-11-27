@@ -4,7 +4,7 @@
 
 <script>
 import Tree from '../../tree/src/tree.vue';
-import { getValueByPath } from 'element-ui/src/utils/util';
+import { getValueByPath } from 'rowinself-ui/src/utils/util';
 
 export default {
   name: 'ElApiTree',

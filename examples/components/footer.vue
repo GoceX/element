@@ -11,7 +11,7 @@
       <div class="footer-main">
         <h4>{{ langConfig.community }}</h4>
         <a :href="`https://github.com/Gocas/element/blob/master/.github/CONTRIBUTING.${ lang }.md`" class="footer-main-link" target="_blank">{{ langConfig.contribution }}</a>
-        <a href="https://segmentfault.com/t/element-ui" class="footer-main-link" target="_blank">SegmentFault</a>
+        <a href="https://segmentfault.com/t/rowinself-ui" class="footer-main-link" target="_blank">SegmentFault</a>
         <a href="https://github.com/ElementUI/awesome-element" class="footer-main-link" target="_blank">Awesome Element</a>
       </div>
       <div class="footer-social">

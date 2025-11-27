@@ -13,7 +13,7 @@
 import Select from '../../select/src/select.vue';
 import Option from '../../select/src/option.vue';
 import OptionGroup from '../../select/src/option-group.vue';
-import { getValueByPath } from 'element-ui/src/utils/util';
+import { getValueByPath } from 'rowinself-ui/src/utils/util';
 
 export default {
   name: 'ElApiSelect',

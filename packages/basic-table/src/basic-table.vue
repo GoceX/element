@@ -53,9 +53,9 @@
 <script>
 // 依赖组件：基础表格、分页、搜索表单与列渲染子组件
 // 文件职能：封装基础表格行为（列配置、分页、远程加载、选择行、搜索联动），暴露完整方法集供外部按需控制
-import ElTable from 'element-ui/packages/table';
-import ElPagination from 'element-ui/packages/pagination';
-import ElBasicForm from 'element-ui/packages/basic-form';
+import ElTable from 'rowinself-ui/packages/table';
+import ElPagination from 'rowinself-ui/packages/pagination';
+import ElBasicForm from 'rowinself-ui/packages/basic-form';
 import ElBasicTableColumn from './basic-table-column.vue';
 import actions from './actions';
 import { ensureKeys as uEnsureKeys, normalizePagination as uNormalizePagination, mapColumns, createFetchParams } from './utils';

@@ -1,4 +1,4 @@
-export * from './element-ui'
+export * from './rowinself-ui'
 
-import * as ElementUI from './element-ui'
+import * as ElementUI from './rowinself-ui'
 export default ElementUI

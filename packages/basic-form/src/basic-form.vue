@@ -42,7 +42,7 @@
   </el-form>
 </template>
 <script>
-import { formatDate, isDateObject } from 'element-ui/src/utils/date-util';
+import { formatDate, isDateObject } from 'rowinself-ui/src/utils/date-util';
 import ElBasicFormItem from './basic-form-item.vue';
 /*
  * 组件：ElBasicForm

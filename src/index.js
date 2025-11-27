@@ -91,8 +91,8 @@ import DescriptionsItem from '../packages/descriptions-item/index.js';
 import Result from '../packages/result/index.js';
 import BasicForm from '../packages/basic-form/index.js';
 import BasicTable from '../packages/basic-table/index.js';
-import locale from 'element-ui/src/locale';
-import CollapseTransition from 'element-ui/src/transitions/collapse-transition';
+import locale from 'rowinself-ui/src/locale';
+import CollapseTransition from 'rowinself-ui/src/transitions/collapse-transition';
 
 const components = [
   Pagination,
