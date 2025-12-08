@@ -5,4 +5,3 @@ ElBasicTable.install = function(Vue) {
 };
 
 export default ElBasicTable;
-

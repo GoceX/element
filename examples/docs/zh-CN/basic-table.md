@@ -7,6 +7,154 @@
 :::demo 传入 `columns` 与本地 `data-source` 渲染，并使用方法集进行分页、刷新、选择与数据更新（含远程加载模拟）。
 ```html
 <template>
+   <el-basic-table
+      title="用户管理"
+      v-bind="tableConfig"
+      @register="onRegister"
+     >
+    <template slot="toolbar">
+      <el-button size="mini" type="primary" @click="doReload">刷新</el-button>
+      <el-button size="mini" @click="showPager">显示分页</el-button>
+      <el-button size="mini" @click="hidePager">隐藏分页</el-button>
+      <el-button size="mini" @click="logData">获取数据</el-button>
+      <el-button size="mini" @click="selectSecond">选中第二行</el-button>
+      <el-button size="mini" @click="clearSelect">清空选中</el-button>
+      <el-button size="mini" @click="updateSecond">修改第二行地址</el-button>
+    </template>
+    <template slot="roleCell" slot-scope="{ row }">
+        {{ (row && row.role && row.role.name) ? row.role.name : '-' }}
+      </template>
+      <template slot="statusCell" slot-scope="{ row }">
+        <el-badge is-dot class="isDot" :type="row && row.status == 1 ? 'success' : 'danger'" />
+        <span>{{ row && row.status == 1 ? '启用' : '禁用' }}</span>
+      </template>
+      <template slot="opCell" slot-scope="{ row }">
+        <div class="box-around settingClassWarp">
+          <el-link type="primary" :underline="false" @click="writeModelFun(row)">修改</el-link>
+        </div>
+      </template>
+  </el-basic-table>
+</template>
+<script>
+export default {
+  data() {
+    return {
+      tableProps: null,
+      tableConfig:{
+        /** 列配置：对应后端返回的字段或自定义插槽 */
+        columns: [
+          { title: 'id', dataIndex: 'id', align: 'center', width: 100 },
+          { title: '用户名', dataIndex: 'username', align: 'center', minWidth: 140 },
+          { title: '所属角色', slot: 'roleCell', align: 'center', minWidth: 160 },
+          { title: '状态', slot: 'statusCell', align: 'center', width: 140 },
+          { title: '最后一次登录时间', dataIndex: 'loginTime', align: 'center', minWidth: 180 },
+          { title: '登录ip', dataIndex: 'loginIp', align: 'center', minWidth: 160 },
+          { title: '操作', slot: 'opCell', align: 'center', width: 160 }
+        ],
+        /** 搜索表单配置：与 BasicTable 联动 */
+        formConfig: {
+          labelWidth: 120,
+          showActionButtonGroup: true, // 显示“查询/清空”按钮
+          submitButtonText: '查询',
+          resetButtonText: '清空',
+          baseColProps: { span: 8 },
+          actionColOptions: { span: 8 },
+          // 搜索项：管理员名称 + 角色筛选
+          schemas: [
+            {
+              field: 'name',
+              component: 'Input',
+              label: '管理员名称',
+              componentProps: { placeholder: '请输入管理员名称' }
+            },
+            {
+              field: 'administrator',
+              component: 'ApiSelect',
+              label: '角色名称',
+              componentProps: ({ schema, tableAction, formActionType, formModel }) => {
+                return {
+                  placeholder: '请选择',
+                  api: manageRbacAddUser,
+                  // params: { },
+                  resultField: 'data.data',
+                  labelField: 'name',
+                  valueField: 'id',
+                  afterFetch: (res) => {
+                    // 处理角色选项
+                    formModel.administrator = res[0].id
+                    schema.disabled = res.length > 2
+                    console.clear()
+                    console.log('schema::: ', schema)
+                  },
+                  change: (val) => {
+                    console.log('val::: ', val)
+                  }
+                }
+              }
+            }
+          ]
+        },
+        api: fetchList,
+        fetchSetting: {
+          listField: 'list',
+          totalField: 'page.totalRowNum',
+          pageField: 'page.perPage',
+          sizeField: 'page.pageNum'
+        },
+        afterFetch: (res) => {
+          // 渲染前数据处理
+          console.log('渲染前数据处理::: ', res.data)
+          return res.data
+        },
+        /** 基本表格属性：模板通过 v-bind="basicProps" 绑定 */
+        striped: true,
+        bordered: true,
+        pagination: { pageSize: 5 },
+        useSearchForm: true,
+        showIndexColumn: true,
+        rowSelection: false,
+        clickToRowSelect: false
+      }
+    };
+  },
+  methods: {
+    onRegister(props) { this.tableProps = props; },
+    manageRbacAddUser(params) {
+      return this.$http.post('/admin/Rbac/addUserRoleList', { })
+    },
+    fetchList(params) {
+      // 使用全局 $http 请求接口
+      // 拦截器会自动处理 { code: 0, data: {...} } 格式，直接返回 data
+      return this.$http.post('/admin/Rbac/userList', { params })
+        // .then(data => ({
+        //   items: data.items || data.list || [],
+        //   total: data.total || 0
+        // }))
+        // .catch(() => ({ items: [], total: 0 }));
+    },
+    doReload() { this.tableProps && this.tableProps.reload(); },
+    showPager() { this.tableProps && this.tableProps.setShowPagination(true); },
+    hidePager() { this.tableProps && this.tableProps.setShowPagination(false); },
+    logData() {
+      const ds = this.tableProps ? this.tableProps.getDataSource() : [];
+      console.log('当前数据源:', ds);
+    },
+    selectSecond() { this.tableProps && this.tableProps.setSelectedRowKeys([2]); },
+    clearSelect() { this.tableProps && this.tableProps.clearSelectedRowKeys(); },
+    updateSecond() { this.tableProps && this.tableProps.updateTableDataRecord(2, { address: '修改后的地址' }); }
+  }
+};
+</script>
+```
+:::
+
+
+
+<!-- ### 基础示例
+
+:::demo 传入 `columns` 与本地 `data-source` 渲染，并使用方法集进行分页、刷新、选择与数据更新（含远程加载模拟）。
+```html
+<template>
   <el-basic-table
     title="基础示例"
     :columns="columns"
@@ -36,12 +184,14 @@
 export default {
   data() {
     return {
-      columns: [
-        { title: 'ID', dataIndex: 'id', width: 150 },
-        { title: '日期', dataIndex: 'date', width: 150 },
-        { title: '名称', dataIndex: 'name', minWidth: 120 },
-        { title: '产地', dataIndex: 'origin', minWidth: 120 },
-        { title: '描述', dataIndex: 'description', minWidth: 160 }
+      columns:  [
+        { title: 'id', dataIndex: 'id', align: 'center', width: 100 },
+        { title: '用户名', dataIndex: 'username', align: 'center', minWidth: 140 },
+        // { title: '所属角色', slot: 'roleCell', align: 'center', minWidth: 160 },
+        // { title: '状态', slot: 'statusCell', align: 'center', width: 140 },
+        { title: '最后一次登录时间', dataIndex: 'loginTime', align: 'center', minWidth: 180 },
+        { title: '登录ip', dataIndex: 'loginIp', align: 'center', minWidth: 160 }
+        // { title: '操作', slot: 'opCell', align: 'center', width: 160 }
       ],
       tableProps: null,
       formConfig: {
@@ -64,34 +214,14 @@ export default {
   methods: {
     onRegister(props) { this.tableProps = props; },
     fetchList(params) {
-      return typeof window !== 'undefined' && window.Promise
-        ? new window.Promise((resolve) => {
-            const { page = 1, pageSize = 5 } = params || {};
-            const dateF = params && params.date ? String(params.date) : '';
-            const nameF = params && params.name ? String(params.name) : '';
-            const originF = params && params.origin ? String(params.origin) : '';
-            const descriptionF = params && params.description ? String(params.description) : '';
-            setTimeout(() => {
-              const ALL = 120;
-              const all = Array.from({ length: ALL }).map((_, idx) => ({
-                id: idx + 1,
-                date: '2016-05-0' + ((idx % 9) + 1),
-                name: '鸡蛋仔',
-                origin: '中国',
-                description: '这是一个鸡蛋仔'
-              }));
-              const filtered = all.filter(it => (
-                (!dateF || it.date.indexOf(dateF) !== -1) &&
-                (!nameF || it.name.indexOf(nameF) !== -1) &&
-                (!originF || it.origin.indexOf(originF) !== -1) &&
-                (!descriptionF || it.description.indexOf(descriptionF) !== -1)
-              ));
-              const start = (page - 1) * pageSize;
-              const items = filtered.slice(start, start + pageSize);
-              resolve({ items, total: filtered.length });
-            }, 300);
-          })
-        : { then() {} };
+      // 使用全局 $http 请求接口
+      // 拦截器会自动处理 { code: 0, data: {...} } 格式，直接返回 data
+      return this.$http.post('/admin/Rbac/userList', { params })
+        .then(data => ({
+          items: data.items || data.list || [],
+          total: data.total || 0
+        }))
+        .catch(() => ({ items: [], total: 0 }));
     },
     doReload() { this.tableProps && this.tableProps.reload(); },
     showPager() { this.tableProps && this.tableProps.setShowPagination(true); },
@@ -107,7 +237,7 @@ export default {
 };
 </script>
 ```
-:::
+::: -->
 
 ### 斑马纹与边框
 
@@ -260,9 +390,44 @@ export default {
 ```
 :::
 
+### 远程加载（axios 请求）
+
+:::demo 使用 `api` 配合全局 `$http`（axios）进行真实接口请求。拦截器会自动解构返回数据。
+```html
+<template>
+  <el-basic-table
+    :columns="columns"
+    :pagination="{ pageSize: 10 }"
+    :api="fetchList"
+    :bordered="true"
+    @register="onRegister" />
+</template>
+<script>
+export default {
+  data() {
+    return { columns: [{ title: '名称', dataIndex: 'name' }] };
+  },
+  methods: {
+    fetchList(params) {
+      // 使用全局 $http 请求接口
+      // 拦截器会自动处理 { code: 0, data: {...} } 格式，直接返回 data
+      return this.$http.post('/admin/Rbac/userList', { params })
+        .then(data => ({
+          items: data.items || data.list || [],
+          total: data.total || 0
+        }))
+        .catch(() => ({ items: [], total: 0 }));
+    },
+    onRegister(action) { action.reload(); }
+  }
+};
+</script>
+```
+:::
+
 ### 分页字段映射（fetch-setting）
 
-:::demo 将后端 `{ records, total }` 字段映射为表格数据。
+:::demo 通过 `fetch-setting` 配置接口返回字段映射。支持点号路径（如 `page.totalRowNum`）访问嵌套字段。
 ```html
 <template>
   <el-basic-table
@@ -521,7 +686,7 @@ export default {
 | beforeFetch | `(T)=>T` | - | - | 请求之前对参数进行处理 |  |
 | afterFetch | `(T)=>T` | - | - | 请求之后对返回值进行处理 |  |
 | handleSearchInfoFn | `(T)=>T` | - | - | 在请求之前处理搜索条件参数 |  |
-| fetchSetting | `FetchSetting` | - | - | 接口请求字段映射配置 |  |
+| fetchSetting | `FetchSetting` | 见下方说明 | - | 接口请求字段映射配置，支持点号路径 |  |
 | immediate | `boolean` | `true` | - | 组件加载后是否立即请求接口 |  |
 | searchInfo | `any` | - | - | 额外的请求参数 |
 | useSearchForm | `boolean` | `false` | - | 使用搜索表单 |  |
@@ -636,3 +801,19 @@ form-submitBefore
 ### TableAction / TableImg
 
 本版本暂不支持内置操作列与图片单元格组件。
+
+### FetchSetting
+
+```ts
+const FetchSetting =
+  {
+    // 页码 字段名
+    pageField: 'perPage',
+    // 每页显示数量 字段名
+    sizeField: 'pageNum',
+    // 表格数据 字段名
+    listField: 'list',
+    // 总数据量 字段名（支持点号路径如 page.totalRowNum）
+    totalField: 'page.totalRowNum',
+  };
+```

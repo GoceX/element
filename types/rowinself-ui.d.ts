@@ -89,6 +89,12 @@ import { ElDescriptions } from './descriptions'
 import { ElDescriptionsItem } from './descriptions-item'
 import { ElResult } from './result'
 import { ElStatistic } from './statistic'
+import { ElApiCascader } from './api-cascader'
+import { ElApiSelect } from './api-select'
+import { ElApiTree } from './api-tree'
+import { ElBasicForm } from './basic-form'
+import { ElBasicTable } from './basic-table'
+import { ElScrollbar } from './scrollbar'
 
 export interface InstallationOptions {
   locale: any,
@@ -380,3 +386,15 @@ export class Result extends ElResult {}
 
 /** Statistic Component */
 export class Statistic extends ElStatistic {}
+
+export class ApiCascader extends ElApiCascader {}
+
+export class ApiSelect extends ElApiSelect {}
+
+export class ApiTree extends ElApiTree {}
+
+export class BasicForm extends ElBasicForm {}
+
+export class BasicTable extends ElBasicTable {}
+
+export class Scrollbar extends ElScrollbar {}

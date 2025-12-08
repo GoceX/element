@@ -89,8 +89,10 @@ import Empty from '../packages/empty/index.js';
 import Descriptions from '../packages/descriptions/index.js';
 import DescriptionsItem from '../packages/descriptions-item/index.js';
 import Result from '../packages/result/index.js';
+import ApiSelect from '../packages/api-select/index.js';
 import BasicForm from '../packages/basic-form/index.js';
 import BasicTable from '../packages/basic-table/index.js';
+import BasicTableColumn from '../packages/basic-table-column/index.js';
 import locale from 'rowinself-ui/src/locale';
 import CollapseTransition from 'rowinself-ui/src/transitions/collapse-transition';
 
@@ -179,8 +181,10 @@ const components = [
   Descriptions,
   DescriptionsItem,
   Result,
+  ApiSelect,
   BasicForm,
   BasicTable,
+  BasicTableColumn,
   CollapseTransition
 ];
 
@@ -310,6 +314,8 @@ export default {
   Descriptions,
   DescriptionsItem,
   Result,
+  ApiSelect,
   BasicForm,
-  BasicTable
+  BasicTable,
+  BasicTableColumn
 };

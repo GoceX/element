@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run build:file:*)",
+      "Bash(webpack:*)",
+      "Bash(npx webpack:*)",
+      "Bash(bash -c:*)",
+      "Bash(npm run build:file:table:*)",
+      "Bash(npm run:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

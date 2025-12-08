@@ -1125,15 +1125,18 @@ export default {
 
 ### Props
 
+
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
+| numberToString | `boolean` | `false` | 是否将`number`值转化为`string` |
 | api | `(...arg: any)=>Promise<{ label: string; value: string; children?: any[] }[]>` | - | 请求接口，接受一个 Promise 或 thenable |
 | params | `object` | - | 接口参数。此属性改变时会自动重新加载接口数据 |
-| resultField | `string` | - | 接口返回的数组字段路径，支持 `x.x.x` |
-| immediate | `boolean` | `true` | 是否在创建时立即请求接口 |
+| resultField | `string` | - | 接口返回的字段，如果接口返回数组，可以不填。支持`x.x.x`格式 |
+| labelField | `string` | `label` | 下拉数组项内`label`显示文本的字段，支持`x.x.x`格式 |
+| valueField | `string` | `value` | 下拉数组项内`value`实际值的字段，支持`x.x.x`格式 |
+| immediate | `boolean` | `true` | 是否立即请求接口，否则将在第一次点击时候触发请求 |
 | beforeFetch | `(T)=>T` | - | 请求之前对参数进行处理 |
 | afterFetch | `(T)=>T` | - | 请求之后对返回值进行处理 |
-
 ## RadioButtonGroup
 
 Radio Button 风格的选择按钮

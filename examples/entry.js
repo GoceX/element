@@ -16,6 +16,7 @@ import './demo-styles/index.scss';
 import './assets/styles/common.css';
 import './assets/styles/fonts/style.css';
 import icon from './icon.json';
+import http from './utils/http';
 
 Vue.use(Element);
 Vue.use(VueRouter);
@@ -39,6 +40,7 @@ Vue.mixin({
 });
 
 Vue.prototype.$icon = icon; // Icon 列表页用
+Vue.prototype.$http = http; // 全局 HTTP 请求实例
 
 const router = new VueRouter({
   mode: 'hash',

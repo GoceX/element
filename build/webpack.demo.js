@@ -35,6 +35,15 @@ const webpackConfig = {
     port: 8085,
     publicPath: '/',
     hot: true,
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:4523/m1/7483428-7218734-default', // TODO: 请修改为实际后端 API 地址
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api': '' // 根据后端接口是否有 /api 前缀决定是否需要重写
+        }
+      }
+    },
     before: (app) => {
       /*
        * 编辑器类型 :此处的指令表示的时各个各个编辑器在cmd或terminal中的命令

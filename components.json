@@ -88,6 +88,8 @@
   "descriptions": "./packages/descriptions/index.js",
   "descriptions-item": "./packages/descriptions-item/index.js",
   "result": "./packages/result/index.js",
+  "api-select": "./packages/api-select/index.js",
   "basic-form": "./packages/basic-form/index.js",
-  "basic-table": "./packages/basic-table/index.js"
+  "basic-table": "./packages/basic-table/index.js",
+  "basic-table-column": "./packages/basic-table-column/index.js" 
 }

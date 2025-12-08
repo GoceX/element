@@ -174,6 +174,18 @@
       }
     },
     methods: {
+      addChildrenCount(data) {
+        const result = {};
+        Object.keys(data || {}).forEach((lang) => {
+          const list = Array.isArray(data[lang]) ? data[lang] : [];
+          result[lang] = list.map((item) => {
+            const count = Array.isArray(item.children) ? item.children.length : 0;
+            const name = count > 0 ? `${item.name} (${count})` : item.name;
+            return Object.assign({}, item, { name });
+          });
+        });
+        return result;
+      },
       renderAnchorHref() {
         if (/changelog/g.test(location.href)) return;
         const anchors = document.querySelectorAll('h2 a,h3 a,h4 a,h5 a');
@@ -218,6 +230,7 @@
       }
     },
     created() {
+      this.navsData = this.addChildrenCount(navsData);
       bus.$on('navFade', val => {
         this.navFaded = val;
       });

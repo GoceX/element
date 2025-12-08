@@ -1,12 +1,16 @@
 <script>
 // 列渲染子组件：封装 el-table-column 属性映射与默认溢出处理（Hover 展示完整文本）
+// 注意：不能使用函数式组件，否则在 npm 包环境中 inject 和组件树查找可能失效
 import ElTableColumn from 'rowinself-ui/packages/table-column';
-import ElPopover from 'rowinself-ui/packages/popover';
 import OverflowCell from './overflow-cell.js';
 
 export default {
   name: 'ElBasicTableColumn',
-  components: { ElTableColumn, ElPopover },
+  components: { ElTableColumn, OverflowCell },
+  inject: {
+    // 从 ElBasicTable 注入获取插槽的函数
+    getBasicTableSlots: { default: () => () => ({}) }
+  },
   props: {
     /** 列配置对象（来自父组件 normalizedColumns） */
     column: { type: Object, required: true },
@@ -14,81 +18,88 @@ export default {
     ellipsis: { type: Boolean, default: false }
   },
   computed: {
-    /** 列唯一 key */
-    columnKey() { return this.column.key || this.column.prop || this.column.dataIndex || ''; },
-    /** 列类型（default/selection/index 等） */
-    type() { return this.column.type || 'default'; },
-    /** 表头文本 */
-    label() { return this.column.title || this.column.label || ''; },
-    /** 数据字段名（prop/dataIndex） */
-    prop() { return this.column.dataIndex || this.column.prop || this.column.key || ''; },
-    /** 列宽 */
-    width() { return this.column.width; },
-    /** 最小列宽 */
-    minWidth() { return this.column.minWidth; },
-    /** 对齐方式 */
-    align() { return this.column.align; },
-    /** 表头对齐方式 */
-    headerAlign() { return this.column.headerAlign; },
-    /** 固定列 */
-    fixed() { return this.column.fixed; },
-    /** 是否可排序 */
-    sortable() { return this.column.sortable || false; },
-    /** 序号列 index（仅 type=index 生效） */
-    index() { return this.column.index; },
-    // 原始溢出提示需求
+    // 列类型
+    colType() {
+      return this.column.type || 'default';
+    },
+    // 列标题
+    colLabel() {
+      return this.column.title || this.column.label || '';
+    },
+    // 列字段
+    colProp() {
+      return this.column.dataIndex || this.column.prop || this.column.key || '';
+    },
+    // 插槽名
+    slotName() {
+      return this.column.slot || null;
+    },
+    // 是否显示溢出提示
     showOverflowTooltip() {
-      const v = this.column.showOverflowTooltip;
-      return v != null ? v : !!this.ellipsis;
+      const raw = this.column.showOverflowTooltip;
+      return raw != null ? raw : !!this.ellipsis;
     },
-    // 是否使用自定义 Popover 展示完整内容（仅默认文本列且未自定义插槽时启用）
+    // 是否使用自定义 Popover 溢出处理
     usePopoverOverflow() {
-      return this.type === 'default' && !this.slotName && !!this.showOverflowTooltip && !!this.prop;
+      return this.colType === 'default' && !this.slotName && !!this.showOverflowTooltip && !!this.colProp;
     },
-    /** 具名插槽名称（用于自定义单元格渲染） */
-    slotName() { return this.column.slot || null; }
+    // 透传给 el-table-column 的属性
+    tableColumnProps() {
+      return {
+        type: this.colType,
+        label: this.colLabel,
+        prop: this.colProp,
+        width: this.column.width,
+        minWidth: this.column.minWidth,
+        align: this.column.align,
+        headerAlign: this.column.headerAlign,
+        fixed: this.column.fixed,
+        sortable: this.column.sortable || false,
+        index: this.column.index,
+        showOverflowTooltip: this.usePopoverOverflow ? false : this.showOverflowTooltip
+      };
+    },
+    // 是否有对应的命名插槽
+    hasNamedSlot() {
+      if (!this.slotName) return false;
+      const slots = this.getBasicTableSlots();
+      return slots && typeof slots[this.slotName] === 'function';
+    }
   },
   methods: {
-    /**
-     * 动态渲染来自父组件的具名插槽
-     * @param {Object} scope 作用域对象（row/column/$index 等）
-     * @returns {VNode|null}
-     */
-    renderCell(scope) {
-      const name = this.slotName;
-      if (!name) return null;
-      const parentSlots = this.$parent && this.$parent.$scopedSlots;
-      const fn = parentSlots && parentSlots[name];
-      return fn ? fn(scope) : null;
+    // 渲染命名插槽内容
+    renderNamedSlot(scope) {
+      if (!this.slotName) return null;
+      const slots = this.getBasicTableSlots();
+      const fn = slots && slots[this.slotName];
+      if (fn) {
+        return fn({
+          row: scope.row,
+          record: scope.row,
+          column: this.column,
+          $index: scope.$index
+        });
+      }
+      return null;
+    },
+    // 渲染溢出单元格
+    renderOverflowCell(scope) {
+      const value = scope && scope.row ? scope.row[this.colProp] : '';
+      const text = value == null ? '' : String(value);
+      return this.$createElement(OverflowCell, { props: { text } });
     }
   },
   render(h) {
-    // 透传 el-table-column 所需属性
-    const props = {
-      type: this.type,
-      label: this.label,
-      prop: this.prop,
-      width: this.width,
-      minWidth: this.minWidth,
-      align: this.align,
-      headerAlign: this.headerAlign,
-      fixed: this.fixed,
-      sortable: this.sortable,
-      index: this.index,
-      // 当自定义 Popover 溢出处理时，关闭原生 tooltip
-      showOverflowTooltip: this.usePopoverOverflow ? false : this.showOverflowTooltip
-    };
     const scopedSlots = {};
-    if (this.slotName) {
-      scopedSlots.default = (scope) => this.renderCell(scope);
+
+    // 如果列有 slot 配置，并且父组件提供了对应插槽
+    if (this.slotName && this.hasNamedSlot) {
+      scopedSlots.default = (scope) => this.renderNamedSlot(scope);
     } else if (this.usePopoverOverflow) {
-      scopedSlots.default = (scope) => {
-        const value = scope && scope.row ? scope.row[this.prop] : '';
-        const text = value == null ? '' : String(value);
-        return h(OverflowCell, { props: { text } });
-      };
+      scopedSlots.default = (scope) => this.renderOverflowCell(scope);
     }
-    return h(ElTableColumn, { props, scopedSlots });
+
+    return h(ElTableColumn, { props: this.tableColumnProps, scopedSlots });
   }
 };
 </script>

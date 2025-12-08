@@ -1,5 +1,16 @@
 // 工具函数集合：列映射、分页归一化、参数生成、数据补齐
-import assign from 'object-assign';
+
+// 根据点号路径从对象中获取嵌套值
+export function getByPath(obj, path) {
+  if (!obj || !path) return undefined;
+  const keys = String(path).split('.');
+  let result = obj;
+  for (const key of keys) {
+    if (result == null) return undefined;
+    result = result[key];
+  }
+  return result;
+}
 
 // 为数据源补齐稳定的 key 字段
 export function ensureKeys(list, autoCreate = true, rowKey) {
@@ -55,7 +66,7 @@ export function createFetchParams({ pagination, fetchSetting, searchInfo, before
   /** 处理后的搜索条件 */
   const handledSI = typeof handleSearchInfoFn === 'function' ? handleSearchInfoFn(si) : si;
   /** 请求前处理 */
-  params = assign({}, handledSI, params);
+  params = Object.assign({}, handledSI, params);
   return typeof beforeFetch === 'function' ? beforeFetch(params) : params;
 }
 
@@ -105,4 +116,3 @@ export function mapColumns({ columns, ellipsis, showIndexColumn, indexColumnProp
   }
   return special.concat(baseCols);
 }
-

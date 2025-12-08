@@ -27,19 +27,18 @@
       @selection-change="onSelectionChange"
       @row-click="onRowClick"
     >
-      
       <el-basic-table-column
-        v-for="(col, idx) in normalizedColumns"
+      v-for="(col, idx) in normalizedColumns"
         :key="col.key || col.prop || idx"
         :column="col"
         :ellipsis="ellipsis"
       />
-      <template v-if="$slots.append" slot="append">
+      <!-- <template v-if="$slots.append" slot="append">
         <slot name="append"></slot>
       </template>
       <template v-if="$slots.empty" slot="empty">
         <slot name="empty"></slot>
-      </template>
+      </template> -->
     </el-table>
     <div v-if="showPagination" class="el-basic-table__pagination">
       <el-pagination
@@ -58,11 +57,17 @@ import ElPagination from 'rowinself-ui/packages/pagination';
 import ElBasicForm from 'rowinself-ui/packages/basic-form';
 import ElBasicTableColumn from './basic-table-column.vue';
 import actions from './actions';
-import { ensureKeys as uEnsureKeys, normalizePagination as uNormalizePagination, mapColumns, createFetchParams } from './utils';
+import { ensureKeys as uEnsureKeys, normalizePagination as uNormalizePagination, mapColumns, createFetchParams, getByPath } from './utils';
 
 export default {
   name: 'ElBasicTable',
   components: { ElTable, ElPagination, ElBasicForm, ElBasicTableColumn },
+  provide() {
+    return {
+      // 提供一个函数来获取最新的 $scopedSlots，保证响应性
+      getBasicTableSlots: () => this.$scopedSlots
+    };
+  },
   props: {
     // 标题与提示
     /**
@@ -137,7 +142,19 @@ export default {
     /** 搜索条件处理钩子 */
     handleSearchInfoFn: Function,
     /** 字段映射：pageField/sizeField/listField/totalField */
-    fetchSetting: Object,
+    fetchSetting: {
+      type: Object,
+      default: () => ({
+        /** 列表字段名 */
+        listField: 'list',
+        /** 总数字段名（支持点号路径如 page.totalRowNum） */
+        totalField: 'page.totalRowNum',
+        /** 分页参数：当前页码字段名 */
+        pageField: 'perPage',
+        /** 分页参数：每页条数字段名 */
+        sizeField: 'pageNum'
+      })
+    },
     /** 是否在挂载后立即请求 */
     immediate: { type: Boolean, default: true },
     /** 外部传入的搜索条件（受控） */
@@ -237,7 +254,9 @@ export default {
      * @param {Array<Object>} list 原始数据源
      * @returns {Array<Object>} 带有 key 的数据源
      */
-    ensureKeys(list) { return uEnsureKeys(list, this.autoCreateKey, this.rowKey); },
+    ensureKeys(list) {
+      return uEnsureKeys(list, this.autoCreateKey, this.rowKey);
+    },
     ...actions,
     /**
      * 归一化分页配置，提供默认值与安全检查
@@ -304,6 +323,7 @@ export default {
     reload() {
       // 远程刷新数据（携带分页与搜索条件）
       /** 请求函数 */
+
       const fn = this.api;
       if (typeof fn !== 'function') return;
       this.internalLoading = true;
@@ -321,7 +341,9 @@ export default {
       try {
         const ret = fn(params);
         if (ret && ret.then) {
-          ret.then((res) => this.applyApiResult(typeof this.afterFetch === 'function' ? this.afterFetch(res) : res)).catch((err) => {
+          ret.then((res) => {
+            return this.applyApiResult(typeof this.afterFetch === 'function' ? this.afterFetch(res) : res);
+          }).catch((err) => {
             this.lastFetchError = err;
             this.$emit('fetch-error', err);
           }).finally(() => {
@@ -344,25 +366,27 @@ export default {
      */
     applyApiResult(res) {
       // 应用接口返回数据至表格
+      // console.log('应用接口返回数据至表格::: ', res, !res, Array.isArray(res));
       if (!res) { this.internalData = []; this.rawResult = res; return; }
       if (Array.isArray(res)) {
         this.internalData = this.ensureKeys(res);
         this.rawResult = res;
         return;
       }
-      /** 字段映射 */
-      const fs = this.fetchSetting || {};
-      /** 列表字段名 */
-      const listField = fs.listField || 'items';
-      /** 总数字段名 */
-      const totalField = fs.totalField || 'total';
-      /** 数据列表 */
-      const list = res[listField] != null ? res[listField] : (res.items || res.list || res.data || []);
-      /** 总条数 */
-      const total = res[totalField] != null ? res[totalField] : (res.page && res.page.total);
+      /** 字段映射 列表字段名 总数字段名 */
+      const { listField, totalField } = this.fetchSetting;
+      console.log('{listField, totalField}::: ', listField, totalField);
+      /** 数据列表 优先取 listField 字段 其次取 items/list/data 字段 */
+      const listVal = getByPath(res, listField);
+      const list = listVal != null ? listVal : (res.items || res.list || res.data || []);
+      /** 总条数 取值 优先取 totalField 字段 其次取 page.total 字段 */
+      const totalVal = getByPath(res, totalField);
+      const total = totalVal != null ? totalVal : (res.page && res.page.total);
       this.internalData = Array.isArray(list) ? this.ensureKeys(list) : [];
       if (typeof total === 'number') this.internalPagination.total = total;
       this.rawResult = res;
+      console.log('this.internalData::: ', this.internalData);
+      console.log('this.rawResult::: ', this.rawResult);
       this.$emit('fetch-success', { items: this.internalData, total: this.internalPagination.total });
     },
     /** 表单注册回调，保存表单动作对象 */
@@ -441,10 +465,3 @@ export default {
   }
 };
 </script>
-<style scoped>
-.el-basic-table__form { margin-bottom: 12px; }
-.el-basic-table__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-.el-basic-table__help { color: #909399; margin-left: 8px; }
-.el-basic-table__toolbar { margin-left: auto; }
-.el-basic-table__pagination { padding-top: 14px; display: flex; justify-content: center; }
-</style>

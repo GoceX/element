@@ -15,6 +15,8 @@
         :global-rules-message-join-label="computedRulesMessageJoinLabel"
         :global-size="size"
         :global-disabled="disabled"
+        :table-action="tableAction"
+        :form-action-type="computedFormActionType"
       />
       <!-- 操作按钮区域：提交、重置、高级展开/收起等 -->
       <template v-if="showActionButtonGroup">
@@ -148,7 +150,8 @@ export default {
     // 外部重置钩子（可异步），成功后执行内部重置逻辑
     resetFunc: Function,
     // 外部提交钩子（可异步），成功后触发 submit 事件
-    submitFunc: Function
+    submitFunc: Function,
+    tableAction: Object
   },
   data() {
     return {
@@ -207,7 +210,23 @@ export default {
     computedSubmitButtonOptions() { return this.submitButtonOptions || {}; },
     computedResetButtonOptions() { return this.resetButtonOptions || {}; },
     computedSubmitButtonText() { return this._submitButtonText || this.submitButtonText; },
-    computedResetButtonText() { return this._resetButtonText || this.resetButtonText; }
+    computedResetButtonText() { return this._resetButtonText || this.resetButtonText; },
+    computedFormActionType() {
+      return {
+        setProps: this.setProps,
+        getFieldsValue: this.getFieldsValue,
+        setFieldsValue: this.setFieldsValue,
+        resetFields: this.resetFields,
+        validateFields: this.validateFields,
+        validate: this.validate,
+        submit: this.submit,
+        clearValidate: this.clearValidate,
+        scrollToField: this.scrollToField,
+        removeSchemaByField: this.removeSchemaByField,
+        appendSchemaByField: this.appendSchemaByField,
+        updateSchema: this.updateSchema
+      };
+    }
   },
   watch: {
     schemas: {

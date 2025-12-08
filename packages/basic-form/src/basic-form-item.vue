@@ -28,7 +28,7 @@
       <RenderVNode v-else-if="schema.render" :render-fn="(h) => schema.render(itemCtx)" />
       <!-- 默认：按 componentTag 生成具体组件，v-model 双向绑定到 formModel[field] -->
       <component v-else :is="componentTag(schema.component)" v-model="formModel[schema.field]" v-bind="finalComponentProps"
-        :disabled="computeDisabled(schema)" v-on="customListeners(schema)">
+        :disabled="computeDisabled(schema)" v-on="finalListeners(schema)">
         <!-- 组件内部插槽：根据 options/自定义生成 default/suffix 等插槽 -->
         <template v-for="(slotRender, slotName) in renderComponentContent(schema)" v-slot:[slotName]>
           <RenderVNode v-if="typeof slotRender === 'function'" :render-fn="(h) => slotRender(itemCtx)" />
@@ -67,7 +67,9 @@ export default {
     // 统一的组件尺寸
     globalSize: String,
     // 统一的禁用态（优先生效）
-    globalDisabled: Boolean
+    globalDisabled: Boolean,
+    tableAction: Object,
+    formActionType: Object
   },
   computed: {
     itemProps() {
@@ -97,27 +99,12 @@ export default {
       if (s.itemProps && typeof s.itemProps === 'object') Object.assign(ip, s.itemProps);
       return ip;
     },
-    // 合并静态与动态 componentProps
+    // 合并静态与动态 componentProps，并剔除事件键（事件通过 v-on 绑定）
     finalComponentProps() {
       const s = this.schema || {};
-      const base = s.componentProps || {};
-      const extra = typeof s.componentProps === 'function' ? s.componentProps(this.itemCtx) : {};
-      const props = { ...(typeof base === 'object' ? base : {}), ...(typeof extra === 'object' ? extra : {}) };
-      if (this.globalAutoSetPlaceHolder && props.placeholder == null) {
-        const comp = s.component;
-        if (comp === 'Input' || comp === 'InputNumber' || comp === 'el-input') props.placeholder = '请输入';
-        if (comp === 'Select' || comp === 'el-select' || comp === 'el-cascader') props.placeholder = '请选择';
-      }
-      if (props.size == null && this.globalSize) props.size = this.globalSize;
-      if (props.name == null && s.field) props.name = s.field;
-      // 移除默认 id 赋值，避免组件内部产生重复 DOM id
-      // 根据组件类型补齐默认属性
-      const comp = s.component;
-      if (comp === 'InputPassword') props.type = props.type || 'password';
-      if (comp === 'InputTextArea') props.type = props.type || 'textarea';
-      if (comp === 'MonthPicker') props.type = props.type || 'month';
-      if (comp === 'RangePicker') props.type = props.type || 'daterange';
-      if (comp === 'WeekPicker') props.type = props.type || 'week';
+      const props = this.getComponentPropsMerged(s);
+      const listeners = this.extractEventListeners(props);
+      Object.keys(listeners).forEach((k) => { if (k in props) delete props[k]; });
       return props;
     },
     helpMessageText() {
@@ -142,6 +129,70 @@ export default {
     }
   },
   methods: {
+    /**
+     * 合并 componentProps（对象或函数返回）
+     * @param {Object} s
+     * @returns {Object}
+     */
+    getComponentPropsMerged(s) {
+      const base = s.componentProps || {};
+      const extra = typeof s.componentProps === 'function' ? s.componentProps({
+        schema: s,
+        tableAction: this.tableAction || null,
+        formActionType: this.formActionType || null,
+        formModel: this.formModel
+      }) : {};
+      const props = { ...(typeof base === 'object' ? base : {}), ...(typeof extra === 'object' ? extra : {}) };
+      if (this.globalAutoSetPlaceHolder && props.placeholder == null) {
+        const comp = s.component;
+        if (comp === 'Input' || comp === 'InputNumber' || comp === 'el-input') props.placeholder = '请输入';
+        if (comp === 'Select' || comp === 'el-select' || comp === 'el-cascader') props.placeholder = '请选择';
+      }
+      if (props.size == null && this.globalSize) props.size = this.globalSize;
+      if (props.name == null && s.field) props.name = s.field;
+      const comp = s.component;
+      if (comp === 'InputPassword') props.type = props.type || 'password';
+      if (comp === 'InputTextArea') props.type = props.type || 'textarea';
+      if (comp === 'MonthPicker') props.type = props.type || 'month';
+      if (comp === 'RangePicker') props.type = props.type || 'daterange';
+      if (comp === 'WeekPicker') props.type = props.type || 'week';
+      return props;
+    },
+    /**
+     * 生成最终监听对象：合并 schema.changeEvent 与 componentProps 内事件
+     * @param {Object} schema
+     * @returns {Object}
+     */
+    finalListeners(schema) {
+      const props = this.getComponentPropsMerged(schema || {});
+      const evtFromProps = this.extractEventListeners(props);
+      const evtFromSchema = this.customListeners(schema);
+      return Object.assign({}, evtFromProps, evtFromSchema);
+    },
+    /**
+     * 从 props 中提取事件监听（支持 onXxx、以及常见事件名）
+     * @param {Object} props
+     * @returns {Object}
+     */
+    extractEventListeners(props) {
+      const out = {};
+      const isFn = (v) => typeof v === 'function';
+      const camelToKebab = (s) => s.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+      Object.keys(props || {}).forEach((key) => {
+        const val = props[key];
+        if (/^on[A-Z]/.test(key) && isFn(val)) {
+          const evt = camelToKebab(key.slice(2));
+          out[evt] = val;
+        }
+        if (isFn(val)) {
+          if (key === 'change' || key === 'blur' || key === 'focus' || key === 'clear') out[key] = val;
+          if (key === 'visibleChange') out['visible-change'] = val;
+          if (key === 'removeTag') out['remove-tag'] = val;
+          if (key === 'visible-change' || key === 'remove-tag') out[key] = val;
+        }
+      });
+      return out;
+    },
     /**
      * 将简写组件名映射为 Element 组件标签
      * @param {string} name

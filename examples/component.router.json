@@ -65,8 +65,16 @@
           "title": "Select 选择器"
         },
         {
+          "path": "/api-select",
+          "title": "ApiSelect 选择器"
+        },
+        {
           "path": "/cascader",
           "title": "Cascader 级联选择器"
+        },
+        {
+          "path": "/api-cascader",
+          "title": "ApiCascader 级联选择器"
         },
         {
           "path": "/switch",
@@ -140,6 +148,10 @@
         {
           "path": "/tree",
           "title": "Tree 树形控件"
+        },
+        {
+          "path": "/api-tree",
+          "title": "ApiTree 树形控件"
         },
         {
           "path": "/pagination",
