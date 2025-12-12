@@ -45,13 +45,29 @@
 export default {
   name: 'ElBasicFormItem',
   components: {
-    // 函数式组件：接收 renderFn 并执行，用于渲染 VNode
+    /**
+     * 函数式组件：接收 `renderFn` 并执行，用于渲染自定义 VNode
+     * 设计目的：让 schema/插槽可通过函数返回 VNode，统一渲染入口
+     * 性能：函数式组件无状态、无实例，渲染轻量
+     */
     RenderVNode: {
       functional: true,
+      /** @type {{ renderFn: Function }} */
       props: { renderFn: Function },
-      render(h, ctx) {
-        const fn = ctx.props.renderFn;
-        return typeof fn === 'function' ? fn(h) : null;
+      /**
+       * 执行传入的渲染函数
+       * @param {Function} createElement - Vue 的 `createElement`
+       * @param {{ props: { renderFn: Function } }} ctx - 渲染上下文
+       * @returns {*|null} - 返回渲染结果或 `null`
+       */
+      render(createElement, ctx) {
+        try {
+          const fn = ctx.props.renderFn;
+          return typeof fn === 'function' ? fn(createElement) : null;
+        } catch (err) {
+          console.error('[ElBasicFormItem/RenderVNode] render error:', err);
+          return null;
+        }
       }
     }
   },
@@ -68,135 +84,187 @@ export default {
     globalSize: String,
     // 统一的禁用态（优先生效）
     globalDisabled: Boolean,
+    // 自动设置支持组件的 clearable
+    globalAutoSetClearable: Boolean,
     tableAction: Object,
     formActionType: Object
   },
   computed: {
+    /**
+     * 生成 `el-form-item` 的属性对象
+     * - 动态 required/rules 计算
+     * - labelWidth 统一格式
+     * @returns {Object} - 符合 ElementUI `el-form-item` 的 props
+     */
     itemProps() {
-      const s = this.schema || {};
-      const required = this.evalMaybeFn(s.required);
-      const rulesIn = Array.isArray(s.dynamicRules) ? s.dynamicRules : (typeof s.dynamicRules === 'function' ? s.dynamicRules(this.itemCtx) : (s.rules || []));
-      const joinLabel = this.globalRulesMessageJoinLabel || !!s.rulesMessageJoinLabel;
-      const label = s.label || '';
-      const rules = joinLabel ? (rulesIn || []).map(r => ({ ...r, message: r && r.message ? `${label}${r.message}` : r.message })) : (rulesIn || []);
-      const ip = {
-        label: s.label,
-        prop: s.field,
+      const schema = this.schema || {};
+      const required = this.evalMaybeFn(schema.required);
+      const rulesSource = Array.isArray(schema.dynamicRules)
+        ? schema.dynamicRules
+        : (typeof schema.dynamicRules === 'function' ? schema.dynamicRules(this.itemCtx) : (schema.rules || []));
+      const joinLabel = this.globalRulesMessageJoinLabel || !!schema.rulesMessageJoinLabel;
+      const label = schema.label || '';
+      const rules = joinLabel
+        ? (rulesSource || []).map(rule => ({ ...rule, message: rule && rule.message ? `${label}${rule.message}` : rule.message }))
+        : (rulesSource || []);
+      const elFormItemProps = {
+        label: schema.label,
+        prop: schema.field,
         rules,
-        labelWidth: s.disabledLabelWidth ? null : this.normalizeItemLabelWidth(s.labelWidth),
+        labelWidth: schema.disabledLabelWidth ? null : this.normalizeItemLabelWidth(schema.labelWidth),
         required,
-        inlineMessage: s.inlineMessage,
-        showMessage: s.showMessage,
-        size: s.size,
-        error: s.error,
-        validateStatus: s.validateStatus,
+        inlineMessage: schema.inlineMessage,
+        showMessage: schema.showMessage,
+        size: schema.size,
+        error: schema.error,
+        validateStatus: schema.validateStatus,
         for: (() => {
-          const comp = s.component;
-          const isRange = comp === 'RangePicker' || (comp === 'DatePicker' && ((s.componentProps && (s.componentProps.type === 'daterange' || s.componentProps.type === 'datetimerange'))));
-          return isRange ? null : (s.for || s.field);
+          const component = schema.component;
+          const isRange = component === 'RangePicker' || (component === 'DatePicker' && ((schema.componentProps && ['daterange', 'datetimerange'].includes(schema.componentProps.type))));
+          return isRange ? null : (schema.for || schema.field);
         })()
       };
-      if (s.itemProps && typeof s.itemProps === 'object') Object.assign(ip, s.itemProps);
-      return ip;
+      if (schema.itemProps && typeof schema.itemProps === 'object') Object.assign(elFormItemProps, schema.itemProps);
+      return elFormItemProps;
     },
-    // 合并静态与动态 componentProps，并剔除事件键（事件通过 v-on 绑定）
+    /**
+     * 合并出最终传入组件的 props，并清理事件键（事件通过 `v-on` 绑定）
+     * @returns {Object}
+     */
     finalComponentProps() {
-      const s = this.schema || {};
-      const props = this.getComponentPropsMerged(s);
-      const listeners = this.extractEventListeners(props);
-      Object.keys(listeners).forEach((k) => { if (k in props) delete props[k]; });
-      return props;
+      const schema = this.schema || {};
+      const mergedProps = this.getComponentPropsMerged(schema);
+      const extractedListeners = this.extractEventListeners(mergedProps);
+      Object.keys(extractedListeners).forEach((listenerKey) => { if (listenerKey in mergedProps) delete mergedProps[listenerKey]; });
+      return mergedProps;
     },
+    /**
+     * 规范化帮助信息文本
+     * @returns {string}
+     */
     helpMessageText() {
-      const s = this.schema || {};
-      const hm = s.helpMessage;
-      if (!hm) return '';
-      if (Array.isArray(hm)) return hm.join(' ');
-      return String(hm);
+      const schema = this.schema || {};
+      const helpMessage = schema.helpMessage;
+      if (!helpMessage) return '';
+      if (Array.isArray(helpMessage)) return helpMessage.join(' ');
+      return String(helpMessage);
     },
+    /**
+     * 帮助信息样式生成
+     * @returns {Object}
+     */
     helpStyle() {
-      const p = (this.schema && this.schema.helpComponentProps) || {};
+      const helpComponentProps = (this.schema && this.schema.helpComponentProps) || {};
       const style = {};
-      if (p.maxWidth) style.maxWidth = p.maxWidth;
-      if (p.color) style.color = p.color;
-      if (p.fontSize) style.fontSize = p.fontSize;
+      if (helpComponentProps.maxWidth) style.maxWidth = helpComponentProps.maxWidth;
+      if (helpComponentProps.color) style.color = helpComponentProps.color;
+      if (helpComponentProps.fontSize) style.fontSize = helpComponentProps.fontSize;
       return style;
     },
-    // 提供给 render/slot 的上下文对象
+    /**
+     * 提供给 `render/slot` 的上下文对象
+     * @returns {{ model: Object, field: string, schema: Object, h: Function }}
+     */
     itemCtx() {
-      const s = this.schema || {};
-      return { model: this.formModel, field: s.field, schema: s, h: this.$createElement };
+      const schema = this.schema || {};
+      return { model: this.formModel, field: schema.field, schema: schema, h: this.$createElement };
     }
   },
   methods: {
     /**
-     * 合并 componentProps（对象或函数返回）
-     * @param {Object} s
-     * @returns {Object}
+     * 合并并规范化组件 props（支持对象或函数返回）
+     * - 自动设置 placeholder/clearable/size/name/type 等通用属性
+     * - 异常安全：动态函数执行失败时回退为空对象
+     * @param {Object} s - 当前项的 schema
+     * @returns {Object} - 组件最终 props
      */
-    getComponentPropsMerged(s) {
-      const base = s.componentProps || {};
-      const extra = typeof s.componentProps === 'function' ? s.componentProps({
-        schema: s,
-        tableAction: this.tableAction || null,
-        formActionType: this.formActionType || null,
-        formModel: this.formModel
-      }) : {};
-      const props = { ...(typeof base === 'object' ? base : {}), ...(typeof extra === 'object' ? extra : {}) };
-      if (this.globalAutoSetPlaceHolder && props.placeholder == null) {
-        const comp = s.component;
-        if (comp === 'Input' || comp === 'InputNumber' || comp === 'el-input') props.placeholder = '请输入';
-        if (comp === 'Select' || comp === 'el-select' || comp === 'el-cascader') props.placeholder = '请选择';
+    getComponentPropsMerged(schema) {
+      const componentPropsBase = schema.componentProps || {};
+      const componentPropsExtra = typeof schema.componentProps === 'function' ? (() => {
+        try {
+          return schema.componentProps({
+            schema: schema,
+            tableAction: this.tableAction || null,
+            formActionType: this.formActionType || null,
+            formModel: this.formModel
+          }) || {};
+        } catch (err) {
+          console.error('[ElBasicFormItem/getComponentPropsMerged] componentProps fn error:', err);
+          return {};
+        }
+      })() : {};
+      const mergedProps = { ...(typeof componentPropsBase === 'object' ? componentPropsBase : {}), ...(typeof componentPropsExtra === 'object' ? componentPropsExtra : {}) };
+      if (this.globalAutoSetPlaceHolder && mergedProps.placeholder == null) {
+        const component = schema.component;
+        if (component === 'Input' || component === 'InputNumber' || component === 'el-input') mergedProps.placeholder = '请输入';
+        if (component === 'Select' || component === 'el-select' || component === 'el-cascader') mergedProps.placeholder = '请选择';
       }
-      if (props.size == null && this.globalSize) props.size = this.globalSize;
-      if (props.name == null && s.field) props.name = s.field;
-      const comp = s.component;
-      if (comp === 'InputPassword') props.type = props.type || 'password';
-      if (comp === 'InputTextArea') props.type = props.type || 'textarea';
-      if (comp === 'MonthPicker') props.type = props.type || 'month';
-      if (comp === 'RangePicker') props.type = props.type || 'daterange';
-      if (comp === 'WeekPicker') props.type = props.type || 'week';
-      return props;
+      if (this.globalAutoSetClearable && mergedProps.clearable == null) {
+        const component = schema.component;
+        const supportsClearable = (
+          component === 'Input' || component === 'el-input' ||
+          component === 'Select' || component === 'el-select' || component === 'ApiSelect' ||
+          component === 'TreeSelect' ||
+          component === 'Cascader' || component === 'el-cascader' || component === 'ApiCascader' ||
+          component === 'DatePicker' || component === 'MonthPicker' || component === 'RangePicker' || component === 'WeekPicker' || component === 'el-date-picker' ||
+          component === 'TimePicker' || component === 'el-time-picker'
+        );
+        if (supportsClearable) mergedProps.clearable = true;
+      }
+      if (mergedProps.size == null && this.globalSize) mergedProps.size = this.globalSize;
+      if (mergedProps.name == null && schema.field) mergedProps.name = schema.field;
+      const component = schema.component;
+      if (component === 'InputPassword') mergedProps.type = mergedProps.type || 'password';
+      if (component === 'InputTextArea') mergedProps.type = mergedProps.type || 'textarea';
+      if (component === 'MonthPicker') mergedProps.type = mergedProps.type || 'month';
+      if (component === 'RangePicker') mergedProps.type = mergedProps.type || 'daterange';
+      if (component === 'WeekPicker') mergedProps.type = mergedProps.type || 'week';
+      return mergedProps;
     },
+
     /**
-     * 生成最终监听对象：合并 schema.changeEvent 与 componentProps 内事件
-     * @param {Object} schema
+     * 生成最终事件监听：合并 props 中的事件与 schema 自定义事件
+     * @param {Object} schema - 当前项的 schema
      * @returns {Object}
      */
     finalListeners(schema) {
-      const props = this.getComponentPropsMerged(schema || {});
-      const evtFromProps = this.extractEventListeners(props);
-      const evtFromSchema = this.customListeners(schema);
-      return Object.assign({}, evtFromProps, evtFromSchema);
+      const mergedProps = this.getComponentPropsMerged(schema || {});
+      const listenersFromProps = this.extractEventListeners(mergedProps);
+      const listenersFromSchema = this.customListeners(schema);
+      return Object.assign({}, listenersFromProps, listenersFromSchema);
     },
     /**
-     * 从 props 中提取事件监听（支持 onXxx、以及常见事件名）
-     * @param {Object} props
-     * @returns {Object}
+     * 从 props 中提取事件监听（支持 `onXxx` 风格与常见事件名）
+     * @param {Object} props - 组件 props
+     * @returns {Object} - 事件监听对象
      */
     extractEventListeners(props) {
-      const out = {};
-      const isFn = (v) => typeof v === 'function';
-      const camelToKebab = (s) => s.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
-      Object.keys(props || {}).forEach((key) => {
-        const val = props[key];
-        if (/^on[A-Z]/.test(key) && isFn(val)) {
-          const evt = camelToKebab(key.slice(2));
-          out[evt] = val;
-        }
-        if (isFn(val)) {
-          if (key === 'change' || key === 'blur' || key === 'focus' || key === 'clear') out[key] = val;
-          if (key === 'visibleChange') out['visible-change'] = val;
-          if (key === 'removeTag') out['remove-tag'] = val;
-          if (key === 'visible-change' || key === 'remove-tag') out[key] = val;
-        }
-      });
-      return out;
+      const listeners = {};
+      const isFn = (valueCandidate) => typeof valueCandidate === 'function';
+      const camelToKebab = (camelCaseText) => camelCaseText.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+      try {
+        Object.keys(props || {}).forEach((key) => {
+          const val = props[key];
+          if (/^on[A-Z]/.test(key) && isFn(val)) {
+            const eventName = camelToKebab(key.slice(2));
+            listeners[eventName] = val;
+          }
+          if (isFn(val)) {
+            if (key === 'change' || key === 'blur' || key === 'focus' || key === 'clear') listeners[key] = val;
+            if (key === 'visibleChange') listeners['visible-change'] = val;
+            if (key === 'removeTag') listeners['remove-tag'] = val;
+            if (key === 'visible-change' || key === 'remove-tag') listeners[key] = val;
+          }
+        });
+      } catch (err) {
+        console.error('[ElBasicFormItem/extractEventListeners] error:', err);
+      }
+      return listeners;
     },
     /**
-     * 将简写组件名映射为 Element 组件标签
-     * @param {string} name
-     * @returns {string}
+     * 将简写组件名映射到 ElementUI 组件标签
+     * @param {string} name - 简写名称
+     * @returns {string} - 实际组件标签
      */
     componentTag(name) {
       // 组件类型映射，覆盖常见表单类型
@@ -240,60 +308,72 @@ export default {
       };
       return map[name] || name || 'el-input';
     },
+
     /**
      * 生成组件内部插槽内容
-     * @param {Object} schema
-     * @returns {Object}
+     * - 优先用户自定义 `renderComponentContent`
+     * - 其次根据 options/type 生成默认 children
+     * @param {Object} schema - 当前项 schema
+     * @returns {Object} - 插槽字典，如 { default, suffix }
      */
     renderComponentContent(schema) {
-      // 1) 先取用户自定义插槽
-      const base = schema && schema.renderComponentContent ? (schema.renderComponentContent({ model: this.formModel, field: schema.field }) || {}) : {};
+      // 1) 先取用户自定义插槽（安全执行）
+      const slots = schema && schema.renderComponentContent
+        ? (() => { try { return (schema.renderComponentContent({ model: this.formModel, field: schema.field }) || {}); } catch (err) { console.error('[ElBasicFormItem/renderComponentContent] renderComponentContent fn error:', err); return {}; } })()
+        : {};
       // 2) 根据组件类型与 options 生成默认 children（default 插槽）
-      const type = schema && schema.component;
-      const opts = (schema && schema.options) || (schema && schema.componentProps && schema.componentProps.options) || [];
-      const h = this.$createElement;
-      const children = [];
-      if (Array.isArray(opts) && opts.length) {
-        if (type === 'Select') {
-          opts.forEach(o => children.push(h('el-option', { props: { label: o.label, value: o.value, disabled: !!o.disabled } })));
+      const componentType = schema && schema.component;
+      const options = (schema && schema.options) || (schema && schema.componentProps && schema.componentProps.options) || [];
+      const createElement = this.$createElement;
+      const slotChildren = [];
+      if (Array.isArray(options) && options.length) {
+        if (componentType === 'Select') {
+          options.forEach(option => slotChildren.push(createElement('el-option', { props: { label: option.label, value: option.value, disabled: !!option.disabled } })));
         }
-        if (type === 'RadioGroup') {
-          opts.forEach(o => children.push(h('el-radio', { props: { label: o.value, disabled: !!o.disabled } }, o.label)));
+        if (componentType === 'RadioGroup') {
+          options.forEach(option => slotChildren.push(createElement('el-radio', { props: { label: option.value, disabled: !!option.disabled } }, option.label)));
         }
-        if (type === 'RadioButtonGroup') {
-          opts.forEach(o => children.push(h('el-radio-button', { props: { label: o.value, disabled: !!o.disabled } }, o.label)));
+        if (componentType === 'RadioButtonGroup') {
+          options.forEach(option => slotChildren.push(createElement('el-radio-button', { props: { label: option.value, disabled: !!option.disabled } }, option.label)));
         }
-        if (type === 'CheckboxGroup') {
-          opts.forEach(o => children.push(h('el-checkbox', { props: { label: o.value, disabled: !!o.disabled } }, o.label)));
+        if (componentType === 'CheckboxGroup') {
+          options.forEach(option => slotChildren.push(createElement('el-checkbox', { props: { label: option.value, disabled: !!option.disabled } }, option.label)));
         }
-        if (type === 'CheckboxButtonGroup') {
-          opts.forEach(o => children.push(h('el-checkbox-button', { props: { label: o.value, disabled: !!o.disabled } }, o.label)));
+        if (componentType === 'CheckboxButtonGroup') {
+          options.forEach(option => slotChildren.push(createElement('el-checkbox-button', { props: { label: option.value, disabled: !!option.disabled } }, option.label)));
         }
       }
-      if (children.length) base.default = () => children;
+      if (slotChildren.length) slots.default = () => slotChildren;
       if (schema && schema.suffix) {
-        const suf = schema.suffix;
-        base.suffix = typeof suf === 'function' ? (ctx) => suf(this.itemCtx) : suf;
+        const suffix = schema.suffix;
+        slots.suffix = typeof suffix === 'function' ? (ctx) => { try { return suffix(this.itemCtx); } catch (err) { console.error('[ElBasicFormItem/renderComponentContent] suffix fn error:', err); return null; } } : suffix;
       }
-      return base;
+      return slots;
     },
     /**
      * 解析 schema.slot 对应的渲染函数
-     * @param {Object} schema
+     * @param {Object} schema - 当前项 schema
      * @returns {(function(*): any)|null}
      */
     resolveSlotRender(schema) {
-      const name = schema && schema.slot;
-      if (!name) return null;
-      const fn = this.findScopedSlot(name);
-      if (typeof fn === 'function') {
-        return (h) => fn(this.itemCtx);
+      const slotName = schema && schema.slot;
+      if (!slotName) return null;
+      const slotFn = this.findScopedSlot(slotName);
+      if (typeof slotFn === 'function') {
+        return (h) => {
+          try {
+            return slotFn(this.itemCtx);
+          } catch (err) {
+            console.error('[ElBasicFormItem/resolveSlotRender] slot fn error:', err);
+            return null;
+          }
+        };
       }
       return null;
     },
     /**
      * 向上查找父级作用域插槽
-     * @param {string} name
+     * @param {string} name - 插槽名
      * @returns {Function|null}
      */
     findScopedSlot(name) {
@@ -306,7 +386,7 @@ export default {
       return null;
     },
     /**
-     * 统一宽度格式为字符串
+     * 统一宽度格式为字符串（如 100 -> '100px'）
      * @param {string|number|null|undefined} val
      * @returns {string|null}
      */
@@ -330,8 +410,20 @@ export default {
      */
     computeDisabled(schema) {
       if (this.globalDisabled) return true;
+      if (schema && ('disabled' in schema)) {
+        try {
+          return this.evalMaybeFn(schema.disabled);
+        } catch (err) {
+          console.error('[ElBasicFormItem/computeDisabled] disabled eval error:', err);
+        }
+      }
       if (typeof schema.dynamicDisabled === 'function') {
-        return !!schema.dynamicDisabled({ values: this.formModel });
+        try {
+          return !!schema.dynamicDisabled({ values: this.formModel });
+        } catch (err) {
+          console.error('[ElBasicFormItem/computeDisabled] dynamicDisabled fn error:', err);
+          return !!(schema.componentProps && schema.componentProps.disabled);
+        }
       }
       return !!(schema.componentProps && schema.componentProps.disabled);
     },
@@ -342,8 +434,13 @@ export default {
      */
     evalMaybeFn(val) {
       if (typeof val === 'function') {
-        const r = val(this.itemCtx);
-        return !!r;
+        try {
+          const resultValue = val(this.itemCtx);
+          return !!resultValue;
+        } catch (err) {
+          console.error('[ElBasicFormItem/evalMaybeFn] fn error:', err);
+          return false;
+        }
       }
       return !!val;
     },
@@ -353,12 +450,16 @@ export default {
      * @param {*} e
      * @returns {void}
      */
-    onCustomChange(schema, e) {
+    onCustomChange(schema, event) {
       if (!schema || !schema.changeEvent) return;
-      const f = schema.field;
-      let val = e;
-      if (e && e.target && 'value' in e.target) val = e.target.value;
-      this.$set(this.formModel, f, val);
+      const fieldName = schema.field;
+      let value = event;
+      if (event && event.target && 'value' in event.target) value = event.target.value;
+      try {
+        this.$set(this.formModel, fieldName, value);
+      } catch (err) {
+        console.error('[ElBasicFormItem/onCustomChange] set value error:', err);
+      }
     },
     /**
      * 生成组件自定义监听对象
@@ -366,12 +467,12 @@ export default {
      * @returns {Object}
      */
     customListeners(schema) {
-      const evt = schema && schema.changeEvent;
-      if (!evt) return {};
+      const eventName = schema && schema.changeEvent;
+      if (!eventName) return {};
       const self = this;
-      const obj = {};
-      obj[evt] = function(e) { self.onCustomChange(schema, e); };
-      return obj;
+      const listeners = {};
+      listeners[eventName] = function(event) { self.onCustomChange(schema, event); };
+      return listeners;
     }
   }
 };

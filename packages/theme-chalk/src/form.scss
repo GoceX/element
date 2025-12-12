@@ -121,7 +121,7 @@
   }
 
   @include e(content) {
-    // line-height: $--input-height;
+    line-height: $--input-height;
     position: relative;
     // font-size: $--form-label-font-size;
     @include utils-clearfix;

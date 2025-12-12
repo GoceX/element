@@ -12,6 +12,7 @@
         :schema="schema"
         :form-model="formModel"
         :global-auto-set-place-holder="computedAutoSetPlaceHolder"
+        :global-auto-set-clearable="computedAutoSetClearable"
         :global-rules-message-join-label="computedRulesMessageJoinLabel"
         :global-size="size"
         :global-disabled="disabled"
@@ -22,22 +23,25 @@
       <template v-if="showActionButtonGroup">
         <!-- 通过 computedActionColOptions 控制该列的栅格属性，如 span/offset -->
         <el-col v-bind="computedActionColOptions">
-          <el-form-item>
             <!-- 提交按钮：可配置文本与属性，点击后触发表单提交逻辑 -->
-            <el-button v-if="computedShowSubmitButton" type="primary" v-bind="computedSubmitButtonOptions" @click="submit">
+            <el-button v-if="computedShowSubmitButton" v-bind="computedSubmitButtonOptions" @click="submit">
               {{ computedSubmitButtonText }}
             </el-button>
             <!-- 重置按钮：点击后恢复初始值并触发 reset 事件 -->
             <el-button v-if="computedShowResetButton" v-bind="computedResetButtonOptions" @click="reset">
               {{ computedResetButtonText }}
             </el-button>
+            <template v-if="computedActionCustomButtons"> 
+              <el-button v-for="customButton in computedActionCustomButtons" v-bind="customButton" @click="customButton.click({tableAction})">
+                {{ customButton.text }}
+              </el-button>
+            </template>
             <!-- 高级按钮：展开/收起更多字段，仅在开启 showAdvancedButton 时显示 -->
             <el-button v-if="computedShowAdvancedButton" type="text" @click="toggleAdvanced">
               {{ advancedOpen ? '收起' : '展开' }}
             </el-button>
             <!-- 外部可注入的操作插槽，例如自定义按钮 -->
             <slot name="action"></slot>
-          </el-form-item>
         </el-col>
       </template>
     </el-row>
@@ -100,6 +104,11 @@ export default {
       type: Boolean,
       default: true
     },
+    // 自动为可清空的组件设置 clearable
+    autoSetClearable: {
+      type: Boolean,
+      default: true
+    },
     // 回车自动提交
     autoSubmitOnEnter: Boolean,
     // 规则消息拼接字段标签（如 “用户名不能为空”）
@@ -151,7 +160,11 @@ export default {
     resetFunc: Function,
     // 外部提交钩子（可异步），成功后触发 submit 事件
     submitFunc: Function,
-    tableAction: Object
+    tableAction: Object,
+    actionButton: {
+      type: [Array, null],
+      default: () => null
+    }
   },
   data() {
     return {
@@ -184,6 +197,10 @@ export default {
     computedAutoSetPlaceHolder() {
       return typeof this.autoSetPlaceHolder === 'boolean' ? this.autoSetPlaceHolder : true;
     },
+    // 计算自动 clearable 开关
+    computedAutoSetClearable() {
+      return typeof this.autoSetClearable === 'boolean' ? this.autoSetClearable : true;
+    },
     // 计算规则消息是否拼接标签
     computedRulesMessageJoinLabel() {
       return this._rulesMessageJoinLabel != null ? this._rulesMessageJoinLabel : !!this.rulesMessageJoinLabel;
@@ -192,11 +209,15 @@ export default {
     effectiveSchemas() {
       // 优先使用 internalSchemas（运行时变更），否则回退到 props.schemas
       const src = (this.internalSchemas && this.internalSchemas.length) ? this.internalSchemas : (this.schemas || []);
-      const list = src.filter((s) => {
-        if (typeof s.show === 'function') return !!s.show({ values: this.formModel });
-        if (typeof s.ifShow === 'function') return !!s.ifShow({ values: this.formModel });
-        return s.show !== false && s.ifShow !== false;
-      }).map((s) => ({ ...s, colProps: { ...((this._baseColProps || this.baseColProps) || {}), ...(s.colProps || {}) } }));
+      const list = src.filter((schemaItem) => {
+        if (typeof schemaItem.show === 'function') return !!schemaItem.show({ values: this.formModel });
+        if (typeof schemaItem.ifShow === 'function') return !!schemaItem.ifShow({ values: this.formModel });
+        return schemaItem.show !== false && schemaItem.ifShow !== false;
+      }).map((schemaItem) => ({
+        ...schemaItem,
+        disabled: ('disabled' in schemaItem ? schemaItem.disabled : !!(schemaItem.componentProps && schemaItem.componentProps.disabled)),
+        colProps: { ...((this._baseColProps || this.baseColProps) || {}), ...(schemaItem.colProps || {}) }
+      }));
       if (this.showAdvancedButton && !this.advancedOpen) {
         const keep = Math.max(this.alwaysShowLines, this.autoAdvancedLine);
         return list.slice(0, keep);
@@ -211,6 +232,7 @@ export default {
     computedResetButtonOptions() { return this.resetButtonOptions || {}; },
     computedSubmitButtonText() { return this._submitButtonText || this.submitButtonText; },
     computedResetButtonText() { return this._resetButtonText || this.resetButtonText; },
+    computedActionCustomButtons() { return this.actionButton || null; },
     computedFormActionType() {
       return {
         setProps: this.setProps,
@@ -234,22 +256,22 @@ export default {
       handler(val) {
         // 根据 schemas 初始值生成/同步 internalModel（当未传入外部 model 时）
         const next = {};
-        (val || []).forEach((s) => {
-          let init = s.defaultValue !== undefined ? s.defaultValue : this.formModel[s.field];
-          const comp = s.component;
+        (val || []).forEach((schemaItem) => {
+          let init = schemaItem.defaultValue !== undefined ? schemaItem.defaultValue : this.formModel[schemaItem.field];
+          const comp = schemaItem.component;
           if (init === undefined) {
             if (comp === 'CheckboxGroup' || comp === 'CheckboxButtonGroup' || comp === 'Upload') init = [];
             if (comp === 'Checkbox') init = false;
             if (comp === 'InputNumber') init = 0;
           }
-          next[s.field] = init;
+          next[schemaItem.field] = init;
         });
         if (!this.model) {
-          Object.keys(next).forEach((k) => {
-            if (this.internalModel[k] === undefined) this.$set(this.internalModel, k, next[k]);
+          Object.keys(next).forEach((fieldName) => {
+            if (this.internalModel[fieldName] === undefined) this.$set(this.internalModel, fieldName, next[fieldName]);
           });
-          Object.keys(this.internalModel).forEach((k) => {
-            if (!(k in next)) this.$delete(this.internalModel, k);
+          Object.keys(this.internalModel).forEach((fieldName) => {
+            if (!(fieldName in next)) this.$delete(this.internalModel, fieldName);
           });
         }
       }
@@ -268,8 +290,8 @@ export default {
      * @returns {void}
      */
     handleEnterSubmit() {
-      const v = this._autoSubmitOnEnter != null ? this._autoSubmitOnEnter : this.autoSubmitOnEnter;
-      if (v) this.submit();
+      const autoSubmitEnabled = this._autoSubmitOnEnter != null ? this._autoSubmitOnEnter : this.autoSubmitOnEnter;
+      if (autoSubmitEnabled) this.submit();
     },
     /**
      * 统一宽度为字符串形式
@@ -294,10 +316,10 @@ export default {
           const val = output[srcField];
           if (Array.isArray(val) && val.length >= 2) {
             // 区分 Date 对象与字符串，按需格式化
-            const s = isDateObject(val[0]) ? formatDate(val[0], fmt || 'yyyy-MM-dd') : val[0];
-            const e = isDateObject(val[1]) ? formatDate(val[1], fmt || 'yyyy-MM-dd') : val[1];
-            output[startField] = s;
-            output[endField] = e;
+            const startValue = isDateObject(val[0]) ? formatDate(val[0], fmt || 'yyyy-MM-dd') : val[0];
+            const endValue = isDateObject(val[1]) ? formatDate(val[1], fmt || 'yyyy-MM-dd') : val[1];
+            output[startField] = startValue;
+            output[endField] = endValue;
             delete output[srcField];
           }
         });
@@ -333,7 +355,7 @@ export default {
      * @param {Object} values
      * @returns {void}
      */
-    setFieldsValue(values) { Object.keys(values || {}).forEach((k) => { this.$set(this.formModel, k, values[k]); }); },
+    setFieldsValue(values) { Object.keys(values || {}).forEach((fieldName) => { this.$set(this.formModel, fieldName, values[fieldName]); }); },
     resetFields() { this.reset(); },
     /**
      * 校验指定字段
@@ -381,22 +403,22 @@ export default {
      * @returns {void}
      */
     setProps(formProps) {
-      const p = formProps || {};
-      if ('actionColOptions' in p) this._actionColOptions = p.actionColOptions;
-      if ('baseColProps' in p) this._baseColProps = p.baseColProps;
-      if ('mergeDynamicData' in p) this._mergeDynamicData = p.mergeDynamicData;
-      if ('autoSubmitOnEnter' in p) this._autoSubmitOnEnter = p.autoSubmitOnEnter;
-      if ('rulesMessageJoinLabel' in p) this._rulesMessageJoinLabel = p.rulesMessageJoinLabel;
-      if ('showSubmitButton' in p) this._showSubmitButton = p.showSubmitButton;
-      if ('showResetButton' in p) this._showResetButton = p.showResetButton;
-      if ('submitButtonText' in p) this._submitButtonText = p.submitButtonText;
-      if ('resetButtonText' in p) this._resetButtonText = p.resetButtonText;
+      const nextProps = formProps || {};
+      if ('actionColOptions' in nextProps) this._actionColOptions = nextProps.actionColOptions;
+      if ('baseColProps' in nextProps) this._baseColProps = nextProps.baseColProps;
+      if ('mergeDynamicData' in nextProps) this._mergeDynamicData = nextProps.mergeDynamicData;
+      if ('autoSubmitOnEnter' in nextProps) this._autoSubmitOnEnter = nextProps.autoSubmitOnEnter;
+      if ('rulesMessageJoinLabel' in nextProps) this._rulesMessageJoinLabel = nextProps.rulesMessageJoinLabel;
+      if ('showSubmitButton' in nextProps) this._showSubmitButton = nextProps.showSubmitButton;
+      if ('showResetButton' in nextProps) this._showResetButton = nextProps.showResetButton;
+      if ('submitButtonText' in nextProps) this._submitButtonText = nextProps.submitButtonText;
+      if ('resetButtonText' in nextProps) this._resetButtonText = nextProps.resetButtonText;
     },
     // 根据 field 删除 Schema（支持数组）
     removeSchemaByField(field) {
       const names = Array.isArray(field) ? field : [field];
       const src = (this.internalSchemas && this.internalSchemas.length) ? this.internalSchemas : (this.schemas || []);
-      this.internalSchemas = src.filter((s) => names.indexOf(s.field) === -1);
+      this.internalSchemas = src.filter((schemaItem) => names.indexOf(schemaItem.field) === -1);
     },
     // 在指定字段后插入 schema；未指定则插到末尾；first=true 则插到最前
     appendSchemaByField(schema, prefixField, first) {
@@ -405,7 +427,7 @@ export default {
       if (first) {
         src.unshift(item);
       } else if (prefixField) {
-        const idx = src.findIndex((s) => s.field === prefixField);
+        const idx = src.findIndex((schemaItem) => schemaItem.field === prefixField);
         if (idx !== -1) src.splice(idx + 1, 0, item); else src.push(item);
       } else {
         src.push(item);
@@ -416,9 +438,9 @@ export default {
     updateSchema(data) {
       const src = (this.internalSchemas && this.internalSchemas.length) ? this.internalSchemas.slice() : ((this.schemas || []).slice());
       const items = Array.isArray(data) ? data : [data];
-      const map = Object.create(null);
-      items.forEach((d) => { if (d && d.field) map[d.field] = d; });
-      this.internalSchemas = src.map((s) => (map[s.field] ? { ...s, ...map[s.field] } : s));
+      const patchMap = Object.create(null);
+      items.forEach((patchSchema) => { if (patchSchema && patchSchema.field) patchMap[patchSchema.field] = patchSchema; });
+      this.internalSchemas = src.map((schemaItem) => (patchMap[schemaItem.field] ? { ...schemaItem, ...patchMap[schemaItem.field] } : schemaItem));
     },
     /**
      * 触发提交
@@ -461,15 +483,15 @@ export default {
       const doReset = () => {
         ref.resetFields();
         const next = {};
-        (this.schemas || []).forEach((s) => {
-          let init = s.defaultValue;
+        (this.schemas || []).forEach((schemaItem) => {
+          let init = schemaItem.defaultValue;
           if (init === undefined) {
-            const comp = s.component;
+            const comp = schemaItem.component;
             if (comp === 'CheckboxGroup' || comp === 'CheckboxButtonGroup' || comp === 'Upload') init = [];
             if (comp === 'Checkbox') init = false;
             if (comp === 'InputNumber') init = 0;
           }
-          next[s.field] = init;
+          next[schemaItem.field] = init;
         });
         this.internalModel = { ...next };
         // 重置后对当前值做映射与合并，并向外触发 reset 事件

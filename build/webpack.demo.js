@@ -32,7 +32,7 @@ const webpackConfig = {
   },
   devServer: {
     host: '0.0.0.0',
-    port: 8085,
+    port: 8088,
     publicPath: '/',
     hot: true,
     proxy: {
@@ -88,7 +88,12 @@ const webpackConfig = {
         use: [
           isProd ? MiniCssExtractPlugin.loader : 'style-loader',
           'css-loader',
-          'sass-loader'
+          {
+            loader: 'sass-loader',
+            options: {
+              implementation: require('sass')
+            }
+          }
         ]
       },
       {

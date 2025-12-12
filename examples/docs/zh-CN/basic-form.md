@@ -19,7 +19,7 @@
             component: 'Input',
             label: '字段1',
             defaultValue: '',
-            componentProps: { placeholder: '请输入' },
+            componentProps: { placeholder: '请输入',disabled: true,},
             rules: [{ required: true, message: '必填', trigger: 'blur' }],
             colProps: { span: 12 }
           },

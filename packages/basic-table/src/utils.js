@@ -53,20 +53,21 @@ export function normalizePagination(p) {
 
 // 生成最终请求参数（分页 + 搜索 + 钩子）
 export function createFetchParams({ pagination, fetchSetting, searchInfo, beforeFetch, handleSearchInfoFn }) {
-  /** 字段映射 */
   const fs = fetchSetting || {};
-  /** 页码字段名 */
-  const pageField = fs.pageField || 'page';
-  /** 页容量字段名 */
-  const sizeField = fs.sizeField || 'pageSize';
-  /** 基础分页参数 */
-  let params = { [pageField]: pagination.currentPage, [sizeField]: pagination.pageSize };
-  /** 搜索条件 */
+  // 支持点号路径：取最后一段作为请求字段名（如 'page.perPage' -> 'perPage'）
+  const pageFieldPath = fs.pageField || 'page';
+  const sizeFieldPath = fs.sizeField || 'pageSize';
+  const pageFieldKey = String(pageFieldPath).split('.').pop();
+  const sizeFieldKey = String(sizeFieldPath).split('.').pop();
+  // 组装分页参数（按映射字段名）
+  let params = { [pageFieldKey]: pagination.currentPage, [sizeFieldKey]: pagination.pageSize };
+  // 合并搜索条件（先处理 handleSearchInfoFn）
   const si = searchInfo || {};
   /** 处理后的搜索条件 */
   const handledSI = typeof handleSearchInfoFn === 'function' ? handleSearchInfoFn(si) : si;
   /** 请求前处理 */
   params = Object.assign({}, handledSI, params);
+  // 请求前钩子处理 beforeFetch
   return typeof beforeFetch === 'function' ? beforeFetch(params) : params;
 }
 

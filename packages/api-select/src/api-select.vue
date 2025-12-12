@@ -21,6 +21,12 @@ import Option from '../../select/src/option.vue';
 import OptionGroup from '../../select/src/option-group.vue';
 import { getValueByPath } from 'rowinself-ui/src/utils/util';
 
+/**
+ * 组件: ElApiSelect
+ * 功能: 通过传入的 `api` 方法按需获取选项数据并渲染到 `el-select`
+ * 说明: 支持自定义参数、结果字段提取、前后置处理钩子等
+ */
+
 export default {
   name: 'ElApiSelect',
   inheritAttrs: false,
@@ -38,9 +44,13 @@ export default {
     return { items: [], loading: false };
   },
   computed: {
+    /**
+     * 计算下拉的加载状态
+     * @returns {boolean} 当外部通过 `loading` 传入或内部正在加载时返回 true
+     */
     computedLoading() {
-      const a = this.$attrs || {};
-      return !!(a.loading) || this.loading;
+      const attrs = this.$attrs || {};
+      return !!(attrs.loading) || this.loading;
     }
   },
   watch: {
@@ -61,26 +71,41 @@ export default {
     if (this.immediate) this.loadOptions();
   },
   methods: {
+    /**
+     * 获取选项唯一 key
+     * @param {Object} item 选项对象
+     * @returns {string|number} 用于 v-for 的唯一标识
+     */
     getItemKey(item) {
       return item && item.value !== undefined ? item.value : item && item.label ? item.label : JSON.stringify(item);
     },
+    /**
+     * 规范化接口返回的列表数据为统一结构
+     * @param {Array|*} list 原始列表数据
+     * @returns {Array} 形如 { label, value, children } 的数组
+     */
     normalizeList(list) {
       const ensureArray = Array.isArray(list) ? list : [];
-      return ensureArray.map(v => ({
+      return ensureArray.map(entry => ({
         label:
-          v && v.label !== undefined ? v.label
-            : (v && v.name !== undefined ? v.name
-              : (v && v.role_name !== undefined ? v.role_name : '')),
+          entry && entry.label !== undefined ? entry.label
+            : (entry && entry.name !== undefined ? entry.name
+              : (entry && entry.role_name !== undefined ? entry.role_name : '')),
         value:
-          v && v.value !== undefined ? v.value
-            : (v && v.id !== undefined ? v.id
-              : (v && v.role_id !== undefined ? v.role_id : v)),
-        children: Array.isArray(v && v.children) ? v.children.map(c => ({
-          label: c && c.label !== undefined ? c.label : (c && c.name !== undefined ? c.name : ''),
-          value: c && c.value !== undefined ? c.value : (c && c.id !== undefined ? c.id : c)
+          entry && entry.value !== undefined ? entry.value
+            : (entry && entry.id !== undefined ? entry.id
+              : (entry && entry.role_id !== undefined ? entry.role_id : entry)),
+        children: Array.isArray(entry && entry.children) ? entry.children.map(child => ({
+          label: child && child.label !== undefined ? child.label : (child && child.name !== undefined ? child.name : ''),
+          value: child && child.value !== undefined ? child.value : (child && child.id !== undefined ? child.id : child)
         })) : []
       }));
     },
+    /**
+     * 提取接口返回中实际的结果数组
+     * @param {*} payload 接口返回的原始数据
+     * @returns {Array} 结果数组，无法提取时返回空数组
+     */
     extractResult(payload) {
       if (Array.isArray(payload)) return payload;
       if (this.resultField) {
@@ -88,13 +113,18 @@ export default {
         if (Array.isArray(res)) return res;
         // 回退：当 resultField 指向非数组时，尝试常见位置
       }
-      const d = payload && payload.data;
-      if (Array.isArray(d)) return d;
-      if (d && Array.isArray(d.list)) return d.list;
+      const payloadData = payload && payload.data;
+      if (Array.isArray(payloadData)) return payloadData;
+      if (payloadData && Array.isArray(payloadData.list)) return payloadData.list;
       if (Array.isArray(payload.items)) return payload.items;
       if (Array.isArray(payload.list)) return payload.list;
       return [];
     },
+    /**
+     * 加载下拉选项
+     * 根据 props.api 与 props.params 发起请求，支持前后置处理钩子
+     * @returns {void}
+     */
     loadOptions() {
       const safeParams = this.beforeFetch ? this.beforeFetch(this.params) : this.params;
       const apiFn = this.api;
@@ -104,9 +134,9 @@ export default {
         return;
       }
       this.loading = true;
-      const p = apiFn(safeParams);
-      if (p && typeof p.then === 'function') {
-        p
+      const maybePromise = apiFn(safeParams);
+      if (maybePromise && typeof maybePromise.then === 'function') {
+        maybePromise
           .then(data => {
             const raw = this.extractResult(data);
             let processed = this.afterFetch ? this.afterFetch(raw) : raw;
@@ -120,20 +150,28 @@ export default {
             this.loading = false;
           });
       } else {
-        const raw = this.extractResult(p);
+        const raw = this.extractResult(maybePromise);
         let processed = this.afterFetch ? this.afterFetch(raw) : raw;
         if (!Array.isArray(processed)) processed = raw;
         this.items = this.normalizeList(processed);
         this.loading = false;
       }
     },
+    /**
+     * 聚焦到内部的 el-select
+     * @returns {void}
+     */
     focus() {
-      const r = this.$refs && this.$refs.selectRef;
-      if (r && typeof r.focus === 'function') r.focus();
+      const selectRef = this.$refs && this.$refs.selectRef;
+      if (selectRef && typeof selectRef.focus === 'function') selectRef.focus();
     },
+    /**
+     * 使内部的 el-select 失焦
+     * @returns {void}
+     */
     blur() {
-      const r = this.$refs && this.$refs.selectRef;
-      if (r && typeof r.blur === 'function') r.blur();
+      const selectRef = this.$refs && this.$refs.selectRef;
+      if (selectRef && typeof selectRef.blur === 'function') selectRef.blur();
     }
   }
 };

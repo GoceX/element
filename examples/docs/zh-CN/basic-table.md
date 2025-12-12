@@ -8,7 +8,7 @@
 ```html
 <template>
    <el-basic-table
-      title="用户管理"
+      title=""
       v-bind="tableConfig"
       @register="onRegister"
      >
