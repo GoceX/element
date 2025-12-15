@@ -74,15 +74,14 @@ export function createFetchParams({ pagination, fetchSetting, searchInfo, before
 // 将列配置转换为渲染列（含前置特殊列）
 export function mapColumns({ columns, ellipsis, showIndexColumn, indexColumnProps, rowSelection }) {
   const baseCols = (columns || []).map((c, i) => ({
-    /** 渲染 key（优先 key/dataIndex；否则按序号） */
-    key: c.key != null ? c.key : (c.dataIndex != null ? c.dataIndex : `col_${i}`),
-    /** 表头文本（title/label） */
+    key: c.key != null ? c.key : (c.dataIndex != null ? c.dataIndex : (c.prop != null ? c.prop : (c.field != null ? c.field : `col_${i}`))),
     title: c.title,
     label: c.label,
-    /** 数据字段（prop/dataIndex） */
-    prop: c.prop,
-    dataIndex: c.dataIndex,
-    /** 宽度/最小宽度 */
+    // 将 field 作为 dataIndex/prop 的后备，以兼容新版配置
+    prop: c.prop != null ? c.prop : (c.dataIndex != null ? c.dataIndex : c.field),
+    dataIndex: c.dataIndex != null ? c.dataIndex : (c.prop != null ? c.prop : c.field),
+    // 同时保留 field 字段，便于 bodyCell 判断使用 column.field
+    field: c.field,
     width: c.width,
     minWidth: c.minWidth,
     /** 对齐方式/表头对齐 */
@@ -97,7 +96,8 @@ export function mapColumns({ columns, ellipsis, showIndexColumn, indexColumnProp
     /** 具名插槽名称 */
     slot: c.slot,
     /** 溢出省略（优先列级；否则使用全局 ellipsis） */
-    showOverflowTooltip: c.showOverflowTooltip != null ? c.showOverflowTooltip : !!ellipsis
+    showOverflowTooltip: c.showOverflowTooltip != null ? c.showOverflowTooltip : !!ellipsis,
+    children: Array.isArray(c.children) ? c.children : undefined
   }));
   // 前置特殊列（索引、选择）
   const special = [];

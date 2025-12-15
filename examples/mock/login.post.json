@@ -1,0 +1,11 @@
+{
+  "login": {
+    "code": 0,
+    "message": "ok",
+    "token": "mock-token"
+  },
+  "logout": {
+    "code": 0,
+    "message": "bye"
+  }
+}

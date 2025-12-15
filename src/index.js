@@ -93,6 +93,7 @@ import ApiSelect from '../packages/api-select/index.js';
 import BasicForm from '../packages/basic-form/index.js';
 import BasicTable from '../packages/basic-table/index.js';
 import BasicTableColumn from '../packages/basic-table-column/index.js';
+import TableAction from '../packages/table-action/index.js';
 import locale from 'rowinself-ui/src/locale';
 import CollapseTransition from 'rowinself-ui/src/transitions/collapse-transition';
 
@@ -185,6 +186,7 @@ const components = [
   BasicForm,
   BasicTable,
   BasicTableColumn,
+  TableAction,
   CollapseTransition
 ];
 
@@ -317,5 +319,6 @@ export default {
   ApiSelect,
   BasicForm,
   BasicTable,
-  BasicTableColumn
+  BasicTableColumn,
+  TableAction
 };

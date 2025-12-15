@@ -4,7 +4,7 @@
     v-model="visible"
     trigger="click"
   >
-  <div class="el-popconfirm">
+  <div :class="['el-popconfirm', customClass]">
     <p class="el-popconfirm__main">
     <i
       v-if="!hideIcon"
@@ -43,6 +43,10 @@ import {t} from 'rowinself-ui/src/locale';
 export default {
   name: 'ElPopconfirm',
   props: {
+    customClass: {
+      type: String,
+      default: ''
+    },
     title: {
       type: String
     },

@@ -14,370 +14,98 @@
 
   @include e(form) {
     margin-bottom: 16px;
+
+    .el-form-item__action {
+      height: $--input-height;
+      line-height: $--input-height;
+    }
   }
 
   @include e(header) {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 12px;
-    padding: 0;
-  }
-
-  @include e(title-wrap) {
-    display: flex;
-    align-items: center;
-  }
-
-  @include e(title) {
-    font-size: 16px;
-    font-weight: 500;
-    color: $--color-text-primary;
-  }
-
-  @include e(help) {
-    margin-left: 8px;
-    font-size: 12px;
-    color: $--color-text-secondary;
+    padding: 0px 0px 8px 0px;
   }
 
   @include e(toolbar) {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  @include e(body-wrapper) {
-    position: relative;
-    overflow: hidden;
-  }
-
-  @include e(loading) {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(255, 255, 255, 0.9);
-    z-index: 10;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  @include e(loading-spinner) {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: $--color-primary;
-
-    i {
-      font-size: 24px;
-      margin-bottom: 8px;
-      animation: el-basic-table-rotating 2s linear infinite;
-    }
-
-    span {
-      font-size: 14px;
-      color: $--color-text-secondary;
-    }
-  }
-
-  @include e(table) {
-    width: 100%;
-    table-layout: fixed;
-    border-collapse: separate;
-    border-spacing: 0;
-  }
-
-  @include e(thead) {
-    color: $--table-header-font-color;
-    font-weight: 500;
-
-    tr {
-      background-color: $--table-header-background-color;
-    }
-  }
-
-  @include e(th) {
-    padding: 10px 0;
-    min-width: 0;
-    box-sizing: border-box;
-    text-overflow: ellipsis;
-    vertical-align: middle;
-    position: relative;
-    text-align: left;
-    overflow: hidden;
-    user-select: none;
-    background-color: $--table-header-background-color;
-    border-bottom: $--table-border;
-
-    &.is-center {
-      text-align: center;
-    }
-
-    &.is-right {
-      text-align: right;
-    }
-
-    &.is-sortable {
-      cursor: pointer;
-    }
-  }
-
-  @include e(th-content) {
-    display: inline-block;
-    box-sizing: border-box;
-    position: relative;
-    vertical-align: middle;
-    padding-left: 10px;
-    padding-right: 10px;
-    width: 100%;
-    line-height: $--font-size-base;
-
-    &.highlight {
-      color: $--color-primary;
-    }
-  }
-
-  @include e(sort-icons) {
     display: inline-flex;
-    flex-direction: column;
+    flex-wrap: wrap;
     align-items: center;
-    height: 34px;
-    width: 24px;
-    vertical-align: middle;
-    cursor: pointer;
-    overflow: initial;
-    position: relative;
+    justify-content: flex-end;
+    gap: 14px;
 
-    i {
-      width: 0;
-      height: 0;
-      border: solid 5px transparent;
-      position: absolute;
-      left: 7px;
+    >* {
+      margin: 0px;
+    }
+  }
 
-      &.el-icon-caret-top {
-        border-bottom-color: $--color-text-placeholder;
-        top: 5px;
-
-        &.is-active {
-          border-bottom-color: $--color-primary;
+  .el-table__header {
+    thead {
+      &.is-group {
+        th.el-table__cell {
+          background: $--color-primary;
         }
       }
 
-      &.el-icon-caret-bottom {
-        border-top-color: $--color-text-placeholder;
-        bottom: 7px;
+      background-color: $--color-primary;
+      color: $--color-white;
+    }
 
-        &.is-active {
-          border-top-color: $--color-primary;
-        }
-      }
+    th {
+      background-color: $--color-primary;
     }
   }
 
-  @include e(tbody) {
-    tr {
-      background-color: $--color-white;
-      transition: background-color 0.25s ease;
-
-      &:hover > td {
-        background-color: $--table-row-hover-background-color;
-      }
-
-      input[type="checkbox"] {
-        margin: 0;
-      }
-    }
-  }
-
-  @include e(row) {
-    &.is-striped {
-      td {
-        background: #FAFAFA;
-      }
-
-      &:hover > td {
-        background-color: $--table-row-hover-background-color;
-      }
-    }
-
-    &.is-selected > td,
-    &.is-current > td {
-      background-color: $--table-current-row-background-color;
-    }
-  }
-
-  @include e(td) {
-    padding: 10px 0;
-    min-width: 0;
-    box-sizing: border-box;
-    text-overflow: ellipsis;
-    vertical-align: middle;
-    position: relative;
-    text-align: left;
-    border-bottom: $--table-border;
-
-    &.is-center {
-      text-align: center;
-    }
-
-    &.is-right {
-      text-align: right;
-    }
-  }
-
-  @include e(cell-content) {
-    box-sizing: border-box;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: normal;
-    word-break: break-all;
-    line-height: $--font-size-base;
-    padding-left: 10px;
-    padding-right: 10px;
-  }
-
-  .cell {
-    box-sizing: border-box;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: normal;
-    word-break: break-all;
-    line-height: $--font-size-base;
-    padding-left: 10px;
-    padding-right: 10px;
-  }
-
-  @include e(checkbox) {
-    width: 14px;
-    height: 14px;
-    cursor: pointer;
-  }
-
-  @include e(empty-row) {
-    td {
-      border-bottom: none;
-    }
-  }
-
-  @include e(empty-cell) {
-    text-align: center;
-  }
-
-  @include e(empty) {
-    min-height: 60px;
-    text-align: center;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    line-height: 60px;
-    color: $--color-text-secondary;
-  }
-
-  @include e(tfoot) {
-    td {
-      border-top: $--table-border;
-      background-color: $--table-row-hover-background-color;
-      color: $--table-font-color;
-      padding: 10px 0;
-    }
-  }
-
-  @include e(append) {
-    overflow: hidden;
+  // 表格内容区域
+  .el-table__body-wrapper {
+    overflow: auto;
+    color: $--color-text-primary;
   }
 
   @include e(pagination) {
-    padding: 14px 0 0;
-    display: flex;
+    margin-top: 14px;
+    text-align: center;
+  }
+
+  .el-table-action {
+    width: 100%;
+    box-sizing: border-box;
+    display: inline-flex;
     justify-content: center;
-  }
+    gap: 10px;
 
-  // Size variants
-  &--medium {
-    .el-basic-table__th,
-    .el-basic-table__td {
-      padding: 10px 0;
-    }
-  }
-
-  &--small {
-    font-size: 12px;
-
-    .el-basic-table__th,
-    .el-basic-table__td {
-      padding: 8px 0;
-    }
-  }
-
-  &--mini {
-    font-size: 12px;
-
-    .el-basic-table__th,
-    .el-basic-table__td {
-      padding: 6px 0;
-    }
-  }
-
-  // Striped modifier
-  &.is-striped {
-    .el-basic-table__tbody {
-      tr:nth-child(even) {
-        td {
-          background: #FAFAFA;
-        }
-
-        &:hover > td {
-          background-color: $--table-row-hover-background-color;
-        }
-      }
-
-      tr.is-selected:nth-child(even) > td,
-      tr.is-current:nth-child(even) > td {
-        background-color: $--table-current-row-background-color;
-      }
-    }
-  }
-
-  // Border modifier
-  &.is-bordered {
-    border: $--table-border;
-
-    &::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      right: 0;
+    // 给除最后一个子元素之外的所有子元素添加分隔线
+    >*:not(:last-child)::after {
+      content: "";
+      display: block;
       width: 1px;
       height: 100%;
-      background-color: $--table-border-color;
-      z-index: 1;
-    }
-
-    .el-basic-table__th,
-    .el-basic-table__td {
-      border-right: $--table-border;
-    }
-
-    .el-basic-table__th {
-      border-bottom: $--table-border;
+      background-color: #C1C4CB;
+      position: relative;
+      right: -5px;
     }
   }
+}
 
-  // Bottom border pseudo element
-  &::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    height: 1px;
-    background-color: $--table-border-color;
-    z-index: 1;
+.el-table-popconfirm {
+  .el-popconfirm__action {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+
+    button {
+      padding: 0px 15px;
+      height: 1.5em;
+
+      >span {
+        display: inline-block;
+        letter-spacing: 0.4em;
+        text-align: center;
+        transform: translateX(0.2em);
+      }
+
+    }
   }
 }
 
@@ -385,6 +113,7 @@
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }

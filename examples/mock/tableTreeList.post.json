@@ -1,0 +1,97 @@
+{
+  "code": 0,
+  "msg": "ok",
+  "data": {
+    "list": [
+      {
+        "id": 1,
+        "name": "华东仓库",
+        "province": "上海",
+        "city": "普陀区",
+        "address": "金沙江路 1518 弄",
+        "zip": 200333,
+        "children": [
+          {
+            "id": 11,
+            "name": "一号库位",
+            "province": "上海",
+            "city": "普陀区",
+            "address": "仓储一号",
+            "zip": 200333
+          },
+          {
+            "id": 12,
+            "name": "二号库位",
+            "province": "上海",
+            "city": "普陀区",
+            "address": "仓储二号",
+            "zip": 200333
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "name": "华北仓库",
+        "province": "北京",
+        "city": "海淀区",
+        "address": "中关村大街 1 号",
+        "zip": 100080
+      },
+      {
+        "id": 3,
+        "name": "华南仓库",
+        "province": "广东",
+        "city": "天河区",
+        "address": "体育西路 1 号",
+        "zip": 510000,
+        "children": [
+          {
+            "id": 31,
+            "name": "一号库位",
+            "province": "广东",
+            "city": "天河区",
+            "address": "库位 A",
+            "zip": 510000
+          },
+          {
+            "id": 32,
+            "name": "二号库位",
+            "province": "广东",
+            "city": "天河区",
+            "address": "库位 B",
+            "zip": 510000
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "name": "西南仓库",
+        "province": "四川",
+        "city": "武侯区",
+        "address": "人民南路一段 1 号",
+        "zip": 610000
+      },
+      {
+        "id": 5,
+        "name": "华中仓库",
+        "province": "湖北",
+        "city": "武昌区",
+        "address": "中南路 88 号",
+        "zip": 430000
+      },
+      {
+        "id": 6,
+        "name": "东北仓库",
+        "province": "辽宁",
+        "city": "和平区",
+        "address": "南京北街 10 号",
+        "zip": 110000
+      }
+    ],
+    "page": {
+      "totalRowNum": 6,
+      "perPage": 1,
+      "pageNum": 10
+    }
+  }
+}

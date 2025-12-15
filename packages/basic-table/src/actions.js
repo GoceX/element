@@ -16,9 +16,13 @@ export default {
     this.onSelectionChange(this.selectedRows.filter((r) => this.getKeyOfRow(r) !== key));
   },
   // 获取当前选中行的主键集合
-  getSelectRowKeys() { return this.selectedRows.map((r) => this.getKeyOfRow(r)).filter((v) => v !== undefined); },
+  getSelectRowKeys() {
+    return this.selectedRows.map((r) => this.getKeyOfRow(r)).filter((v) => v !== undefined);
+  },
   // 获取当前选中的行数据副本
-  getSelectRows() { return this.selectedRows.slice(); },
+  getSelectRows() {
+    return this.selectedRows.slice();
+  },
   // 清空当前选中行
   clearSelectedRowKeys() {
     const ref = this.$refs.tableRef;
@@ -37,19 +41,27 @@ export default {
     });
   },
   // 获取当前分页配置引用（或 false）
-  getPaginationRef() { return this.internalPagination || false; },
+  getPaginationRef() {
+    return this.internalPagination || false;
+  },
   // 获取当前分页显示状态
-  getShowPagination() { return !!this.showPaginationFlag; },
+  getShowPagination() {
+    return !!this.showPaginationFlag;
+  },
   // 设置分页显示状态（返回 Promise 以保持一致性）
   setShowPagination(show) {
     if (typeof window !== 'undefined' && window.Promise) {
-      return new window.Promise((resolve) => { this.showPaginationFlag = !!show; resolve(); });
+      return new window.Promise((resolve) => {
+        this.showPaginationFlag = !!show; resolve();
+      });
     }
     this.showPaginationFlag = !!show;
     return undefined;
   },
   // 获取选择列配置（或 false）
-  getRowSelection() { return this.rowSelection || false; },
+  getRowSelection() {
+    return this.rowSelection || false;
+  },
   // 更新指定行的指定字段值（按索引）
   updateTableData(index, key, value) {
     const i = Number(index);
@@ -62,7 +74,16 @@ export default {
   // 根据主键更新指定行数据（局部更新）
   updateTableDataRecord(rowKey, record) {
     const idx = this.internalData.findIndex((r) => this.getKeyOfRow(r) === rowKey);
-    if (idx !== -1) this.$set(this.internalData, idx, { ...(this.internalData[idx] || {}), ...(record || {}) });
+    if (idx !== -1) {
+      this.$set(
+        this.internalData,
+        idx,
+        {
+          ...(this.internalData[idx] || {}),
+          ...(record || {})
+        }
+      );
+    }
   },
   // 根据主键集合删除指定行（局部删除）
   deleteTableDataRecord(rowKey) {
@@ -74,35 +95,70 @@ export default {
     const rec = { ...(record || {}) };
     const i = typeof index === 'number' ? index : this.internalData.length;
     const list = this.internalData.slice();
-    if (i >= 0 && i <= list.length) list.splice(i, 0, rec); else list.push(rec);
+    if (i >= 0 && i <= list.length) {
+      list.splice(i, 0, rec);
+    } else {
+      list.push(rec);
+    }
     this.internalData = list;
   },
   // 获取搜索表单方法集（当启用 useSearchForm 时有效）
-  getForm() { return this.formActions; },
-  // 展开全部树形节点（需 isTreeTable=true）
-  expandAll() { if (this.isTreeTable) this.internalData.forEach((r) => { const ref = this.$refs.tableRef; if (ref) ref.toggleRowExpansion(r, true); }); },
-  // 折叠全部树形节点（需 isTreeTable=true）
-  collapseAll() { if (this.isTreeTable) this.internalData.forEach((r) => { const ref = this.$refs.tableRef; if (ref) ref.toggleRowExpansion(r, false); }); },
+  getForm() {
+    return this.formActions;
+  },
+  // 展开全部树形节点
+  expandAll() {
+    const ref = this.$refs.tableRef;
+    if (!ref || !this.rowKey) return;
+    const store = ref.store;
+    const treeData = (store && store.states && store.states.treeData) || {};
+    const keys = Object.keys(treeData);
+    if (keys.length && store && typeof store.updateTreeExpandKeys === 'function') {
+      store.updateTreeExpandKeys(keys);
+    }
+  },
+  // 折叠全部树形节点
+  collapseAll() {
+    const ref = this.$refs.tableRef;
+    if (!ref || !this.rowKey) return;
+    const store = ref.store;
+    if (store && typeof store.updateTreeExpandKeys === 'function') {
+      store.updateTreeExpandKeys([]);
+    }
+  },
   // 表格选择变化事件处理：同步 selectedRows/selectedRowKeys，并对外发出 selection-change
   onSelectionChange(sel) {
     this.selectedRows = Array.isArray(sel) ? sel : [];
     this.selectedRowKeys = this.getSelectRowKeys();
-    this.$emit('selection-change', { keys: this.selectedRowKeys, rows: this.selectedRows });
+    this.$emit('selection-change', {
+      keys: this.selectedRowKeys,
+      rows: this.selectedRows
+    });
   },
   // 表格行点击事件处理：支持点击切换选中（当 clickToRowSelect=true 且 rowSelection 有效）
   onRowClick(row, column, event) {
     this.$emit('row-click', row, column, event);
     if (this.clickToRowSelect) {
       const ref = this.$refs.tableRef;
-      if (ref && this.rowSelection) ref.toggleRowSelection(row);
+      if (ref && this.rowSelection) {
+        ref.toggleRowSelection(row);
+      }
     }
   },
   // 重新计算表格布局高度（适配容器变化）
   redoHeight() {
     const ref = this.$refs.tableRef;
-    if (ref && typeof ref.doLayout === 'function') ref.doLayout();
+    if (ref && typeof ref.doLayout === 'function') {
+      ref.doLayout();
+    }
   },
   // 表单注册与提交（为兼容性保留；实际逻辑在父组件中实现）
-  onFormRegister(actions) { this.formActions = actions; },
-  onFormSubmit(payload) { this.$emit('form-submit', payload); this.$emit('update:searchInfo', payload); this.reload(); }
+  onFormRegister(actions) {
+    this.formActions = actions;
+  },
+  onFormSubmit(payload) {
+    this.$emit('form-submit', payload);
+    this.$emit('update:searchInfo', payload);
+    this.reload();
+  }
 };

@@ -22,7 +22,7 @@
       <!-- 操作按钮区域：提交、重置、高级展开/收起等 -->
       <template v-if="showActionButtonGroup">
         <!-- 通过 computedActionColOptions 控制该列的栅格属性，如 span/offset -->
-        <el-col v-bind="computedActionColOptions">
+        <el-col v-bind="computedActionColOptions" class="el-form-item__action">
             <!-- 提交按钮：可配置文本与属性，点击后触发表单提交逻辑 -->
             <el-button v-if="computedShowSubmitButton" v-bind="computedSubmitButtonOptions" @click="submit">
               {{ computedSubmitButtonText }}
@@ -32,7 +32,12 @@
               {{ computedResetButtonText }}
             </el-button>
             <template v-if="computedActionCustomButtons"> 
-              <el-button v-for="customButton in computedActionCustomButtons" v-bind="customButton" @click="customButton.click({tableAction})">
+              <el-button
+                v-for="(customButton, idx) in computedActionCustomButtons"
+                :key="customButton && (customButton.key || customButton.text || idx)"
+                v-bind="customButton"
+                @click="customButton.click({tableAction})"
+              >
                 {{ customButton.text }}
               </el-button>
             </template>

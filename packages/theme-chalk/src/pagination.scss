@@ -152,6 +152,7 @@
 
       &.el-input .el-input__inner {
         height: 22px;
+        border-radius: $--pagination-border-radius;
       }
     }
   }
@@ -187,6 +188,8 @@
 
     .el-input__inner {
       padding: 0 3px;
+      border-radius: $--pagination-border-radius;
+
     }
   }
 
@@ -225,10 +228,10 @@
     .btn-next,
     .el-pager li {
       margin: 0 5px;
-      background-color: $--color-info-lighter;
+      background-color: $--color-white;
       color: $--color-text-regular;
       min-width: $--pagination-button-width;
-      border-radius: 2px;
+      border-radius: $--pagination-border-radius;
 
       &.disabled {
         color: $--color-text-placeholder;

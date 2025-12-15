@@ -34,7 +34,7 @@ http.interceptors.response.use(
     // 后端返回格式: { code: 0, data: {}, message: '' }
     // code === 0 表示成功
     if (code === 0) {
-      console.log('data::: ', data);
+      // console.log('data::: ', data);
       return data;
     }
     // 业务错误

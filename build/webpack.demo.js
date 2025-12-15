@@ -37,11 +37,8 @@ const webpackConfig = {
     hot: true,
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:4523/m1/7483428-7218734-default', // TODO: 请修改为实际后端 API 地址
-        changeOrigin: true,
-        pathRewrite: {
-          '^/api': '' // 根据后端接口是否有 /api 前缀决定是否需要重写
-        }
+        target: 'http://127.0.0.1:3001',
+        changeOrigin: true
       }
     },
     before: (app) => {

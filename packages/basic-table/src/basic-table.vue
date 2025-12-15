@@ -8,19 +8,24 @@
         @register="onFormRegister"
       />
     </div>
-    <div v-if="title || titleHelpMessage" class="el-basic-table__header">
+    <!-- v-if="title || titleHelpMessage" -->
+    <div class="el-basic-table__header">
       <div class="el-basic-table__title">{{ title }}</div>
       <div v-if="titleHelpMessage" class="el-basic-table__help">{{ titleHelpMessage }}</div>
-      <div class="el-basic-table__toolbar"><slot name="toolbar"></slot></div>
+      <div class="el-basic-table__toolbar">
+        <slot name="toolbar"></slot>
+      </div>
     </div>
     <el-table
       ref="tableRef"
+      v-loading="internalLoading"
       :data="internalData"
       :stripe="striped"
       :border="bordered"
       :max-height="maxHeight"
       :size="size"
       :row-key="rowKey"
+      :tree-props="treeProps"
       :highlight-current-row="highlightCurrentRow"
       :empty-text="emptyText"
       :show-summary="showSummary"
@@ -124,7 +129,7 @@ export default {
     /** 自动为数据补充 key */
     autoCreateKey: { type: Boolean, default: true },
     /** 点击行是否切换勾选 */
-    clickToRowSelect: { type: Boolean, default: true },
+    clickToRowSelect: { type: Boolean, default: false },
     /** 翻页是否清空勾选 */
     clearSelectOnPageChange: { type: Boolean, default: false },
     // 搜索表单
@@ -133,8 +138,16 @@ export default {
     /** 搜索表单配置（透传给 ElBasicForm） */
     formConfig: Object,
     // 树形表格
-    /** 是否使用树形表格 */
-    isTreeTable: { type: Boolean, default: false },
+    /** 树形表格子项字段名与是否有子项标志 */
+    treeProps: {
+      type: Object,
+      default: () => ({
+        /** 子项字段名 */
+        children: 'children',
+        /** 是否有子项标志 */
+        hasChildren: 'hasChildren'
+      })
+    },
     // 请求钩子与映射
     /** 请求前对参数处理 */
     beforeFetch: Function,
@@ -284,38 +297,38 @@ export default {
       immediate: true,
       /**
        * 监听本地数据源变更，补齐 key 后写入内部态
-       * @param {Array<Object>} val 新数据源
+       * @param {Array<Object>} nextDataSource 新数据源
        */
-      handler(val) {
-        this.internalData = Array.isArray(val) ? this.ensureKeys(val) : [];
+      handler(nextDataSource) {
+        this.internalData = Array.isArray(nextDataSource) ? this.ensureKeys(nextDataSource) : [];
       }
     },
     columns: {
       immediate: true,
       /** 监听列配置变更，写入内部态 */
-      handler(val) {
-        this.internalColumns = Array.isArray(val) ? val : [];
+      handler(nextColumns) {
+        this.internalColumns = Array.isArray(nextColumns) ? nextColumns : [];
       }
     },
     loading: {
       immediate: true,
       /** 监听外部 loading 状态 */
-      handler(val) {
-        this.internalLoading = !!val;
+      handler(nextLoading) {
+        this.internalLoading = !!nextLoading;
       }
     },
     pagination: {
       immediate: true,
       /** 监听分页配置变更，归一化后写入内部态 */
-      handler(val) {
-        this.internalPagination = this.normalizePagination(val);
+      handler(nextPagination) {
+        this.internalPagination = this.normalizePagination(nextPagination);
       }
     },
     searchInfo: {
       immediate: true,
       /** 监听外部搜索条件（受控） */
-      handler(val) {
-        this.internalSearchInfo = val || {};
+      handler(nextSearchInfo) {
+        this.internalSearchInfo = nextSearchInfo || {};
       }
     }
   },
@@ -334,51 +347,48 @@ export default {
      * @param {Object} p 原始分页配置
      * @returns {Object} 规范化后的分页配置
      */
-    normalizePagination(p) {
-      return uNormalizePagination(p);
+    normalizePagination(paginationConfig) {
+      return uNormalizePagination(paginationConfig);
     },
     /**
      * 处理页码变更，支持翻页时清空选中行
      * @param {number} page 新页码
      */
-    handlePageChange(page) {
-      this.internalPagination.currentPage = page;
+    handlePageChange(nextPage) {
+      this.internalPagination.currentPage = nextPage;
       if (this.clearSelectOnPageChange) this.clearSelectedRowKeys();
       this.reload();
-      this.$emit('page-change', page);
+      this.$emit('page-change', nextPage);
     },
     /**
      * 处理页容量变更，重置到第 1 页并刷新
      * @param {number} size 新页容量
      */
-    handlePageSizeChange(size) {
-      this.internalPagination.pageSize = size;
+    handlePageSizeChange(nextPageSize) {
+      this.internalPagination.pageSize = nextPageSize;
       this.internalPagination.currentPage = 1;
       if (this.clearSelectOnPageChange) this.clearSelectedRowKeys();
       this.reload();
-      this.$emit('page-size-change', size);
+      this.$emit('page-size-change', nextPageSize);
     },
     /**
      * 运行时设置表格属性（列/数据/loading/分页/选中/索引列/标题/搜索条件等）
      * @param {Object} nextProps 需更新的属性集合
      */
     setProps(nextProps) {
-      const p = nextProps || {};
-      if ('columns' in p) this.internalColumns = Array.isArray(p.columns) ? p.columns : [];
-      if ('dataSource' in p) this.internalData = Array.isArray(p.dataSource) ? p.dataSource : [];
-      if ('loading' in p) this.internalLoading = !!p.loading;
-      if ('pagination' in p) this.internalPagination = this.normalizePagination(p.pagination);
-      if ('rowSelection' in p) this.$emit('update:rowSelection', p.rowSelection);
-      if ('showIndexColumn' in p) this.$emit('update:showIndexColumn', !!p.showIndexColumn);
-      if ('searchInfo' in p) { this.internalSearchInfo = p.searchInfo || {}; this.$emit('update:searchInfo', p.searchInfo); }
-      if ('title' in p) this.$emit('update:title', p.title);
+      const propsToUpdate = nextProps || {};
+      if ('columns' in propsToUpdate) this.internalColumns = Array.isArray(propsToUpdate.columns) ? propsToUpdate.columns : [];
+      if ('dataSource' in propsToUpdate) this.internalData = Array.isArray(propsToUpdate.dataSource) ? propsToUpdate.dataSource : [];
+      if ('loading' in propsToUpdate) this.internalLoading = !!propsToUpdate.loading;
+      if ('pagination' in propsToUpdate) this.internalPagination = this.normalizePagination(propsToUpdate.pagination);
+      if ('rowSelection' in propsToUpdate) this.$emit('update:rowSelection', propsToUpdate.rowSelection);
+      if ('showIndexColumn' in propsToUpdate) this.$emit('update:showIndexColumn', !!propsToUpdate.showIndexColumn);
+      if ('searchInfo' in propsToUpdate) { this.internalSearchInfo = propsToUpdate.searchInfo || {}; this.$emit('update:searchInfo', propsToUpdate.searchInfo); }
+      if ('title' in propsToUpdate) this.$emit('update:title', propsToUpdate.title);
     },
-    /** 设置 loading 状态 */
-    setLoading(v) { this.internalLoading = !!v; },
-    /** 设置列配置 */
-    setColumns(cols) { this.internalColumns = Array.isArray(cols) ? cols : []; },
-    /** 设置数据源（补齐 key） */
-    setDataSource(list) { this.internalData = Array.isArray(list) ? this.ensureKeys(list) : []; },
+    setLoading(loading) { this.internalLoading = !!loading; },
+    setColumns(nextColumns) { this.internalColumns = Array.isArray(nextColumns) ? nextColumns : []; },
+    setDataSource(nextDataSource) { this.internalData = Array.isArray(nextDataSource) ? this.ensureKeys(nextDataSource) : []; },
     /** 获取当前数据源副本 */
     getDataSource() { return this.internalData.slice(); },
     /** 获取原始接口返回 */
@@ -394,40 +404,43 @@ export default {
      * @returns {void}
      */
     reload(extraParams = {}) {
-      /** 请求函数 */
-      const fn = this.api;
-      if (typeof fn !== 'function') return;
+      const requestApi = this.api;
+      if (typeof requestApi !== 'function') return;
       this.internalLoading = true;
-      /** 当前页码 */
-      const page = this.internalPagination.currentPage;
-      /** 每页条数 */
+      const currentPage = this.internalPagination.currentPage;
       const pageSize = this.internalPagination.pageSize;
-      /** 表格参数 */
-      const formValues = (this.formActions && typeof this.formActions.getFieldsValue === 'function')
+      const formState = (this.formActions && typeof this.formActions.getFieldsValue === 'function')
         ? (this.formActions.getFieldsValue() || {})
         : (this.internalSearchInfo || {});
+
       /** 额外参数 */
-      const ep = extraParams || {};
+      const extra = extraParams || {};
       /**
        * 合并分页参数
        * 优先使用 extraParams 中的分页信息
        * 其次使用 extraParams 中的 currentPage/pageSize
        * 最后使用内部分页
        */
-      const mergedPagination = (() => {
+      const paginationPayload = (() => {
         // 基础分页信息：当前页码与每页条数
-        const base = { currentPage: page, pageSize };
+        const basePagination = { currentPage, pageSize };
         // 若 extraParams 中提供了 pagination 对象 优先使用
-        if (ep && typeof ep.pagination === 'object') return { ...base, ...ep.pagination };
+        if (extra && typeof extra.pagination === 'object') {
+          return { ...basePagination, ...extra.pagination };
+        }
         // 若 extraParams 中单独提供了 currentPage 或 pageSize 覆盖对应字段
-        if (typeof ep.currentPage === 'number' || typeof ep.pageSize === 'number') {
-          const out = { ...base };
-          if (typeof ep.currentPage === 'number') out.currentPage = ep.currentPage;
-          if (typeof ep.pageSize === 'number') out.pageSize = ep.pageSize;
-          return out;
+        if (typeof extra.currentPage === 'number' || typeof extra.pageSize === 'number') {
+          const overridden = { ...basePagination };
+          if (typeof extra.currentPage === 'number') {
+            overridden.currentPage = extra.currentPage;
+          }
+          if (typeof extra.pageSize === 'number') {
+            overridden.pageSize = extra.pageSize;
+          }
+          return overridden;
         }
         // 否则直接返回基础分页信息
-        return base;
+        return basePagination;
       })();
       /**
        * 合并搜索条件
@@ -435,40 +448,43 @@ export default {
        * 其次将 extraParams 自身作为搜索参数
        * 最后使用表单值
        */
-      const mergedSearchInfo = (() => {
+      const searchPayload = (() => {
         // 若 extraParams 中显式提供了 searchInfo 对象 与表单值合并
-        if (ep && typeof ep.searchInfo === 'object') return { ...formValues, ...ep.searchInfo };
+        if (extra && typeof extra.searchInfo === 'object') {
+          return { ...formState, ...extra.searchInfo };
+        }
         // 若 extraParams 中存在任意字段 将其整体作为搜索参数与表单值合并
-        if (ep && Object.keys(ep).length) return { ...formValues, ...ep };
-        // 否则仅使用表单值
-        return { ...formValues };
+        if (extra && Object.keys(extra).length) {
+          return { ...formState, ...extra };
+        }
+        return { ...formState };
       })();
       // 构造最终请求参数对象 包含分页、搜索条件及钩子函数
-      const params = createFetchParams({
-        pagination: mergedPagination,
+      const finalParams = createFetchParams({
+        pagination: paginationPayload,
         fetchSetting: this.fetchSetting,
-        searchInfo: mergedSearchInfo,
+        searchInfo: searchPayload,
         beforeFetch: this.beforeFetch,
         handleSearchInfoFn: this.handleSearchInfoFn
       });
       try {
-        const ret = fn(params);
-        if (ret && ret.then) {
-          ret.then((res) => {
-            return this.applyApiResult(typeof this.afterFetch === 'function' ? this.afterFetch(res) : res);
-          }).catch((err) => {
-            this.lastFetchError = err;
-            this.$emit('fetch-error', err);
+        const result = requestApi(finalParams);
+        if (result && result.then) {
+          result.then((response) => {
+            return this.applyApiResult(typeof this.afterFetch === 'function' ? this.afterFetch(response) : response);
+          }).catch((error) => {
+            this.lastFetchError = error;
+            this.$emit('fetch-error', error);
           }).finally(() => {
             this.internalLoading = false;
           });
         } else {
-          this.applyApiResult(typeof this.afterFetch === 'function' ? this.afterFetch(ret) : ret);
+          this.applyApiResult(typeof this.afterFetch === 'function' ? this.afterFetch(result) : result);
           this.internalLoading = false;
         }
-      } catch (err) {
-        this.lastFetchError = err;
-        this.$emit('fetch-error', err);
+      } catch (error) {
+        this.lastFetchError = error;
+        this.$emit('fetch-error', error);
         this.internalLoading = false;
       }
     },
@@ -477,29 +493,27 @@ export default {
      * @param {Object|Array} res 接口返回数据
      * @returns {void}
      */
-    applyApiResult(res) {
-      // 应用接口返回数据至表格
-      // console.log('应用接口返回数据至表格::: ', res, !res, Array.isArray(res));
-      if (!res) { this.internalData = []; this.rawResult = res; return; }
-      if (Array.isArray(res)) {
-        this.internalData = this.ensureKeys(res);
-        this.rawResult = res;
+    applyApiResult(response) {
+    // 应用接口返回数据至表格
+      if (!response) {
+        this.internalData = []; this.rawResult = response; return;
+      }
+      if (Array.isArray(response)) {
+        this.internalData = this.ensureKeys(response);
+        this.rawResult = response;
         return;
       }
       /** 字段映射 列表字段名 总数字段名 */
       const { listField, totalField } = this.fetchSetting;
-      // console.log('{listField, totalField}::: ', listField, totalField);
       /** 数据列表 优先取 listField 字段 其次取 items/list/data 字段 */
-      const listVal = getByPath(res, listField);
-      const list = listVal != null ? listVal : (res.items || res.list || res.data || []);
+      const listByMapping = getByPath(response, listField);
+      const items = listByMapping != null ? listByMapping : (response.items || response.list || response.data || []);
       /** 总条数 取值 优先取 totalField 字段 其次取 page.total 字段 */
-      const totalVal = getByPath(res, totalField);
-      const total = totalVal != null ? totalVal : (res.page && res.page.total);
-      this.internalData = Array.isArray(list) ? this.ensureKeys(list) : [];
+      const totalByMapping = getByPath(response, totalField);
+      const total = totalByMapping != null ? totalByMapping : (response.page && response.page.total);
+      this.internalData = Array.isArray(items) ? this.ensureKeys(items) : [];
       if (typeof total === 'number') this.internalPagination.total = total;
-      this.rawResult = res;
-      // console.log('this.internalData::: ', this.internalData);
-      // console.log('this.rawResult::: ', this.rawResult);
+      this.rawResult = response;
       this.$emit('fetch-success', { items: this.internalData, total: this.internalPagination.total });
     },
     /** 表单注册回调，保存表单动作对象 */
