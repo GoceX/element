@@ -58,16 +58,23 @@
 <script>
 // 依赖组件：基础表格、分页、搜索表单与列渲染子组件
 // 文件职能：封装基础表格行为（列配置、分页、远程加载、选择行、搜索联动），暴露完整方法集供外部按需控制
+// 说明：该文件聚合 UI 与对外 API，核心行为拆分到 mixins 保持清晰职责
 import ElTable from 'rowinself-ui/packages/table';
 import ElPagination from 'rowinself-ui/packages/pagination';
 import ElBasicForm from 'rowinself-ui/packages/basic-form';
 import ElBasicTableColumn from './basic-table-column.vue';
 import actions from './actions';
-import { ensureKeys as uEnsureKeys, normalizePagination as uNormalizePagination, mapColumns, createFetchParams, getByPath } from './utils';
+import { mapColumns } from './utils';
+import fetchMixin from './mixins/fetch';
+import paginationMixin from './mixins/pagination';
+import formMixin from './mixins/form';
+import actionsContextMixin from './mixins/actions-context';
+import watchersMixin from './mixins/watchers';
 
 export default {
   name: 'ElBasicTable',
   components: { ElTable, ElPagination, ElBasicForm, ElBasicTableColumn },
+  mixins: [fetchMixin, paginationMixin, formMixin, actionsContextMixin, watchersMixin],
   provide() {
     return {
       // 提供一个函数来获取最新的 $scopedSlots，保证响应性
@@ -224,153 +231,12 @@ export default {
         indexColumnProps: this.indexColumnProps,
         rowSelection: this.rowSelection
       });
-    },
-    showPagination() {
-      // 仅当显示标志为真且存在总数（或页数）时显示分页
-      if (!this.showPaginationFlag) return false;
-      const p = this.internalPagination;
-      return !!p && (p.total != null || p.pageCount != null);
-    },
-    tableActionContext() {
-      return {
-      // 批量更新表格属性（列、数据、loading、分页、选中、索引列、标题、搜索条件等）
-        setProps: this.setProps,
-        // 设置表格 loading 状态
-        setLoading: this.setLoading,
-        // 重新加载数据（携带分页与搜索条件）
-        reload: this.reload,
-        // 获取当前表格数据源副本
-        getDataSource: this.getDataSource,
-        // 清空表格选中行（Element UI 原生方法）
-        clearSelection: this.clearSelection,
-        // 设置列配置
-        setColumns: this.setColumns,
-        // 设置数据源（自动补齐 key）
-        setDataSource: this.setDataSource,
-        // 获取最近一次接口返回的原始数据
-        getRawDataSource: this.getRawDataSource,
-        // 获取当前列配置副本
-        getColumns: this.getColumns,
-        // 设置表格数据（别名方法）
-        setTableData: this.setTableData,
-        // 设置分页信息
-        setPagination: this.setPagination,
-        // 根据主键删除已选中的某一行
-        deleteSelectRowByKey: this.deleteSelectRowByKey,
-        // 获取当前选中行的主键数组
-        getSelectRowKeys: this.getSelectRowKeys,
-        // 获取当前选中的行数据数组
-        getSelectRows: this.getSelectRows,
-        // 清空所有已选中的行主键
-        clearSelectedRowKeys: this.clearSelectedRowKeys,
-        // 手动设置选中行的主键数组
-        setSelectedRowKeys: this.setSelectedRowKeys,
-        // 获取分页组件实例引用
-        getPaginationRef: this.getPaginationRef,
-        // 获取当前是否显示分页
-        getShowPagination: this.getShowPagination,
-        // 设置是否显示分页
-        setShowPagination: this.setShowPagination,
-        // 获取行选择配置对象
-        getRowSelection: this.getRowSelection,
-        // 批量更新表格数据（按索引）
-        updateTableData: this.updateTableData,
-        // 更新指定行的数据
-        updateTableDataRecord: this.updateTableDataRecord,
-        // 删除指定行的数据
-        deleteTableDataRecord: this.deleteTableDataRecord,
-        // 插入新行数据
-        insertTableDataRecord: this.insertTableDataRecord,
-        // 获取搜索表单实例
-        getForm: this.getForm,
-        // 展开所有可展开的行（树形表格）
-        expandAll: this.expandAll,
-        // 收起所有展开的行（树形表格）
-        collapseAll: this.collapseAll,
-        // 重新计算表格高度
-        redoHeight: this.redoHeight
-      };
     }
+    // showPagination/tableActionContext 已拆分至 mixins，保持本组件只关注数据与渲染
   },
-  watch: {
-    dataSource: {
-      immediate: true,
-      /**
-       * 监听本地数据源变更，补齐 key 后写入内部态
-       * @param {Array<Object>} nextDataSource 新数据源
-       */
-      handler(nextDataSource) {
-        this.internalData = Array.isArray(nextDataSource) ? this.ensureKeys(nextDataSource) : [];
-      }
-    },
-    columns: {
-      immediate: true,
-      /** 监听列配置变更，写入内部态 */
-      handler(nextColumns) {
-        this.internalColumns = Array.isArray(nextColumns) ? nextColumns : [];
-      }
-    },
-    loading: {
-      immediate: true,
-      /** 监听外部 loading 状态 */
-      handler(nextLoading) {
-        this.internalLoading = !!nextLoading;
-      }
-    },
-    pagination: {
-      immediate: true,
-      /** 监听分页配置变更，归一化后写入内部态 */
-      handler(nextPagination) {
-        this.internalPagination = this.normalizePagination(nextPagination);
-      }
-    },
-    searchInfo: {
-      immediate: true,
-      /** 监听外部搜索条件（受控） */
-      handler(nextSearchInfo) {
-        this.internalSearchInfo = nextSearchInfo || {};
-      }
-    }
-  },
+
   methods: {
-    /**
-     * 为数据源补齐稳定的行键（key）
-     * @param {Array<Object>} list 原始数据源
-     * @returns {Array<Object>} 带有 key 的数据源
-     */
-    ensureKeys(list) {
-      return uEnsureKeys(list, this.autoCreateKey, this.rowKey);
-    },
     ...actions,
-    /**
-     * 归一化分页配置，提供默认值与安全检查
-     * @param {Object} p 原始分页配置
-     * @returns {Object} 规范化后的分页配置
-     */
-    normalizePagination(paginationConfig) {
-      return uNormalizePagination(paginationConfig);
-    },
-    /**
-     * 处理页码变更，支持翻页时清空选中行
-     * @param {number} page 新页码
-     */
-    handlePageChange(nextPage) {
-      this.internalPagination.currentPage = nextPage;
-      if (this.clearSelectOnPageChange) this.clearSelectedRowKeys();
-      this.reload();
-      this.$emit('page-change', nextPage);
-    },
-    /**
-     * 处理页容量变更，重置到第 1 页并刷新
-     * @param {number} size 新页容量
-     */
-    handlePageSizeChange(nextPageSize) {
-      this.internalPagination.pageSize = nextPageSize;
-      this.internalPagination.currentPage = 1;
-      if (this.clearSelectOnPageChange) this.clearSelectedRowKeys();
-      this.reload();
-      this.$emit('page-size-change', nextPageSize);
-    },
     /**
      * 运行时设置表格属性（列/数据/loading/分页/选中/索引列/标题/搜索条件等）
      * @param {Object} nextProps 需更新的属性集合
@@ -398,136 +264,8 @@ export default {
     /** 设置数据源（别名） */
     setTableData(values) { this.setDataSource(values); },
     /** 合并设置分页信息 */
-    setPagination(info) { this.internalPagination = { ...this.internalPagination, ...(info || {}) }; },
-    /**
-     * 远程刷新数据（携带分页与搜索条件）
-     * @returns {void}
-     */
-    reload(extraParams = {}) {
-      const requestApi = this.api;
-      if (typeof requestApi !== 'function') return;
-      this.internalLoading = true;
-      const currentPage = this.internalPagination.currentPage;
-      const pageSize = this.internalPagination.pageSize;
-      const formState = (this.formActions && typeof this.formActions.getFieldsValue === 'function')
-        ? (this.formActions.getFieldsValue() || {})
-        : (this.internalSearchInfo || {});
+    setPagination(info) { this.internalPagination = { ...this.internalPagination, ...(info || {}) }; }
 
-      /** 额外参数 */
-      const extra = extraParams || {};
-      /**
-       * 合并分页参数
-       * 优先使用 extraParams 中的分页信息
-       * 其次使用 extraParams 中的 currentPage/pageSize
-       * 最后使用内部分页
-       */
-      const paginationPayload = (() => {
-        // 基础分页信息：当前页码与每页条数
-        const basePagination = { currentPage, pageSize };
-        // 若 extraParams 中提供了 pagination 对象 优先使用
-        if (extra && typeof extra.pagination === 'object') {
-          return { ...basePagination, ...extra.pagination };
-        }
-        // 若 extraParams 中单独提供了 currentPage 或 pageSize 覆盖对应字段
-        if (typeof extra.currentPage === 'number' || typeof extra.pageSize === 'number') {
-          const overridden = { ...basePagination };
-          if (typeof extra.currentPage === 'number') {
-            overridden.currentPage = extra.currentPage;
-          }
-          if (typeof extra.pageSize === 'number') {
-            overridden.pageSize = extra.pageSize;
-          }
-          return overridden;
-        }
-        // 否则直接返回基础分页信息
-        return basePagination;
-      })();
-      /**
-       * 合并搜索条件
-       * 优先使用 extraParams 中的 searchInfo 对象
-       * 其次将 extraParams 自身作为搜索参数
-       * 最后使用表单值
-       */
-      const searchPayload = (() => {
-        // 若 extraParams 中显式提供了 searchInfo 对象 与表单值合并
-        if (extra && typeof extra.searchInfo === 'object') {
-          return { ...formState, ...extra.searchInfo };
-        }
-        // 若 extraParams 中存在任意字段 将其整体作为搜索参数与表单值合并
-        if (extra && Object.keys(extra).length) {
-          return { ...formState, ...extra };
-        }
-        return { ...formState };
-      })();
-      // 构造最终请求参数对象 包含分页、搜索条件及钩子函数
-      const finalParams = createFetchParams({
-        pagination: paginationPayload,
-        fetchSetting: this.fetchSetting,
-        searchInfo: searchPayload,
-        beforeFetch: this.beforeFetch,
-        handleSearchInfoFn: this.handleSearchInfoFn
-      });
-      try {
-        const result = requestApi(finalParams);
-        if (result && result.then) {
-          result.then((response) => {
-            return this.applyApiResult(typeof this.afterFetch === 'function' ? this.afterFetch(response) : response);
-          }).catch((error) => {
-            this.lastFetchError = error;
-            this.$emit('fetch-error', error);
-          }).finally(() => {
-            this.internalLoading = false;
-          });
-        } else {
-          this.applyApiResult(typeof this.afterFetch === 'function' ? this.afterFetch(result) : result);
-          this.internalLoading = false;
-        }
-      } catch (error) {
-        this.lastFetchError = error;
-        this.$emit('fetch-error', error);
-        this.internalLoading = false;
-      }
-    },
-    /**
-     * 应用接口返回数据至表格
-     * @param {Object|Array} res 接口返回数据
-     * @returns {void}
-     */
-    applyApiResult(response) {
-    // 应用接口返回数据至表格
-      if (!response) {
-        this.internalData = []; this.rawResult = response; return;
-      }
-      if (Array.isArray(response)) {
-        this.internalData = this.ensureKeys(response);
-        this.rawResult = response;
-        return;
-      }
-      /** 字段映射 列表字段名 总数字段名 */
-      const { listField, totalField } = this.fetchSetting;
-      /** 数据列表 优先取 listField 字段 其次取 items/list/data 字段 */
-      const listByMapping = getByPath(response, listField);
-      const items = listByMapping != null ? listByMapping : (response.items || response.list || response.data || []);
-      /** 总条数 取值 优先取 totalField 字段 其次取 page.total 字段 */
-      const totalByMapping = getByPath(response, totalField);
-      const total = totalByMapping != null ? totalByMapping : (response.page && response.page.total);
-      this.internalData = Array.isArray(items) ? this.ensureKeys(items) : [];
-      if (typeof total === 'number') this.internalPagination.total = total;
-      this.rawResult = response;
-      this.$emit('fetch-success', { items: this.internalData, total: this.internalPagination.total });
-    },
-    /** 表单注册回调，保存表单动作对象 */
-    onFormRegister(actions) { this.formActions = actions; },
-    /**
-     * 搜索表单提交，更新内部搜索条件并刷新
-     * @param {Object} payload 表单提交的搜索条件
-     */
-    onFormSubmit(payload) {
-      this.internalSearchInfo = payload || {};
-      this.$emit('form-submit', payload);
-      this.$emit('update:searchInfo', payload);
-      this.reload({});
-    }
   },
   mounted() {
     this.$emit('register', this.tableActionContext);
