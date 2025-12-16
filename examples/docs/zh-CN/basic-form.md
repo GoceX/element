@@ -8,18 +8,18 @@
 
 :::demo 使用 `schemas` 定义表单结构，支持常用组件与规则校验
 ```html
-<el-basic-form :schemas="schemas" :labelWidth="120" @submit="handleSubmit"  />
+<el-basic-form :schemas="schemas" :labelWidth="120" labelAlign="between" @submit="handleSubmit"  />
 <script>
   export default {
     data() {
       return {
         schemas: [
           {
-            field: 'field1',
+            field: 'field',
             component: 'Input',
-            label: '字段1',
+            label: '字段',
             defaultValue: '',
-            componentProps: { placeholder: '请输入',disabled: true,},
+            componentProps: { placeholder: '请输入'},
             rules: [{ required: true, message: '必填', trigger: 'blur' }],
             colProps: { span: 12 }
           },
@@ -27,7 +27,9 @@
             field: 'pwd',
             component: 'InputPassword',
             label: '密码',
+            // required: true,
             componentProps: { placeholder: '请输入密码', showPassword: true },
+            rules: [{ required: true, message: '必填', trigger: 'blur' }],
             colProps: { span: 12 }
           },
           {
@@ -552,90 +554,25 @@
 ```
 :::
 
-### API
-`Methods`见下方说明
 
 ### Methods
 
-**getFieldsValue**
+| 方法 | 类型 | 说明 |
+| --- | --- | --- |
+| `getFieldsValue` | `() => Recordable` | 获取表单值 |
+| `setFieldsValue` | `<T>(values: T) => Promise<void>` | 设置表单字段值 |
+| `resetFields` | `() => Promise<void>` | 重置表单值 |
+| `validateFields` | `(nameList?: NamePath[]) => Promise<boolean>` | 校验指定表单项 |
+| `validate` | `(nameList?: NamePath[]) => Promise<boolean>` | 校验整个表单 |
+| `submit` | `() => Promise<void>` | 提交表单 |
+| `scrollToField` | `(name: NamePath, options?: ScrollOptions) => Promise<void>` | 滚动到对应字段位置 |
+| `clearValidate` | `(name?: string | string[]) => Promise<void>` | 清空校验 |
+| `setProps` | `(formProps: Partial<FormProps>) => Promise<void>` | 设置表单 Props（亦可标签传递或初始化 `useForm(props)`） |
+| `removeSchemaByField` | `(field: string | string[]) => Promise<void>` | 根据 field 删除 Schema |
+| `appendSchemaByField` | `(schema: FormSchema, prefixField?: string, first?: boolean) => Promise<void>` | 插入到指定 `field` 后；未传则插入最后；`first=true` 插入第一个位置 |
+| `updateSchema` | `(data: Partial<FormSchema> | Partial<FormSchema>[]) => Promise<void>` | 更新表单的 schema（仅更新传入的部分） |
 
-类型: `() => Recordable;`
-
-说明: 获取表单值
-
-**setFieldsValue**
-
-类型: `<T>(values: T) => Promise<void>`
-
-说明: 设置表单字段值
-
-**resetFields**
-
-类型: `()=> Promise<void>`
-
-说明: 重置表单值
-
-**validateFields**
-
-类型: `(nameList?: NamePath[]) => Promise<any>`
-
-说明: 校验指定表单项
-
-**validate**
-
-类型: `(nameList?: NamePath[]) => Promise<any>`
-
-说明: 校验整个表单
-
-**submit**
-
-类型: `() => Promise<void>`
-
-说明: 提交表单
-
-**scrollToField**
-
-类型: `(name: NamePath, options?: ScrollOptions) => Promise<void>`
-
-说明: 滚动到对应字段位置
-
-**clearValidate**
-
-类型: `(name?: string | string[]) => Promise<void>`
-
-说明: 清空校验
-
-**setProps**
-
-::: tip
-
-设置表单的 props 可以直接在标签上传递，也可以使用 setProps，或者初始化直接写 useForm(props)
-
-:::
-
-类型: `(formProps: Partial<FormProps>) => Promise<void>`
-
-说明: 设置表单 Props
-
-**removeSchemaByField**
-
-类型: `(field: string | string[]) => Promise<void>`
-
-说明: 根据 field 删除 Schema
-
-**appendSchemaByField**
-
-类型: `( schema: FormSchema, prefixField: string | undefined, first?: boolean | undefined ) => Promise<void>`
-
-说明: 插入到指定 filed 后面，如果没传指定 field，则插入到最后,当 first = true 时插入到第一个位置
-
-**updateSchema**
-
-类型: `(data: Partial<FormSchema> | Partial<FormSchema>[]) => Promise<void>`
-
-说明: 更新表单的 schema, 只更新函数所传的参数
-
-e.g
+示例：
 
 ```ts
 updateSchema({ field: 'filed', componentProps: { disabled: true } });
@@ -658,7 +595,7 @@ updateSchema([
 | model | `object` | - | - | 外部表单数据模型（不传则使用内部模型） |
 | rules | `object` | - | - | ElementUI 校验规则对象 |
 | labelPosition | `string` | - | `left`/`right`/`top` | 标签位置（被 `labelAlign` 覆盖） |
-| labelAlign | `string` | - | `left`/`right`/`top` | 标签对齐方式（优先生效） |
+| labelAlign | `string` | - | `left`/`right`/`top`/`between` | 标签对齐方式（优先生效） |
 | labelWidth | `number|string` | - | - | 标签宽度，支持数字像素或字符串 |
 | inline | `boolean` | `false` | - | 行内表单 |
 | size | `string` | - | `medium`/`small`/`mini` | 统一尺寸，透传到子组件 |
@@ -672,6 +609,7 @@ updateSchema([
 | autoFocusFirstItem | `boolean` | `false` | - | 挂载后自动聚焦第一个输入框 |
 | compact | `boolean` | - | - | 紧凑样式（暂不支持） |
 | autoSetPlaceHolder | `boolean` | `true` | - | 常见输入组件自动占位文案 |
+| autoSetClearable | `boolean` | `true` | - | 自动为支持的组件开启 `clearable` |
 | autoSubmitOnEnter | `boolean` | `false` | - | 回车自动提交 |
 | rulesMessageJoinLabel | `boolean` | `false` | - | 校验信息是否拼接标签文本 |
 | showAdvancedButton | `boolean` | `false` | - | 显示展开/收起按钮，控制高级项 |
@@ -687,6 +625,8 @@ updateSchema([
 | resetButtonText | `string` | `重置` | - | 重置按钮文本 |
 | resetFunc | `() => Promise<void>` | - | - | 自定义重置钩子，成功后执行内部重置 |
 | submitFunc | `() => Promise<void>` | - | - | 自定义提交钩子，成功后触发 `submit` 事件 |
+| tableAction | `object` | - | - | 表格方法集上下文（供 `componentProps` 函数使用） |
+| actionButton | `Array` | - | - | 操作区自定义按钮数组，项形如 `{ text, click, ...el-button props }` |
 
 ### 说明
 
@@ -724,7 +664,7 @@ fieldMapToTime: [
 | rulesMessageJoinLabel | `boolean` | false | - | 校验信息是否加入 label |
 | itemProps | `any` | - | - | 参考下方 FormItem |
 | colProps | `ColEx` | - | - | 参考上方 actionColOptions |
-| defaultValue | `object` | - | - | 所渲渲染组件的初始值 |
+| defaultValue | `any` | - | - | 组件初始值，用于生成内部模型 |
 | render | `(renderCallbackParams: RenderCallbackParams) => VNode / VNode[] / string` | - | - | 自定义渲染组件 |
 | renderColContent | `(renderCallbackParams: RenderCallbackParams) => VNode / VNode[] / string` | - | - | 自定义渲染组件（需要自行包含 formItem） |
 | renderComponentContent | `(renderCallbackParams: RenderCallbackParams) => any / string` | - | - | 自定义渲染组内部的 slot |
@@ -733,7 +673,7 @@ fieldMapToTime: [
 | show | ` boolean / ((renderCallbackParams: RenderCallbackParams) => boolean)` | - | - | 动态判断当前组件是否显示，css 控制，不会删除 dom |
 | ifShow | ` boolean / ((renderCallbackParams: RenderCallbackParams) => boolean)` | - | - | 动态判断当前组件是否显示，js 控制，会删除 dom |
 | dynamicDisabled | `boolean / ((renderCallbackParams: RenderCallbackParams) => boolean) ` | - | - | 动态判断当前组件是否禁用 |
-| dynamicRules | `boolean / ((renderCallbackParams: RenderCallbackParams) => boolean)` | - | - | 动态判返当前组件你校验规则 |
+| dynamicRules | `ValidationRule[] / ((renderCallbackParams: RenderCallbackParams) => ValidationRule[])` | - | - | 动态返回当前组件的校验规则 |
 
 **RenderCallbackParams**
 
@@ -785,18 +725,8 @@ export interface RenderCallbackParams {
 ```ts
 export interface HelpComponentProps {
   maxWidth: string;
-  // 是否显示序号
-  showIndex: boolean;
-  // 文本列表
-  text: any;
-  // 颜色
   color: string;
-  // 字体大小
   fontSize: string;
-  icon: string;
-  absolute: boolean;
-  // 定位
-  position: any;
 }
 ```
 
@@ -810,15 +740,19 @@ export type ComponentType =
   | 'InputPassword'
   | 'InputSearch'
   | 'InputTextArea'
+  | 'InputAutoComplete'
   | 'InputNumber'
   | 'Select'
-  | 'ApiSelect' // 映射为 el-select，不内置远程加载
+  | 'ApiSelect'
+  | 'ApiTree'
+  | 'ApiCascader'
   | 'TreeSelect' // 映射为 el-cascader
+  | 'Cascader'
+  | 'Radio'
   | 'RadioButtonGroup'
   | 'RadioGroup'
   | 'Checkbox'
   | 'CheckboxGroup'
-  | 'Cascader'
   | 'DatePicker'
   | 'MonthPicker'
   | 'RangePicker'
@@ -828,17 +762,19 @@ export type ComponentType =
   | 'Upload'
   | 'Slider'
   | 'Rate'
+  | 'ColorPicker'
+  | 'Transfer'
   | 'Divider';
 ```
 
 ### Divider schema 说明
 
-`Divider`类型用于在`schemas`中占位，将会渲染成一个分割线（始终占一整行的版面），可以用于较长表单的版面分隔。请只将 Divider 类型的 schema 当作一个分割线，而不是一个常规的表单字段。
+`Divider`类型用于在`schemas`中占位，将会渲染成一个分割线（始终占一整行的版面），可用于较长表单的分组与分隔。
 
-- **`Divider`仅在`showAdvancedButton`为 false 时才会显示**（也就是说如果启用了表单收起和展开功能，`Divider`将不会显示）
-- `Divider` 使用`schema`中的`label`以及`helpMessage`来渲染分割线中的提示内容
-- `Divider` 可以使用`componentProps`来设置除`type`之外的 props
-- `Divider` 不会渲染`AFormItem`，因此`schema`中除`label`、`componentProps`、`helpMessage`、`helpComponentProps`以外的属性不会被用到
+- 始终占一整列渲染，不随高级展开/收起逻辑隐藏
+- 使用 `schema.label` 与 `schema.helpMessage` 渲染分割线与提示
+- 可通过 `componentProps` 设置除 `type` 之外的属性
+- 不渲染常规表单项容器，仅用于展示分隔与说明
 
 ## 自行添加需要的组件类型
 
@@ -1065,9 +1001,6 @@ useComponentRegister('StrengthMeter', StrengthMeter);
 </script>
 ```
 
----
-
-见 [form]()
 
 ## Slots
 
@@ -1123,20 +1056,16 @@ export default {
 </script>
 ```
 
-### Props
-
+### Props（通用）
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| numberToString | `boolean` | `false` | 是否将`number`值转化为`string` |
-| api | `(...arg: any)=>Promise<{ label: string; value: string; children?: any[] }[]>` | - | 请求接口，接受一个 Promise 或 thenable |
-| params | `object` | - | 接口参数。此属性改变时会自动重新加载接口数据 |
-| resultField | `string` | - | 接口返回的字段，如果接口返回数组，可以不填。支持`x.x.x`格式 |
-| labelField | `string` | `label` | 下拉数组项内`label`显示文本的字段，支持`x.x.x`格式 |
-| valueField | `string` | `value` | 下拉数组项内`value`实际值的字段，支持`x.x.x`格式 |
-| immediate | `boolean` | `true` | 是否立即请求接口，否则将在第一次点击时候触发请求 |
-| beforeFetch | `(T)=>T` | - | 请求之前对参数进行处理 |
-| afterFetch | `(T)=>T` | - | 请求之后对返回值进行处理 |
+| api | `Function` | - | 请求函数，返回数组或 Promise |
+| params | `object` | `{}` | 请求参数，对象变更会触发重新加载 |
+| resultField | `string` | `''` | 结果字段路径（支持 `x.x.x`）；为空且返回为数组时直接使用 |
+| immediate | `boolean` | `true` | 是否在挂载时立即请求 |
+| beforeFetch | `(T)=>T` | - | 请求前处理参数 |
+| afterFetch | `(T)=>T` | - | 请求后处理返回值（返回数组） |
 ## RadioButtonGroup
 
 Radio Button 风格的选择按钮

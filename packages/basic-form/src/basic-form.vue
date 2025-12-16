@@ -1,10 +1,10 @@
 <template>
   <!-- 表单容器：绑定模型、校验规则与基础配置，拦截 Enter 键触发回车提交 -->
-  <el-form ref="formRef" :model="formModel" :rules="formRules" :label-position="labelAlign || labelPosition"
+  <el-form ref="formRef" :class="['el-basic-form']" :model="formModel" :rules="formRules" :label-position="labelAlign || labelPosition"
     :label-width="normalizedLabelWidth" :inline="inline" :size="size" :disabled="disabled"
     @keydown.native.enter.prevent="handleEnterSubmit">
     <!-- 栅格行：设置统一 gutter 与可选的行内样式 -->
-    <el-row :gutter="14" :style="baseRowStyle">
+    <el-row :gutter="14" :style="baseRowStyle" :class="`el-basic-form__label-${labelAlign}`">
       <!-- 逐项渲染 Schema 对应的表单项组件，并透传全局占位与校验文案配置 -->
       <ElBasicFormItem
         v-for="(schema, idx) in effectiveSchemas"
@@ -20,41 +20,33 @@
         :form-action-type="computedFormActionType"
       />
       <!-- 操作按钮区域：提交、重置、高级展开/收起等 -->
-      <template v-if="showActionButtonGroup">
-        <!-- 通过 computedActionColOptions 控制该列的栅格属性，如 span/offset -->
-        <el-col v-bind="computedActionColOptions" class="el-form-item__action">
-            <!-- 提交按钮：可配置文本与属性，点击后触发表单提交逻辑 -->
-            <el-button v-if="computedShowSubmitButton" v-bind="computedSubmitButtonOptions" @click="submit">
-              {{ computedSubmitButtonText }}
-            </el-button>
-            <!-- 重置按钮：点击后恢复初始值并触发 reset 事件 -->
-            <el-button v-if="computedShowResetButton" v-bind="computedResetButtonOptions" @click="reset">
-              {{ computedResetButtonText }}
-            </el-button>
-            <template v-if="computedActionCustomButtons"> 
-              <el-button
-                v-for="(customButton, idx) in computedActionCustomButtons"
-                :key="customButton && (customButton.key || customButton.text || idx)"
-                v-bind="customButton"
-                @click="customButton.click({tableAction})"
-              >
-                {{ customButton.text }}
-              </el-button>
-            </template>
-            <!-- 高级按钮：展开/收起更多字段，仅在开启 showAdvancedButton 时显示 -->
-            <el-button v-if="computedShowAdvancedButton" type="text" @click="toggleAdvanced">
-              {{ advancedOpen ? '收起' : '展开' }}
-            </el-button>
-            <!-- 外部可注入的操作插槽，例如自定义按钮 -->
-            <slot name="action"></slot>
-        </el-col>
-      </template>
+      <BasicFormAction
+        v-if="showActionButtonGroup"
+        :action-col-options="computedActionColOptions"
+        :show-submit-button="computedShowSubmitButton"
+        :show-reset-button="computedShowResetButton"
+        :submit-button-options="computedSubmitButtonOptions"
+        :reset-button-options="computedResetButtonOptions"
+        :submit-button-text="computedSubmitButtonText"
+        :reset-button-text="computedResetButtonText"
+        :action-button="computedActionCustomButtons"
+        :show-advanced-button="computedShowAdvancedButton"
+        :advanced-open="advancedOpen"
+        :table-action="tableAction"
+        :on-submit="submit"
+        :on-reset="reset"
+        :on-toggle-advanced="toggleAdvanced"
+      >
+        <template slot="action"><slot name="action"></slot></template>
+      </BasicFormAction>
     </el-row>
   </el-form>
 </template>
 <script>
-import { formatDate, isDateObject } from 'rowinself-ui/src/utils/date-util';
+// import { formatDate, isDateObject } from 'rowinself-ui/src/utils/date-util';
 import ElBasicFormItem from './basic-form-item.vue';
+import BasicFormAction from './basic-form-action.vue';
+import basicFormRuntime from './mixins/basic-form-runtime';
 /*
  * 组件：ElBasicForm
  * 功能：基于 Schema 配置快速构建表单，支持动态 Schema、占位符、校验规则拼接、
@@ -64,7 +56,8 @@ import ElBasicFormItem from './basic-form-item.vue';
 
 export default {
   name: 'ElBasicForm',
-  components: { ElBasicFormItem },
+  components: { ElBasicFormItem, BasicFormAction },
+  mixins: [basicFormRuntime],
   props: {
     // 外部传入的表单数据模型；缺省时组件维护 internalModel
     model: Object,
@@ -255,271 +248,11 @@ export default {
       };
     }
   },
-  watch: {
-    schemas: {
-      immediate: true,
-      handler(val) {
-        // 根据 schemas 初始值生成/同步 internalModel（当未传入外部 model 时）
-        const next = {};
-        (val || []).forEach((schemaItem) => {
-          let init = schemaItem.defaultValue !== undefined ? schemaItem.defaultValue : this.formModel[schemaItem.field];
-          const comp = schemaItem.component;
-          if (init === undefined) {
-            if (comp === 'CheckboxGroup' || comp === 'CheckboxButtonGroup' || comp === 'Upload') init = [];
-            if (comp === 'Checkbox') init = false;
-            if (comp === 'InputNumber') init = 0;
-          }
-          next[schemaItem.field] = init;
-        });
-        if (!this.model) {
-          Object.keys(next).forEach((fieldName) => {
-            if (this.internalModel[fieldName] === undefined) this.$set(this.internalModel, fieldName, next[fieldName]);
-          });
-          Object.keys(this.internalModel).forEach((fieldName) => {
-            if (!(fieldName in next)) this.$delete(this.internalModel, fieldName);
-          });
-        }
-      }
-    },
-    rules: {
-      immediate: true,
-      handler(val) {
-        // 动态更新校验规则对象
-        this.formRules = val || {};
-      }
-    }
-  },
+  watch: {},
   methods: {
-    /**
-     * 回车提交事件处理
-     * @returns {void}
-     */
     handleEnterSubmit() {
       const autoSubmitEnabled = this._autoSubmitOnEnter != null ? this._autoSubmitOnEnter : this.autoSubmitOnEnter;
       if (autoSubmitEnabled) this.submit();
-    },
-    /**
-     * 统一宽度为字符串形式
-     * @param {string|number|null|undefined} val
-     * @returns {string|null}
-     */
-    normalizeWidth(val) {
-      if (val === undefined || val === null) return null;
-      if (typeof val === 'number') return `${val}px`;
-      return val;
-    },
-    /**
-     * 将区间时间字段映射为起止字段
-     * @param {Object} values 表单值
-     * @returns {Object} 处理后的值
-     */
-    mapFieldToTime(values) {
-      const output = { ...values };
-      try {
-        (this.fieldMapToTime || []).forEach((item) => {
-          const [srcField, startField, endField, fmt] = item;
-          const val = output[srcField];
-          if (Array.isArray(val) && val.length >= 2) {
-            // 区分 Date 对象与字符串，按需格式化
-            const startValue = isDateObject(val[0]) ? formatDate(val[0], fmt || 'yyyy-MM-dd') : val[0];
-            const endValue = isDateObject(val[1]) ? formatDate(val[1], fmt || 'yyyy-MM-dd') : val[1];
-            output[startField] = startValue;
-            output[endField] = endValue;
-            delete output[srcField];
-          }
-        });
-      } catch (err) {
-        // eslint-disable-next-line no-console
-        console.error('[ElBasicForm] mapFieldToTime error:', err);
-      }
-      return output;
-    },
-    /**
-     * 合并动态数据到提交载荷
-     * @param {Object} values 当前表单值
-     * @returns {Object}
-     */
-    mergePayload(values) {
-      const extra = this._mergeDynamicData != null ? this._mergeDynamicData : (this.mergeDynamicData || {});
-      return { ...extra, ...values };
-    },
-    /**
-     * 展开/收起高级字段
-     * @returns {void}
-     */
-    toggleAdvanced() {
-      this.advancedOpen = !this.advancedOpen;
-    },
-    /**
-     * 获取表单当前值快照
-     * @returns {Object}
-     */
-    getFieldsValue() { return { ...this.formModel }; },
-    /**
-     * 批量设置表单值
-     * @param {Object} values
-     * @returns {void}
-     */
-    setFieldsValue(values) { Object.keys(values || {}).forEach((fieldName) => { this.$set(this.formModel, fieldName, values[fieldName]); }); },
-    resetFields() { this.reset(); },
-    /**
-     * 校验指定字段
-     * @param {string[]|string} nameList
-     * @returns {Promise<boolean>|boolean}
-     */
-    validateFields(nameList) {
-      const ref = this.$refs.formRef; if (!ref) return (window && window.Promise) ? window.Promise.resolve(true) : true;
-      if (window && window.Promise) {
-        return new window.Promise((resolve) => { ref.validateField(nameList || [], (msg) => resolve(!msg)); });
-      }
-      let ok = true;
-      ref.validateField(nameList || [], (msg) => { ok = !msg; });
-      return ok;
-    },
-    /**
-     * 整体校验
-     * @param {string[]|undefined} nameList
-     * @returns {Promise<boolean>|boolean}
-     */
-    validate(nameList) {
-      const ref = this.$refs.formRef; if (!ref) return (window && window.Promise) ? window.Promise.resolve(true) : true;
-      if (window && window.Promise) {
-        return new window.Promise((resolve) => { ref.validate((valid) => resolve(valid)); });
-      }
-      let ok = true;
-      ref.validate((valid) => { ok = !!valid; });
-      return ok;
-    },
-    clearValidate(name) { const ref = this.$refs.formRef; if (!ref) return; ref.clearValidate(name); },
-    /**
-     * 滚动到指定字段
-     * @param {string} name
-     * @param {ScrollIntoViewOptions} [options]
-     * @returns {void}
-     */
-    scrollToField(name, options) {
-      const el = this.$el && this.$el.querySelector && this.$el.querySelector(`[for="${name}"]`);
-      const target = el || (this.$el && this.$el.querySelector && this.$el.querySelector(`.el-form-item__content [name='${name}']`));
-      if (target && target.scrollIntoView) target.scrollIntoView(options || { behavior: 'smooth', block: 'center' });
-    },
-    /**
-     * 运行时更新表单属性
-     * @param {Object} formProps
-     * @returns {void}
-     */
-    setProps(formProps) {
-      const nextProps = formProps || {};
-      if ('actionColOptions' in nextProps) this._actionColOptions = nextProps.actionColOptions;
-      if ('baseColProps' in nextProps) this._baseColProps = nextProps.baseColProps;
-      if ('mergeDynamicData' in nextProps) this._mergeDynamicData = nextProps.mergeDynamicData;
-      if ('autoSubmitOnEnter' in nextProps) this._autoSubmitOnEnter = nextProps.autoSubmitOnEnter;
-      if ('rulesMessageJoinLabel' in nextProps) this._rulesMessageJoinLabel = nextProps.rulesMessageJoinLabel;
-      if ('showSubmitButton' in nextProps) this._showSubmitButton = nextProps.showSubmitButton;
-      if ('showResetButton' in nextProps) this._showResetButton = nextProps.showResetButton;
-      if ('submitButtonText' in nextProps) this._submitButtonText = nextProps.submitButtonText;
-      if ('resetButtonText' in nextProps) this._resetButtonText = nextProps.resetButtonText;
-    },
-    // 根据 field 删除 Schema（支持数组）
-    removeSchemaByField(field) {
-      const names = Array.isArray(field) ? field : [field];
-      const src = (this.internalSchemas && this.internalSchemas.length) ? this.internalSchemas : (this.schemas || []);
-      this.internalSchemas = src.filter((schemaItem) => names.indexOf(schemaItem.field) === -1);
-    },
-    // 在指定字段后插入 schema；未指定则插到末尾；first=true 则插到最前
-    appendSchemaByField(schema, prefixField, first) {
-      const src = (this.internalSchemas && this.internalSchemas.length) ? this.internalSchemas.slice() : ((this.schemas || []).slice());
-      const item = { ...(schema || {}) };
-      if (first) {
-        src.unshift(item);
-      } else if (prefixField) {
-        const idx = src.findIndex((schemaItem) => schemaItem.field === prefixField);
-        if (idx !== -1) src.splice(idx + 1, 0, item); else src.push(item);
-      } else {
-        src.push(item);
-      }
-      this.internalSchemas = src;
-    },
-    // 更新一个或多个 schema（按 field 合并）
-    updateSchema(data) {
-      const src = (this.internalSchemas && this.internalSchemas.length) ? this.internalSchemas.slice() : ((this.schemas || []).slice());
-      const items = Array.isArray(data) ? data : [data];
-      const patchMap = Object.create(null);
-      items.forEach((patchSchema) => { if (patchSchema && patchSchema.field) patchMap[patchSchema.field] = patchSchema; });
-      this.internalSchemas = src.map((schemaItem) => (patchMap[schemaItem.field] ? { ...schemaItem, ...patchMap[schemaItem.field] } : schemaItem));
-    },
-    /**
-     * 触发提交
-     * @returns {void}
-     */
-    submit() {
-      const ref = this.$refs.formRef;
-      if (!ref) return;
-      const doSubmit = () => {
-        // 提交前将区间时间映射并合并动态数据
-        const payload = this.mergePayload(this.mapFieldToTime({ ...this.formModel }));
-        this.$emit('submit', payload);
-      };
-      if (typeof this.submitFunc === 'function') {
-        try {
-          if (window && window.Promise) {
-            window.Promise.resolve(this.submitFunc()).then(() => doSubmit()).catch((err) => {
-              // eslint-disable-next-line no-console
-              console.error('[ElBasicForm] submitFunc rejected:', err);
-            });
-          } else {
-            this.submitFunc();
-            doSubmit();
-          }
-        } catch (err) {
-          // eslint-disable-next-line no-console
-          console.error('[ElBasicForm] submitFunc error:', err);
-        }
-        return;
-      }
-      ref.validate((valid) => { if (valid) doSubmit(); });
-    },
-    /**
-     * 重置表单
-     * @returns {void}
-     */
-    reset() {
-      const ref = this.$refs.formRef;
-      if (!ref) return;
-      const doReset = () => {
-        ref.resetFields();
-        const next = {};
-        (this.schemas || []).forEach((schemaItem) => {
-          let init = schemaItem.defaultValue;
-          if (init === undefined) {
-            const comp = schemaItem.component;
-            if (comp === 'CheckboxGroup' || comp === 'CheckboxButtonGroup' || comp === 'Upload') init = [];
-            if (comp === 'Checkbox') init = false;
-            if (comp === 'InputNumber') init = 0;
-          }
-          next[schemaItem.field] = init;
-        });
-        this.internalModel = { ...next };
-        // 重置后对当前值做映射与合并，并向外触发 reset 事件
-        this.$emit('reset', this.mergePayload(this.mapFieldToTime({ ...this.formModel })));
-      };
-      if (typeof this.resetFunc === 'function') {
-        try {
-          if (window && window.Promise) {
-            window.Promise.resolve(this.resetFunc()).then(() => doReset()).catch((err) => {
-              // eslint-disable-next-line no-console
-              console.error('[ElBasicForm] resetFunc rejected:', err);
-            });
-          } else {
-            this.resetFunc();
-            doReset();
-          }
-        } catch (err) {
-          // eslint-disable-next-line no-console
-          console.error('[ElBasicForm] resetFunc error:', err);
-        }
-        return;
-      }
-      doReset();
     }
   },
   mounted() {

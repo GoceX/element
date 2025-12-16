@@ -1,0 +1,29 @@
+@import "mixins/mixins";
+@import "common/var";
+
+@include b(basic-form) {
+  @include e(label-between) {
+    .el-form-item__label {
+      // 设置文字撑开宽度
+      text-align: justify;
+      text-align-last: justify;
+      padding: 0 14px 0 25px;
+      position: relative;
+
+      &::before {
+        position: absolute;
+        left: 10px;
+        // line-height: 1em;
+      }
+    }
+
+    .el-form-item__content {
+
+      // 设置子元素宽度为100%
+      >* {
+        width: 100%;
+      }
+    }
+
+  }
+}
