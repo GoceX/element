@@ -201,6 +201,441 @@
 ```
 :::
 
+### 大屏配置表单示例
+
+:::demo 使用 BasicForm 配置大屏基础信息、背景色和 A/B/C 区标识与分组（sections 模式）
+```html
+<el-basic-form
+  :schemas="schemas"
+  :labelWidth="140"
+  sections
+  labelAlign="between"
+  @submit="handleSubmit"
+/>
+<script>
+  export default {
+    data() {
+      return {
+        schemas: [
+          {
+            // 分组标题独占一行
+            sectionsTitle: '大屏基础信息配置',
+            // 行背景颜色
+            rowColor: '#FFF',
+            // rowColor: '#FFF',
+            // 列属性
+            colProps: { span: 8 },
+            // 标签宽度
+            labelWidth: 200,
+            // 是否必填
+            required: true,
+            sectionsStyle: {
+              backgroundColor: '#F3F4F8',
+              borderRadius: '10px',
+              padding: '14px 0'
+            },
+            sections: [
+              {
+                field: 'templateName',
+                component: 'Input',
+                label: '大屏配置模板名称',
+                defaultValue: '绿色通用板'
+              },
+              {
+                field: 'templateCode',
+                component: 'Input',
+                label: '大屏配置模板编码',
+                defaultValue: 'MB001',
+                colProps: { span: 16 }
+              },
+              {
+                field: 'pageTurnTime',
+                component: 'Input',
+                label: '大屏翻页时间',
+                defaultValue: '8s'
+              },
+              {
+                field: 'showPageNum',
+                component: 'RadioGroup',
+                label: '是否显示大屏页码',
+                defaultValue: '1',
+                componentProps: {
+                  options: [
+                    { label: '是', value: '1' },
+                    { label: '否', value: '0' }
+                  ]
+                }
+              },
+              {
+                field: 'interfaceRefreshTime',
+                component: 'Input',
+                label: '接口刷新时间',
+                defaultValue: '10s'
+              },
+              {
+                field: 'showPopup',
+                component: 'RadioGroup',
+                label: '是否显示弹窗',
+                defaultValue: '1',
+                componentProps: {
+                  options: [
+                    { label: '是', value: '1' },
+                    { label: '否', value: '0' }
+                  ]
+                }
+              },
+              {
+                field: 'popupType',
+                component: 'Select',
+                label: '选择弹窗类型',
+                defaultValue: '1',
+                componentProps: {
+                  options: [
+                    { label: '提示弹窗', value: '1' },
+                    { label: '确认弹窗', value: '0' }
+                  ]
+                }
+              },
+              {
+                field: 'popupShowTime',
+                component: 'Input',
+                label: '弹窗显示时间',
+                defaultValue: '8s'
+              }
+            ]
+          },
+          {
+            sectionsTitle: (h) => h(
+              'div',
+              {
+                style: {
+                  fontSize: '16px',
+                  fontWeight: 'bold',
+                  padding: '14px 0 14px'
+                }
+              },
+              '大屏显示信息配置'
+            ),
+            rowColor: '#FFF',
+            colProps: { span: 12 },
+            labelWidth: 150,
+            required: true,
+            sectionsStyle: {
+              backgroundColor: '#F3F4F8',
+              borderRadius: '10px',
+              padding: '14px 0',
+              margin:'0 0 14px 0'
+            },
+            sections: [
+              {
+                field: 'templateName1',
+                component: 'Select',
+                label: '选择大屏模板',
+                defaultValue: 'MB001',
+                componentProps: { 
+                  options: [{ label: '绿色通用板', value: 'MB001' }] 
+                }
+              },
+              {
+                field: 'templateGrid',
+                component: 'Input',
+                label: '当前模板行/列数',
+                labelWidth: 180,
+                defaultValue: '5 行 5 列'
+              },
+              {
+                field: 'interfaceColor',
+                label: '界面颜色配置',
+                defaultValue: {
+                   selectValue: '#0183ff', 
+                   color1: '#0183ff',
+                   color2: '#0183ff' 
+                },
+                colProps: { span: 24 },
+                component: (h)=>h('ColorPickerLink'),
+                componentProps: {
+                  showAlpha: false,
+                  selectOptions: [
+                    { label: '预设蓝', value: 0,colors: ['#0183b0','#0183ff'] },
+                    { label: '预设绿', value: 1,colors: ['#67a03a','#67c23a'] },
+                    { label: '预设橙', value: 2,colors: ['#a0a23c','#e6a23c'] }
+                  ],
+                  containerStyle: {
+                    display: 'flex',
+                    alignItems: 'stretch'
+                  }
+                }
+              },
+              {
+                sectionsTitle: 'A 区',
+                labelWidth: 125,
+                rowStyle: { 
+                  backgroundColor: '#F5F5F5',
+                  borderRadius: '10px',
+                  margin:'14px 0px',
+                  padding:'14px 0 0 0'
+                },
+                sectionsStyle: {
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: '10px',
+                  padding:'14px',
+                  margin:'0 14px',
+                  width: 'auto'
+                },
+                sections: [
+                  [{
+                    field: 'titleNameA1',
+                    component: 'Input', 
+                    label: '标题名称1',
+                    defaultValue: '诊室',
+                    colProps: { span: 8 }
+                  },
+                  {
+                    field: 'proportionA1',
+                    component: 'Input',
+                    label: '占比',
+                    required: false,
+                    labelWidth: 60,
+                    labelStyle: { padding:'0 14px 0 0' },
+                    defaultValue: '50%',
+                    colProps: { span: 4 }
+                  },
+                  {
+                    field: 'selectDataA1',
+                    component: 'Select',
+                    label: '选择数据',
+                    defaultValue: 'roomName',
+                    colProps: { span: 12 }
+                  }],
+                  [{
+                    field: 'titleNameA2',
+                    component: 'Input',
+                    label: '标题名称2',
+                    defaultValue: '诊室',
+                    colProps: { span: 8 }
+                  },
+                  {
+                    field: 'proportionA2',
+                    component: 'Input',
+                    label: '占比',
+                    required: false,
+                    labelWidth: 60,
+                    labelStyle: { padding:'0 14px 0 0' },
+                    defaultValue: '50%',
+                    colProps: { span: 4 }
+                  },
+                  {
+                    field: 'selectDataA2',
+                    component: 'Select',
+                    label: '选择数据',
+                    defaultValue: 'roomName',
+                    colProps: { span: 12 }
+                  }]
+                ]
+              },
+              {
+                sectionsTitle: 'B 区',
+                labelWidth: 140,
+                rowStyle: { 
+                  backgroundColor: '#F5F5F5',
+                  borderRadius: '10px',
+                  margin:'14px 0px',
+                  padding:'14px 0 0 0'
+                },
+                sectionsStyle: {
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: '10px',
+                  padding:'14px',
+                  margin:'14px',
+                  width: 'auto'
+                },
+                sections: [
+                  [{
+                    field: 'titleNameB1',
+                    component: 'Input',
+                    label: '标题名称1',
+                    defaultValue: '诊室',
+                    colProps: { span: 8 }
+                  },
+                  {
+                    field: 'proportionB1',
+                    component: 'Input',
+                    label: '占比',
+                    required: false,
+                    labelWidth: 60,
+                    labelStyle: { padding:'0 14px 0 0' },
+                    defaultValue: '50%',
+                    colProps: { span: 4 }
+                  },
+                  {
+                    field: 'selectDataB1',
+                    component: 'Select',
+                    label: '选择数据',
+                    defaultValue: 'roomName',
+                    colProps: { span: 12 }
+                  }],
+                  [{
+                    field: 'titleNameB2',
+                    component: 'Input',
+                    label: '标题名称2',
+                    defaultValue: '诊室',
+                    colProps: { span: 8 }
+                  },
+                  {
+                    field: 'proportionB2',
+                    component: 'Input',
+                    label: '占比',
+                    required: false,
+                    labelWidth: 60,
+                    labelStyle: { padding:'0 14px 0 0' },
+                    defaultValue: '50%',
+                    colProps: { span: 4 }
+                  },
+                  {
+                    field: 'selectDataB2',
+                    component: 'Select',
+                    label: '选择数据',
+                    defaultValue: 'roomName',
+                    colProps: { span: 12 }
+                  }]
+                ]
+              },
+              {
+                sectionsTitle: 'C 区',
+                labelWidth: 140,
+                rowStyle: { 
+                  backgroundColor: '#F5F5F5',
+                  borderRadius: '10px',
+                  margin:'14px 0px',
+                  padding:'14px 0 0 0'
+                },
+                sectionsStyle: {
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: '10px',
+                  padding:'14px',
+                  margin:'0 14px',
+                  width: 'auto'
+                },
+                sections: [
+                  [{
+                    field: 'titleNameC1',
+                    component: 'Input',
+                    label: '标题名称1',
+                    defaultValue: '温馨提示',
+                    colProps: { span: 8 }
+                  },
+                  {
+                    field: 'proportionC1',
+                    component: 'Input',
+                    label: '占比',
+                    required: false,
+                    labelWidth: 60,
+                    labelStyle: { padding:'0 14px 0 0' },
+                    defaultValue: '50%',
+                    colProps: { span: 4 }
+                  },
+                  {
+                    field: 'selectDataC1',
+                    component: 'Select',
+                    label: '选择数据',
+                    defaultValue: 'warmPrompt',
+                    colProps: { span: 12 }
+                  },
+                  {
+                    field: 'promptC1',
+                    component: 'InputTextArea',
+                    label: '提示文案',
+                    defaultValue: '',
+                    colProps: { span: 24 }
+                  }],
+                  [{
+                    field: 'titleNameC2',
+                    component: 'Input',
+                    label: '标题名称2',
+                    defaultValue: '温馨提示',
+                    colProps: { span: 8 }
+                  },
+                  {
+                    field: 'proportionC2',
+                    component: 'Input',
+                    label: '占比',
+                    required: false,
+                    labelWidth: 60,
+                    labelStyle: { padding:'0 14px 0 0' },
+                    defaultValue: '50%',
+                    colProps: { span: 4 }
+                  },
+                  {
+                    field: 'selectDataC2',
+                    component: 'Select',
+                    label: '选择数据',
+                    defaultValue: 'warmPrompt',
+                    colProps: { span: 12 }
+                  },
+                  {
+                    field: 'promptC2',
+                    component: 'InputTextArea',
+                    label: '提示文案',
+                    defaultValue: '',
+                    colProps: { span: 24 }
+                  }]
+                ]
+              }
+            ]
+          },
+          {
+            field: 'titleName',
+            component: 'InputTextArea',
+            label: '大屏显示标题配置',
+            labelWidth: 200,
+            defaultValue: '',
+            colProps: { span: 24 }
+          },
+          {
+            field: 'contentName',
+            component: 'InputTextArea',
+            label: '宣教内容配置',
+            defaultValue: '',
+            labelWidth: 200,
+            colProps: { span: 24 }
+          },
+          {
+            field: 'imageName',
+            component: 'InputTextArea',
+            label: '宣教图片配置',
+            defaultValue: '',
+            labelWidth: 200,
+            colProps: { span: 24 }
+          },
+          {
+            field: 'missionType',
+            component: 'RadioGroup',
+            label: '选择宣教方式',
+            labelWidth: 200,
+            defaultValue: 1,
+            componentProps: {
+              options: [
+                { label: '无', value: 0 },
+                { label: '文字', value: 1 },
+                { label: '图片', value: 2 }
+              ]
+            },
+            colProps: { span: 24 }
+          }
+        ]
+      };
+    },
+    methods: {
+      handleSubmit(values) {
+        console.log('大屏配置提交: ', values);
+      }
+    }
+  };
+</script>
+
+```
+:::
+
 ### 分割线 Divider
 
 :::demo 在 `schemas` 中添加 `component: 'Divider'` 渲染整行分割线
@@ -613,6 +1048,7 @@ updateSchema([
 | autoSubmitOnEnter | `boolean` | `false` | - | 回车自动提交 |
 | rulesMessageJoinLabel | `boolean` | `false` | - | 校验信息是否拼接标签文本 |
 | showAdvancedButton | `boolean` | `false` | - | 显示展开/收起按钮，控制高级项 |
+| sections | `boolean` | `false` | - | 是否启用 sections 分组模式，按嵌套 sections 展开 Schema |
 | emptySpan | `number|object` | 0 | - | 空白占位（暂不支持） |
 | autoAdvancedLine | `number` | 3 | - | 未展开时默认保留的行数 |
 | alwaysShowLines | `number` | 1 | - | 未展开时至少保留的行数 |

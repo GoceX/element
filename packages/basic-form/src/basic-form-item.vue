@@ -90,6 +90,7 @@ export default {
         prop: schema.field,
         rules,
         labelWidth: schema.disabledLabelWidth ? null : this.normalizeItemLabelWidth(schema.labelWidth),
+        labelStyle: schema.labelStyle,
         required,
         inlineMessage: schema.inlineMessage,
         showMessage: schema.showMessage,

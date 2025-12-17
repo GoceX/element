@@ -9,6 +9,7 @@ import MainFooter from './components/footer';
 import MainHeader from './components/header';
 import SideNav from './components/side-nav';
 import FooterNav from './components/footer-nav';
+import ColorPickerLink from './components/basic-form/color-picker-link.vue';
 import title from './i18n/title';
 
 import 'packages/theme-chalk/src/index.scss';
@@ -25,6 +26,7 @@ Vue.component('main-footer', MainFooter);
 Vue.component('main-header', MainHeader);
 Vue.component('side-nav', SideNav);
 Vue.component('footer-nav', FooterNav);
+Vue.component('ColorPickerLink', ColorPickerLink);
 
 const globalEle = new Vue({
   data: { $isEle: false } // 是否 ele 用户

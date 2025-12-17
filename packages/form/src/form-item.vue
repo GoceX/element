@@ -10,9 +10,9 @@
     sizeClass ? 'el-form-item--' + sizeClass : ''
   ]">
     <label-wrap
-      :is-auto-width="labelStyle && labelStyle.width === 'auto'"
+      :is-auto-width="mergedLabelStyle && mergedLabelStyle.width === 'auto'"
       :update-all="form.labelWidth === 'auto'">
-      <label :for="labelFor" class="el-form-item__label" :style="labelStyle" v-if="label || $slots.label">
+      <label :for="labelFor" class="el-form-item__label" :style="mergedLabelStyle" v-if="label || $slots.label">
         <slot name="label">{{label + form.labelSuffix}}</slot>
       </label>
     </label-wrap>
@@ -62,6 +62,7 @@
     props: {
       label: String,
       labelWidth: String,
+      labelStyle: [Object, String],
       prop: String,
       required: {
         type: Boolean,
@@ -106,12 +107,18 @@
       labelFor() {
         return this.for || this.prop;
       },
-      labelStyle() {
+      mergedLabelStyle() {
         const ret = {};
-        if (this.form.labelPosition === 'top') return ret;
+        const externalStyle = this.labelStyle || {};
+        if (this.form.labelPosition === 'top') {
+          return externalStyle || {};
+        }
         const labelWidth = this.labelWidth || this.form.labelWidth;
         if (labelWidth) {
           ret.width = labelWidth;
+        }
+        if (externalStyle && typeof externalStyle === 'object') {
+          return Object.assign({}, ret, externalStyle);
         }
         return ret;
       },

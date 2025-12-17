@@ -11,6 +11,9 @@ export declare class ElFormItem extends ElementUIComponent {
   /** Width of label, e.g. '50px' */
   labelWidth: string
 
+  /** Custom label style */
+  labelStyle: object
+
   /** Whether the field is required or not, will be determined by validation rules if omitted */
   required: boolean
 

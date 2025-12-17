@@ -3,6 +3,7 @@
     v-bind="data.attrs"
     v-on="listeners"
     :class="[data.staticClass, 'el-divider', `el-divider--${props.direction}`]"
+    :style="[data.style, props.style]"
   >
     <div
       v-if="slots().default && props.direction !== 'vertical'"
@@ -17,6 +18,10 @@
 export default {
   name: 'ElDivider',
   props: {
+    style: {
+      type: [Object, Array, String],
+      default: ''
+    },
     direction: {
       type: String,
       default: 'horizontal',
