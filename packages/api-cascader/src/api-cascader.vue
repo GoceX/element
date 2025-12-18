@@ -31,12 +31,20 @@ export default {
   },
   methods: {
     normalizeNode(node) {
-      const children = Array.isArray(node && node.children) ? node.children : [];
-      return {
-        label: node && node.label !== undefined ? node.label : '',
-        value: node && node.value !== undefined ? node.value : node,
-        children: children.map(c => this.normalizeNode(c))
+      const origin = node;
+      const isObject = !!(origin && typeof origin === 'object');
+      const children = isObject && Array.isArray(origin.children) ? origin.children : [];
+      const normalized = {
+        label: isObject && origin.label !== undefined ? origin.label : '',
+        value: isObject && origin.value !== undefined ? origin.value : origin
       };
+      if (children.length) {
+        normalized.children = children.map(c => this.normalizeNode(c));
+      }
+      if (isObject && origin.leaf !== undefined) {
+        normalized.leaf = origin.leaf;
+      }
+      return normalized;
     },
     normalizeList(list) {
       const arr = Array.isArray(list) ? list : [];

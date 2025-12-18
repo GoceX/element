@@ -89,8 +89,10 @@
   "descriptions-item": "./packages/descriptions-item/index.js",
   "result": "./packages/result/index.js",
   "api-select": "./packages/api-select/index.js",
+  "api-cascader": "./packages/api-cascader/index.js",
+  "api-tree": "./packages/api-tree/index.js",
   "basic-form": "./packages/basic-form/index.js",
   "basic-table": "./packages/basic-table/index.js",
   "basic-table-column": "./packages/basic-table-column/index.js",
-  "table-action": "./packages/table-action/index.js" 
+  "table-action": "./packages/table-action/index.js"
 }

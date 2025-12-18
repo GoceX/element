@@ -1,4 +1,5 @@
 import { createVue, destroyVM, triggerEvent, wait, waitImmediate } from '../util';
+import calcTextareaHeight from 'packages/input/src/calcTextareaHeight';
 
 describe('Input', () => {
   let vm;
@@ -160,14 +161,23 @@ describe('Input', () => {
 
     var limitSizeInput = vm.$refs.limitSize;
     var limitlessSizeInput = vm.$refs.limitlessSize;
-    expect(limitSizeInput.textareaStyle.height).to.be.equal('117px');
-    expect(limitlessSizeInput.textareaStyle.height).to.be.equal('201px');
+
+    await waitImmediate();
+    const expectedLimited = calcTextareaHeight(limitSizeInput.$refs.textarea, 3, 5);
+    const expectedLimitless = calcTextareaHeight(limitlessSizeInput.$refs.textarea, undefined, undefined);
+
+    expect(limitSizeInput.textareaStyle.height).to.be.equal(expectedLimited.height);
+    expect(limitlessSizeInput.textareaStyle.height).to.be.equal(expectedLimitless.height);
 
     vm.textareaValue = '';
 
     await wait();
-    expect(limitSizeInput.textareaStyle.height).to.be.equal('75px');
-    expect(limitlessSizeInput.textareaStyle.height).to.be.equal('33px');
+
+    const expectedLimitedAfterClear = calcTextareaHeight(limitSizeInput.$refs.textarea, 3, 5);
+    const expectedLimitlessAfterClear = calcTextareaHeight(limitlessSizeInput.$refs.textarea, undefined, undefined);
+
+    expect(limitSizeInput.textareaStyle.height).to.be.equal(expectedLimitedAfterClear.height);
+    expect(limitlessSizeInput.textareaStyle.height).to.be.equal(expectedLimitlessAfterClear.height);
   });
 
   it('focus', async() => {

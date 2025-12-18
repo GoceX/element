@@ -1,13 +1,23 @@
 <template>
   <el-select ref="selectRef" :value="value" v-bind="$attrs" v-on="$listeners" :loading="computedLoading" @input="$emit('input', $event)">
     <template v-if="$slots.prefix" slot="prefix">
-      <slot name="prefix"></slot>
+      <span class="el-api-select__prefix">
+        <slot name="prefix"></slot>
+      </span>
     </template>
     <template v-for="item in items">
-      <el-option-group v-if="item && item.children && item.children.length" :key="getItemKey(item)" :label="item.label">
-        <el-option v-for="child in item.children" :key="getItemKey(child)" :label="child.label" :value="child.value" />
+      <el-option-group v-if="item && item.children && item.children.length" :key="getItemKey(item)" :label="item.label" :disabled="item.disabled">
+        <el-option v-for="child in item.children" :key="getItemKey(child)" :label="child.label" :value="child.value" :disabled="child.disabled">
+          <template v-if="$scopedSlots.option">
+            <slot name="option" :item="child"></slot>
+          </template>
+        </el-option>
       </el-option-group>
-      <el-option v-else :key="`single-${getItemKey(item)}`" :label="item.label" :value="item.value" />
+      <el-option v-else :key="`single-${getItemKey(item)}`" :label="item.label" :value="item.value" :disabled="item.disabled">
+        <template v-if="$scopedSlots.option">
+          <slot name="option" :item="item"></slot>
+        </template>
+      </el-option>
     </template>
     <template v-if="$slots.empty" slot="empty">
       <slot name="empty"></slot>
@@ -77,7 +87,16 @@ export default {
      * @returns {string|number} 用于 v-for 的唯一标识
      */
     getItemKey(item) {
-      return item && item.value !== undefined ? item.value : item && item.label ? item.label : JSON.stringify(item);
+      const value = item && item.value;
+      const label = item && item.label;
+      const isPrimitive = (v) => v == null || ['string', 'number', 'boolean'].includes(typeof v);
+      if (isPrimitive(value)) return value;
+      if (isPrimitive(label)) return label;
+      try {
+        return JSON.stringify(item);
+      } catch (err) {
+        return String(label || '');
+      }
     },
     /**
      * 规范化接口返回的列表数据为统一结构
@@ -86,20 +105,47 @@ export default {
      */
     normalizeList(list) {
       const ensureArray = Array.isArray(list) ? list : [];
-      return ensureArray.map(entry => ({
-        label:
+      const isPrimitive = (v) => v == null || ['string', 'number', 'boolean'].includes(typeof v);
+      const normalizeValue = (val, fallbackLabel) => {
+        if (isPrimitive(val)) return val;
+        if (isPrimitive(fallbackLabel)) return fallbackLabel;
+        try {
+          return JSON.stringify(val);
+        } catch (err) {
+          return '';
+        }
+      };
+      return ensureArray.map(entry => {
+        const label =
           entry && entry.label !== undefined ? entry.label
             : (entry && entry.name !== undefined ? entry.name
-              : (entry && entry.role_name !== undefined ? entry.role_name : '')),
-        value:
-          entry && entry.value !== undefined ? entry.value
-            : (entry && entry.id !== undefined ? entry.id
-              : (entry && entry.role_id !== undefined ? entry.role_id : entry)),
-        children: Array.isArray(entry && entry.children) ? entry.children.map(child => ({
-          label: child && child.label !== undefined ? child.label : (child && child.name !== undefined ? child.name : ''),
-          value: child && child.value !== undefined ? child.value : (child && child.id !== undefined ? child.id : child)
-        })) : []
-      }));
+              : (entry && entry.role_name !== undefined ? entry.role_name : ''));
+
+        const disabled = !!(entry && entry.disabled);
+
+        const children = Array.isArray(entry && entry.children)
+          ? entry.children.map(child => {
+            const childLabel = child && child.label !== undefined ? child.label : (child && child.name !== undefined ? child.name : '');
+            const childValue = child && child.value !== undefined ? child.value : (child && child.id !== undefined ? child.id : child);
+            return {
+              label: childLabel,
+              value: normalizeValue(childValue, childLabel),
+              disabled: !!(child && child.disabled)
+            };
+          })
+          : [];
+
+        const rawValue = entry && entry.value !== undefined ? entry.value
+          : (entry && entry.id !== undefined ? entry.id
+            : (entry && entry.role_id !== undefined ? entry.role_id : entry));
+
+        return {
+          label,
+          value: normalizeValue(rawValue, label),
+          children,
+          disabled
+        };
+      });
     },
     /**
      * 提取接口返回中实际的结果数组

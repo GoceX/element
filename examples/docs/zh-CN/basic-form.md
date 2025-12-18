@@ -291,8 +291,9 @@
                 defaultValue: '1',
                 componentProps: {
                   options: [
-                    { label: '提示弹窗', value: '1' },
-                    { label: '确认弹窗', value: '0' }
+                    { label: '弹窗1', value: '1' },
+                    { label: '弹窗2', value: '2' },
+                    { label: '弹窗3', value: '3' }
                   ]
                 }
               },
@@ -347,11 +348,11 @@
                 field: 'interfaceColor',
                 label: '界面颜色配置',
                 defaultValue: {
-                   selectValue: '#0183ff', 
-                   color1: '#0183ff',
+                   selectValue: 0, 
+                   color1: '#0183b0',
                    color2: '#0183ff' 
                 },
-                colProps: { span: 24 },
+                colProps: { span: 13 },
                 component: (h)=>h('ColorPickerLink'),
                 componentProps: {
                   showAlpha: false,
@@ -601,11 +602,34 @@
           },
           {
             field: 'imageName',
-            component: 'InputTextArea',
             label: '宣教图片配置',
             defaultValue: '',
             labelWidth: 200,
-            colProps: { span: 24 }
+            colProps: { span: 24 },
+            component: 'Upload',
+            componentProps: ({ formModel, schema }) => ({
+              action: '#',
+              accept: 'image/*',
+              listType: 'picture-card',
+              showFileList: false,
+              httpRequest: (options) => {
+                try {
+                  const file = options && options.file;
+                  const url = file ? URL.createObjectURL(file) : '';
+                  if (options && typeof options.onSuccess === 'function') {
+                    options.onSuccess({ data: { url } }, file);
+                  }
+                  return Promise.resolve({ data: { url } });
+                } catch (err) {
+                  if (options && typeof options.onError === 'function') options.onError(err);
+                  return Promise.reject(err);
+                }
+              },
+              onSuccess: (res) => {
+                const url = res && res.data && res.data.url ? res.data.url : '';
+                if (formModel && schema && schema.field) formModel[schema.field] = url;
+              }
+            })
           },
           {
             field: 'missionType',

@@ -1,4 +1,4 @@
-import { createVue, destroyVM, triggerKeyDown } from '../util';
+import { createVue, destroyVM, triggerKeyDown, waitImmediate } from '../util';
 
 describe('Radio', () => {
   let vm;
@@ -275,27 +275,32 @@ describe('Radio', () => {
       }, true);
 
       expect(vm.radio).to.be.equal(6);
-      vm.$nextTick(() => {
-        triggerKeyDown(vm.$refs.radio2.$el, 37);
-        expect(vm.radio).to.be.equal(3);
+      vm.$nextTick(async() => {
+        try {
+          triggerKeyDown(vm.$refs.radio2.$el, 37);
+          await waitImmediate();
+          expect(vm.radio).to.be.equal(3);
 
-        triggerKeyDown(vm.$refs.radio1.$el, 37);
-        expect(vm.radio).to.be.equal(9);
+          triggerKeyDown(vm.$refs.radio1.$el, 37);
+          await waitImmediate();
+          expect(vm.radio).to.be.equal(9);
 
-        vm.$nextTick(() => {
           triggerKeyDown(vm.$refs.radio3.$el, 39);
+          await waitImmediate();
           expect(vm.radio).to.be.equal(3);
 
           triggerKeyDown(vm.$refs.radio1.$el, 39);
+          await waitImmediate();
           expect(vm.radio).to.be.equal(6);
 
-          vm.$nextTick(() => {
-            triggerKeyDown(vm.$refs.radio1.$el, 13);
-            expect(vm.radio).to.be.equal(6);
+          triggerKeyDown(vm.$refs.radio1.$el, 13);
+          await waitImmediate();
+          expect(vm.radio).to.be.equal(6);
 
-            done();
-          });
-        });
+          done();
+        } catch (err) {
+          done(err);
+        }
       });
     });
     describe('Radio Button', () => {

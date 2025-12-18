@@ -90,6 +90,8 @@ import Descriptions from '../packages/descriptions/index.js';
 import DescriptionsItem from '../packages/descriptions-item/index.js';
 import Result from '../packages/result/index.js';
 import ApiSelect from '../packages/api-select/index.js';
+import ApiCascader from '../packages/api-cascader/index.js';
+import ApiTree from '../packages/api-tree/index.js';
 import BasicForm from '../packages/basic-form/index.js';
 import BasicTable from '../packages/basic-table/index.js';
 import BasicTableColumn from '../packages/basic-table-column/index.js';
@@ -183,6 +185,8 @@ const components = [
   DescriptionsItem,
   Result,
   ApiSelect,
+  ApiCascader,
+  ApiTree,
   BasicForm,
   BasicTable,
   BasicTableColumn,
@@ -317,6 +321,7 @@ export default {
   DescriptionsItem,
   Result,
   ApiSelect,
+  ApiCascader,
   BasicForm,
   BasicTable,
   BasicTableColumn,

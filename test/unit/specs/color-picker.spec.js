@@ -1,12 +1,14 @@
-import { createTest, createVue, destroyVM } from '../util';
+import { createTest, createVue, destroyVM, triggerEvent } from '../util';
 import ColorPicker from 'packages/color-picker';
 
 describe('ColorPicker', () => {
   let vm;
 
   afterEach(() => {
-    vm.$destroy(true);
-    destroyVM(vm);
+    if (vm) {
+      vm.$destroy(true);
+      destroyVM(vm);
+    }
     const dropdown = document.querySelector('.el-color-dropdown');
     if (dropdown && dropdown.parentNode) dropdown.parentNode.removeChild(dropdown);
   });
@@ -17,7 +19,7 @@ describe('ColorPicker', () => {
   });
 
   it('should show alpha slider when show-alpha=true', (done) => {
-    const vm = createVue({
+    vm = createVue({
       template: `
         <el-color-picker v-model="color" show-alpha></el-color-picker>
       `,
@@ -55,7 +57,7 @@ describe('ColorPicker', () => {
   const ANIMATION_TIME = 300;
 
   it('should pick a color when confirm button click', (done) => {
-    const vm = createVue({
+    vm = createVue({
       template: `
         <el-color-picker v-model="color"></el-color-picker>
       `,
@@ -81,7 +83,7 @@ describe('ColorPicker', () => {
   });
 
   it('should show correct rgb value', (done) => {
-    const vm = createVue({
+    vm = createVue({
       template: `
         <el-color-picker v-model="color"></el-color-picker>
       `,
@@ -104,7 +106,7 @@ describe('ColorPicker', () => {
   });
 
   it('should init the right color when open', (done) => {
-    const vm = createVue({
+    vm = createVue({
       template: `
         <el-color-picker v-model="color"></el-color-picker>
       `,
@@ -132,7 +134,7 @@ describe('ColorPicker', () => {
   });
 
   it('should clear a color when clear button click', (done) => {
-    const vm = createVue({
+    vm = createVue({
       template: `
         <el-color-picker v-model="color"></el-color-picker>
       `,
@@ -158,7 +160,7 @@ describe('ColorPicker', () => {
   });
 
   it('should change hue when clicking the hue bar', (done) => {
-    const vm = createVue({
+    vm = createVue({
       template: `
         <el-color-picker v-model="color"></el-color-picker>
       `,
@@ -185,7 +187,7 @@ describe('ColorPicker', () => {
   });
 
   it('should change hue when saturation is zero', (done) => {
-    const vm = createVue({
+    vm = createVue({
       template: `
         <el-color-picker v-model="color"></el-color-picker>
       `,
@@ -212,7 +214,7 @@ describe('ColorPicker', () => {
   });
 
   it('should change alpha when clicking the alpha bar', (done) => {
-    const vm = createVue({
+    vm = createVue({
       template: `
         <el-color-picker v-model="color" show-alpha></el-color-picker>
       `,
@@ -239,7 +241,7 @@ describe('ColorPicker', () => {
   });
 
   it('should change saturation and value when clicking the sv-panel', (done) => {
-    const vm = createVue({
+    vm = createVue({
       template: `
         <el-color-picker v-model="color" color-format="hsv"></el-color-picker>
       `,
@@ -267,7 +269,7 @@ describe('ColorPicker', () => {
   });
 
   it('should change color to the selected color', done => {
-    const vm = createVue({
+    vm = createVue({
       template: `
         <el-color-picker v-model="color" show-alpha :predefine="colors"></el-color-picker>
       `,
@@ -318,7 +320,7 @@ describe('ColorPicker', () => {
   });
 
   it('should change selected state of predefined color', done => {
-    const vm = createVue({
+    vm = createVue({
       template: `
         <el-color-picker v-model="color" show-alpha :predefine="colors"></el-color-picker>
       `,
@@ -357,6 +359,96 @@ describe('ColorPicker', () => {
           done();
         });
       });
+    });
+  });
+
+  it('should render input when type=input', (done) => {
+    vm = createVue({
+      template: `
+        <el-color-picker v-model="color" type="input"></el-color-picker>
+      `,
+
+      data() {
+        return {
+          color: '#00ba64'
+        };
+      }
+    }, true);
+
+    vm.$nextTick(() => {
+      const input = vm.$el.querySelector('input');
+      expect(input).to.exist;
+      expect(input.value.trim().toUpperCase()).to.equal('#00BA64');
+      done();
+    });
+  });
+
+  it('should apply width prop when type=input', (done) => {
+    vm = createVue({
+      template: `
+        <el-color-picker v-model="color" type="input" :width="width"></el-color-picker>
+      `,
+
+      data() {
+        return {
+          color: '#00ba64',
+          width: 200
+        };
+      }
+    }, true);
+
+    vm.$nextTick(() => {
+      const elInput = vm.$el.querySelector('.el-input');
+      expect(elInput).to.exist;
+      expect(elInput.style.width).to.equal('200px');
+      expect(elInput.style.minWidth).to.equal('120px');
+      done();
+    });
+  });
+
+  it('should use auto width style when type=input and width is not set', (done) => {
+    vm = createVue({
+      template: `
+        <el-color-picker v-model="color" type="input"></el-color-picker>
+      `,
+
+      data() {
+        return {
+          color: 'rgba(0, 186, 189, 1)'
+        };
+      }
+    }, true);
+
+    vm.$nextTick(() => {
+      const elInput = vm.$el.querySelector('.el-input');
+      expect(elInput).to.exist;
+      expect(elInput.style.width).to.contain('calc(');
+      expect(elInput.style.minWidth).to.equal('120px');
+      done();
+    });
+  });
+
+  it('should update v-model when input confirm', done => {
+    vm = createVue({
+      template: `
+        <el-color-picker v-model="color" type="input"></el-color-picker>
+      `,
+
+      data() {
+        return {
+          color: '#00ba64'
+        };
+      }
+    }, true);
+
+    const input = vm.$el.querySelector('input');
+    input.value = '#ff4500';
+    triggerEvent(input, 'input');
+    triggerEvent(input, 'blur');
+
+    vm.$nextTick(() => {
+      expect(vm.color).to.equal('#FF4500');
+      done();
     });
   });
 });

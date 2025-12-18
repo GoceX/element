@@ -2,12 +2,45 @@
   <div
     :class="[
       'el-color-picker',
+      type === 'input' ? 'el-color-picker--input' : '',
       colorDisabled ? 'is-disabled' : '',
       colorSize ? `el-color-picker--${ colorSize }` : ''
     ]"
     v-clickoutside="hide">
-    <div class="el-color-picker__mask" v-if="colorDisabled"></div>
-    <div class="el-color-picker__trigger" @click="handleTrigger">
+    <div class="el-color-picker__mask" v-if="colorDisabled && type !== 'input'"></div>
+
+    <el-input
+      v-if="type === 'input'"
+      :value="inputValue"
+      :style="inputStyle"
+      :disabled="colorDisabled"
+      :size="colorSize"
+      :validate-event="false"
+      @input="handleInputValue"
+      @focus="handleInputFocus"
+      @blur="handleInputBlur"
+      @keyup.native.enter="handleInputConfirm"
+    >
+      <template #suffix>
+        <span
+          ref="trigger"
+          class="el-color-picker__trigger el-color-picker__trigger--in-input"
+          @click.stop="handleTrigger"
+        >
+          <span class="el-color-picker__color" :class="{ 'is-alpha': showAlpha }">
+            <span
+              class="el-color-picker__color-inner"
+              :style="{
+                backgroundColor: displayedColor
+              }"
+            ></span>
+            <span class="el-color-picker__empty el-icon-close" v-if="!value && !showPanelColor"></span>
+          </span>
+        </span>
+      </template>
+    </el-input>
+
+    <div v-else ref="trigger" class="el-color-picker__trigger" @click="handleTrigger">
       <span class="el-color-picker__color" :class="{ 'is-alpha': showAlpha }">
         <span class="el-color-picker__color-inner"
           :style="{
@@ -35,6 +68,7 @@
   import PickerDropdown from './components/picker-dropdown.vue';
   import Clickoutside from 'rowinself-ui/src/utils/clickoutside';
   import Emitter from 'rowinself-ui/src/mixins/emitter';
+  import ElInput from 'rowinself-ui/packages/input';
 
   export default {
     name: 'ElColorPicker',
@@ -47,8 +81,13 @@
       colorFormat: String,
       disabled: Boolean,
       size: String,
+      width: [String, Number],
       popperClass: String,
-      predefine: Array
+      predefine: Array,
+      type: {
+        type: String,
+        default: 'default'
+      }
     },
 
     inject: {
@@ -81,11 +120,41 @@
 
       colorDisabled() {
         return this.disabled || (this.elForm || {}).disabled;
+      },
+
+      inputStyle() {
+        if (this.type !== 'input') return undefined;
+
+        const min_width_px = 120;
+        const width_value = this.width;
+        let width_css_value = '';
+
+        if (typeof width_value === 'number' && Number.isFinite(width_value)) {
+          width_css_value = `${Math.max(width_value, 0)}px`;
+        } else if (typeof width_value === 'string' && width_value.trim()) {
+          const trimmed = width_value.trim();
+          if (/^\d+(\.\d+)?$/.test(trimmed)) {
+            width_css_value = `${Math.max(Number(trimmed), 0)}px`;
+          } else {
+            width_css_value = trimmed;
+          }
+        } else {
+          const text_length = String(this.inputValue || '').length;
+          width_css_value = `calc(${Math.max(text_length, 0)}ch + 64px)`;
+        }
+
+        return {
+          minWidth: `${min_width_px}px`,
+          width: width_css_value
+        };
       }
     },
 
     watch: {
       value(val) {
+        if (this.type === 'input' && !this.inputFocused) {
+          this.inputValue = typeof val === 'string' ? val : '';
+        }
         if (!val) {
           this.showPanelColor = false;
         } else if (val && val !== this.color.value) {
@@ -118,6 +187,52 @@
         if (this.colorDisabled) return;
         this.showPicker = !this.showPicker;
       },
+      normalizeInputColor(value) {
+        const raw = (value || '').trim();
+        if (!raw) return '';
+        if (/^[0-9a-fA-F]{3}$/.test(raw) || /^[0-9a-fA-F]{6}$/.test(raw) || /^[0-9a-fA-F]{8}$/.test(raw)) {
+          return `#${raw}`;
+        }
+        return raw;
+      },
+      resolveColorValue(value) {
+        const normalized = this.normalizeInputColor(value);
+        if (!normalized) return '';
+        const candidate = new Color({
+          enableAlpha: this.showAlpha,
+          format: this.colorFormat
+        });
+        candidate.fromString(normalized);
+        return candidate.value || '';
+      },
+      handleInputValue(val) {
+        this.inputValue = typeof val === 'string' ? val : '';
+      },
+      handleInputFocus() {
+        this.inputFocused = true;
+      },
+      handleInputBlur() {
+        this.inputFocused = false;
+        this.handleInputConfirm();
+      },
+      handleInputConfirm() {
+        if (this.type !== 'input') return;
+        if (this.colorDisabled) return;
+        const next = this.resolveColorValue(this.inputValue);
+        if (!this.inputValue || !String(this.inputValue).trim()) {
+          this.clearValue();
+          return;
+        }
+        if (!next) {
+          this.inputValue = typeof this.value === 'string' ? this.value : '';
+          return;
+        }
+        this.color.fromString(next);
+        const value = this.color.value;
+        this.$emit('input', value);
+        this.$emit('change', value);
+        this.dispatch('ElFormItem', 'el.form.change', value);
+      },
       confirmValue() {
         const value = this.color.value;
         this.$emit('input', value);
@@ -133,6 +248,7 @@
         }
         this.showPanelColor = false;
         this.showPicker = false;
+        if (this.type === 'input') this.inputValue = '';
         this.resetColor();
       },
       hide() {
@@ -166,6 +282,7 @@
         this.color.fromString(value);
       }
       this.popperElm = this.$refs.dropdown.$el;
+      if (this.type === 'input') this.inputValue = typeof value === 'string' ? value : '';
     },
 
     data() {
@@ -177,12 +294,15 @@
       return {
         color,
         showPicker: false,
-        showPanelColor: false
+        showPanelColor: false,
+        inputValue: '',
+        inputFocused: false
       };
     },
 
     components: {
-      PickerDropdown
+      PickerDropdown,
+      ElInput
     }
   };
 </script>

@@ -95,7 +95,8 @@
 
     mounted() {
       this.$parent.popperElm = this.popperElm = this.$el;
-      this.referenceElm = this.$parent.$el;
+      const parent = this.$parent;
+      this.referenceElm = (parent && parent.$refs && parent.$refs.trigger) ? parent.$refs.trigger : parent.$el;
     },
 
     watch: {

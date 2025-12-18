@@ -14,9 +14,9 @@
         :value="option.value"
       />
     </el-select>
-    <el-color-picker v-model="color1Model" :show-alpha="showAlpha" v-bind="leftProps" />
+    <el-color-picker v-model="color1Model" type="input" :show-alpha="showAlpha" v-bind="leftProps" />
     <el-divider :style="mergedDividerStyle" />
-    <el-color-picker v-model="color2Model" :show-alpha="showAlpha" v-bind="rightProps" />
+    <el-color-picker v-model="color2Model" type="input" :show-alpha="showAlpha" v-bind="rightProps" />
   </div>
 </template>
 
@@ -83,11 +83,14 @@ export default {
       },
       set(nextValue) {
         const safe_next_value = nextValue && typeof nextValue === 'object' ? nextValue : {};
-        this.$emit('input', {
+        const payload = {
           selectValue: safe_next_value.selectValue,
           color1: safe_next_value.color1,
           color2: safe_next_value.color2
-        });
+        };
+        this.$emit('input', payload);
+        this.$emit('change', payload);
+        this.$emit('update:value', payload);
       }
     },
     selectValueModel: {
@@ -95,7 +98,8 @@ export default {
         return this.normalizedValue.selectValue;
       },
       set(next_value) {
-        this.normalizedValue = Object.assign({}, this.normalizedValue, { selectValue: next_value });
+        const next_normalized_value = this.build_next_value_by_select(next_value);
+        this.normalizedValue = next_normalized_value;
       }
     },
     color1Model: {
@@ -131,6 +135,23 @@ export default {
         },
         this.dividerStyle || {}
       );
+    }
+  },
+  methods: {
+    build_next_value_by_select(next_select_value) {
+      const base_value = this.normalizedValue;
+      const next_value = Object.assign({}, base_value, { selectValue: next_select_value });
+
+      const options = Array.isArray(this.selectOptions) ? this.selectOptions : [];
+      const matched_option = options.find((option) => option && option.value === next_select_value);
+      const colors = matched_option && Array.isArray(matched_option.colors) ? matched_option.colors : null;
+
+      if (Array.isArray(colors) && colors.length >= 2) {
+        next_value.color1 = colors[0];
+        next_value.color2 = colors[1];
+      }
+
+      return next_value;
     }
   }
 };

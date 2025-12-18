@@ -207,9 +207,120 @@ export default {
       if (merged.render == null && typeof merged.component === 'function') {
         const componentFn = merged.component;
         merged.render = (ctx) => {
-          const h = ctx && ctx.h;
           try {
-            return componentFn.length ? componentFn(h) : componentFn();
+            const h = ctx && ctx.h;
+            const model = ctx && ctx.model;
+            const fieldName = ctx && ctx.field;
+
+            const resolveComponentProps = () => {
+              const base = merged.componentProps;
+              if (typeof base === 'function') {
+                try {
+                  return base({
+                    schema: merged,
+                    tableAction: this.tableAction || null,
+                    formActionType: this.computedFormActionType || null,
+                    formModel: model
+                  }) || {};
+                } catch (err) {
+                  console.error('[ElBasicFormSections] componentProps fn error:', err);
+                  return {};
+                }
+              }
+              return (base && typeof base === 'object') ? base : {};
+            };
+
+            const extractEventListeners = (props) => {
+              const listeners = {};
+              const isFn = (v) => typeof v === 'function';
+              const camelToKebab = (camelCaseText) => camelCaseText.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+              try {
+                Object.keys(props || {}).forEach((key) => {
+                  const val = props[key];
+                  if (/^on[A-Z]/.test(key) && isFn(val)) {
+                    const eventName = camelToKebab(key.slice(2));
+                    listeners[eventName] = val;
+                  }
+                  if (isFn(val)) {
+                    if (key === 'change' || key === 'blur' || key === 'focus' || key === 'clear') listeners[key] = val;
+                    if (key === 'visibleChange') listeners['visible-change'] = val;
+                    if (key === 'removeTag') listeners['remove-tag'] = val;
+                    if (key === 'visible-change' || key === 'remove-tag') listeners[key] = val;
+                  }
+                });
+              } catch (err) {
+                console.error('[ElBasicFormSections] extractEventListeners error:', err);
+              }
+              return listeners;
+            };
+
+            const rawProps = resolveComponentProps();
+            const componentProps = { ...(rawProps || {}) };
+            const listenersFromProps = extractEventListeners(componentProps);
+            Object.keys(componentProps).forEach((key) => {
+              if (/^on[A-Z]/.test(key) && typeof componentProps[key] === 'function') delete componentProps[key];
+              if (typeof componentProps[key] === 'function') {
+                if (key === 'change' || key === 'blur' || key === 'focus' || key === 'clear') delete componentProps[key];
+                if (key === 'visibleChange' || key === 'removeTag') delete componentProps[key];
+                if (key === 'visible-change' || key === 'remove-tag') delete componentProps[key];
+              }
+            });
+
+            const inputHandler = (val) => {
+              if (!model || !fieldName) return;
+              try {
+                this.$set(model, fieldName, val);
+              } catch (err) {
+                console.error('[ElBasicFormSections] v-model writeback error:', err);
+              }
+            };
+
+            const changeEventName = merged && merged.changeEvent;
+            const customListeners = {};
+            if (changeEventName) {
+              customListeners[changeEventName] = (event) => {
+                if (!model || !fieldName) return;
+                let value = event;
+                if (event && event.target && 'value' in event.target) value = event.target.value;
+                try {
+                  this.$set(model, fieldName, value);
+                } catch (err) {
+                  console.error('[ElBasicFormSections] changeEvent writeback error:', err);
+                }
+              };
+            }
+
+            const vnode = componentFn(h, ctx);
+            if (!vnode) return null;
+
+            const originalData = vnode.data || {};
+            const originalOn = originalData.on || {};
+            const nextOn = { ...originalOn, ...listenersFromProps, ...customListeners };
+            const originalInput = nextOn.input;
+            nextOn.input = (val) => {
+              if (typeof originalInput === 'function') {
+                try {
+                  originalInput(val);
+                } catch (err) {
+                  console.error('[ElBasicFormSections] original input handler error:', err);
+                }
+              }
+              inputHandler(val);
+            };
+
+            const nextData = {
+              ...originalData,
+              props: {
+                ...(originalData.props || {}),
+                ...componentProps,
+                value: model && fieldName ? model[fieldName] : undefined
+              },
+              on: nextOn
+            };
+
+            const ctor = vnode.componentOptions && vnode.componentOptions.Ctor;
+            const children = vnode.componentOptions ? vnode.componentOptions.children : vnode.children;
+            return h(ctor || vnode.tag, nextData, children);
           } catch (err) {
             console.error('[ElBasicFormSections] component render error:', err);
             return null;

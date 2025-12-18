@@ -68,22 +68,41 @@
     methods: {
       handleKeydown(e) { // 左右上下按键 可以在radio组内切换不同选项
         const target = e.target;
-        const className = target.nodeName === 'INPUT' ? '[type=radio]' : '[role=radio]';
+        const isInput = target && target.nodeName === 'INPUT';
+        const className = isInput ? '[type=radio]' : '[role=radio]';
         const radios = this.$el.querySelectorAll(className);
-        const length = radios.length;
-        const index = [].indexOf.call(radios, target);
         const roleRadios = this.$el.querySelectorAll('[role=radio]');
+        const length = roleRadios.length;
+        if (!length) return;
+
+        let index = [].indexOf.call(radios, target);
+        if (index < 0) {
+          let roleTarget = target;
+          while (roleTarget && roleTarget !== this.$el) {
+            if (roleTarget.getAttribute && roleTarget.getAttribute('role') === 'radio') break;
+            roleTarget = roleTarget.parentNode;
+          }
+          index = roleTarget ? [].indexOf.call(roleRadios, roleTarget) : -1;
+        }
+        if (index < 0) return;
+
+        const clickRoleRadio = (nextIndex) => {
+          const label = roleRadios[nextIndex];
+          if (!label) return;
+          const input = label.querySelector ? label.querySelector('[type=radio]') : null;
+          if (input && input.click) input.click();
+          else if (label.click) label.click();
+          if (label.focus) label.focus();
+        };
         switch (e.keyCode) {
           case keyCode.LEFT:
           case keyCode.UP:
             e.stopPropagation();
             e.preventDefault();
             if (index === 0) {
-              roleRadios[length - 1].click();
-              roleRadios[length - 1].focus();
+              clickRoleRadio(length - 1);
             } else {
-              roleRadios[index - 1].click();
-              roleRadios[index - 1].focus();
+              clickRoleRadio(index - 1);
             }
             break;
           case keyCode.RIGHT:
@@ -91,11 +110,9 @@
             if (index === (length - 1)) {
               e.stopPropagation();
               e.preventDefault();
-              roleRadios[0].click();
-              roleRadios[0].focus();
+              clickRoleRadio(0);
             } else {
-              roleRadios[index + 1].click();
-              roleRadios[index + 1].focus();
+              clickRoleRadio(index + 1);
             }
             break;
           default:
@@ -110,4 +127,3 @@
     }
   };
 </script>
-
