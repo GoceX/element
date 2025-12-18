@@ -1,6 +1,18 @@
+import { normalizeWidth as normalizeWidthUtil } from './basic-form-runtime-factory';
+
 export default {
   methods: {
+    /**
+     * 合并生成最终传入表单控件的 props：
+     * - 支持 componentProps 为对象 / 函数两种形态
+     * - 在全局开关开启时，自动补齐 placeholder / clearable
+     * - 透传 globalSize，并为组件补齐 name
+     *
+     * @param {Object} schema 单个表单项 schema
+     * @returns {Object} 合并后的 props
+     */
     getComponentPropsMerged(schema) {
+      // componentProps 可能是对象，也可能是函数（返回对象）
       const componentPropsBase = schema.componentProps || {};
       const componentPropsExtra = typeof schema.componentProps === 'function' ? (() => {
         try {
@@ -15,12 +27,18 @@ export default {
           return {};
         }
       })() : {};
+
+      // 合并两份 props：后者覆盖前者同名字段
       const mergedProps = { ...(typeof componentPropsBase === 'object' ? componentPropsBase : {}), ...(typeof componentPropsExtra === 'object' ? componentPropsExtra : {}) };
+
+      // 自动补齐 placeholder：仅对常见输入类组件生效
       if (this.globalAutoSetPlaceHolder && mergedProps.placeholder == null) {
         const component = schema.component;
         if (component === 'Input' || component === 'InputNumber' || component === 'el-input') mergedProps.placeholder = '请输入';
         if (component === 'Select' || component === 'el-select' || component === 'el-cascader') mergedProps.placeholder = '请选择';
       }
+
+      // 自动补齐 clearable：仅对支持 clearable 的组件生效
       if (this.globalAutoSetClearable && mergedProps.clearable == null) {
         const component = schema.component;
         const supportsClearable = (
@@ -33,8 +51,14 @@ export default {
         );
         if (supportsClearable) mergedProps.clearable = true;
       }
+
+      // 全局 size 兜底
       if (mergedProps.size == null && this.globalSize) mergedProps.size = this.globalSize;
+
+      // 为依赖 name 的组件补齐 name（例如表单自动补全/测试定位）
       if (mergedProps.name == null && schema.field) mergedProps.name = schema.field;
+
+      // 兼容内部别名组件：把语义化组件名映射到真实输入类型
       const component = schema.component;
       if (component === 'InputPassword') mergedProps.type = mergedProps.type || 'password';
       if (component === 'InputTextArea') mergedProps.type = mergedProps.type || 'textarea';
@@ -43,12 +67,28 @@ export default {
       if (component === 'WeekPicker') mergedProps.type = mergedProps.type || 'week';
       return mergedProps;
     },
+    /**
+     * 组装组件最终监听器：
+     * - 从 props 中提取 onXxx / change 等事件
+     * - 再叠加 schema.changeEvent 对应的自定义监听
+     *
+     * @param {Object} schema 单个表单项 schema
+     * @returns {Object} 监听器对象
+     */
     finalListeners(schema) {
       const mergedProps = this.getComponentPropsMerged(schema || {});
       const listenersFromProps = this.extractEventListeners(mergedProps);
       const listenersFromSchema = this.customListeners(schema);
       return Object.assign({}, listenersFromProps, listenersFromSchema);
     },
+    /**
+     * 从 props 中抽取事件监听器，避免与 v-bind 冲突：
+     * - 支持 onXxx（驼峰）自动转为 kebab-case
+     * - 同时兼容部分直接传入的事件名（如 change/blur/visibleChange 等）
+     *
+     * @param {Object} props 合并后的 props
+     * @returns {Object} listeners
+     */
     extractEventListeners(props) {
       const listeners = {};
       const isFn = (valueCandidate) => typeof valueCandidate === 'function';
@@ -72,6 +112,11 @@ export default {
       }
       return listeners;
     },
+    /**
+     * 将 schema.component 规范为可渲染的组件 tag。
+     * @param {string} name schema.component
+     * @returns {string}
+     */
     componentTag(name) {
       const map = {
         Input: 'el-input',
@@ -107,6 +152,15 @@ export default {
       };
       return map[name] || name || 'el-input';
     },
+    /**
+     * 生成组件内部插槽内容：
+     * - options 生成 select/radio/checkbox 等的默认插槽
+     * - 支持 renderComponentContent() 返回自定义插槽渲染函数
+     * - 支持 schema.suffix 作为 suffix 插槽
+     *
+     * @param {Object} schema 单个表单项 schema
+     * @returns {Object} slots 映射
+     */
     renderComponentContent(schema) {
       const slots = schema && schema.renderComponentContent
         ? (() => { try { return (schema.renderComponentContent({ model: this.formModel, field: schema.field }) || {}); } catch (err) { console.error('[ElBasicFormItem/renderComponentContent] renderComponentContent fn error:', err); return {}; } })()
@@ -139,6 +193,11 @@ export default {
       }
       return slots;
     },
+    /**
+     * 将具名插槽解析为可传给 RenderVNode 的 renderFn。
+     * @param {Object} schema 单个表单项 schema
+     * @returns {Function | null}
+     */
     resolveSlotRender(schema) {
       const slotName = schema && schema.slot;
       if (!slotName) return null;
@@ -155,6 +214,11 @@ export default {
       }
       return null;
     },
+    /**
+     * 向上查找 $scopedSlots：支持外层组件通过具名 scoped slot 注入渲染。
+     * @param {string} name 插槽名
+     * @returns {Function | null}
+     */
     findScopedSlot(name) {
       let ctx = this;
       while (ctx) {
@@ -164,14 +228,32 @@ export default {
       }
       return null;
     },
+    /**
+     * 标准化宽度：复用 runtime 的工具函数。
+     * @param {string | number | null | undefined} val
+     * @returns {string | null}
+     */
     normalizeWidth(val) {
-      if (val === undefined || val === null) return null;
-      if (typeof val === 'number') return `${val}px`;
-      return val;
+      return normalizeWidthUtil(val);
     },
+    /**
+     * 规范化单个表单项的 labelWidth。
+     * @param {string | number | null | undefined} val
+     * @returns {string | null}
+     */
     normalizeItemLabelWidth(val) {
       return this.normalizeWidth(val);
     },
+    /**
+     * 计算最终 disabled：
+     * - globalDisabled 最高优先级
+     * - schema.disabled 支持布尔/函数
+     * - schema.dynamicDisabled 为函数（带 values）
+     * - 最后回退到 componentProps.disabled
+     *
+     * @param {Object} schema 单个表单项 schema
+     * @returns {boolean}
+     */
     computeDisabled(schema) {
       if (this.globalDisabled) return true;
       if (schema && ('disabled' in schema)) {
@@ -191,6 +273,11 @@ export default {
       }
       return !!(schema.componentProps && schema.componentProps.disabled);
     },
+    /**
+     * 兼容 schema 配置为“值或函数”：函数时传入 itemCtx。
+     * @param {any} val 值或函数
+     * @returns {boolean}
+     */
     evalMaybeFn(val) {
       if (typeof val === 'function') {
         try {
@@ -203,6 +290,13 @@ export default {
       }
       return !!val;
     },
+    /**
+     * 处理 schema.changeEvent 对应的自定义变更事件：
+     * - 将事件值写回 formModel[field]
+     *
+     * @param {Object} schema 单个表单项 schema
+     * @param {any} event 组件事件参数
+     */
     onCustomChange(schema, event) {
       if (!schema || !schema.changeEvent) return;
       const fieldName = schema.field;
@@ -214,6 +308,11 @@ export default {
         console.error('[ElBasicFormItem/onCustomChange] set value error:', err);
       }
     },
+    /**
+     * 根据 schema.changeEvent 生成监听器映射。
+     * @param {Object} schema 单个表单项 schema
+     * @returns {Object}
+     */
     customListeners(schema) {
       const eventName = schema && schema.changeEvent;
       if (!eventName) return {};
@@ -224,4 +323,3 @@ export default {
     }
   }
 };
-

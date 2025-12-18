@@ -1064,6 +1064,64 @@ updateSchema([
 | tableAction | `object` | - | - | 表格方法集上下文（供 `componentProps` 函数使用） |
 | actionButton | `Array` | - | - | 操作区自定义按钮数组，项形如 `{ text, click, ...el-button props }` |
 
+### Sections 模式（分组表单）
+
+当 `el-basic-form` 传入 `sections` 时，`schemas` 支持“分组节点”和“字段节点”混合。
+
+- 分组节点：包含 `sections` 字段（数组），用于组织字段的布局与标题。
+- 字段节点：常规 `FormSchema`（有 `field`），由 `ElBasicFormItem` 渲染。
+
+#### SectionsSchema（分组节点）
+
+| 属性 | 类型 | 说明 |
+| --- | --- | --- |
+| sectionsTitle | `string \| number \| Function` | 分组标题；为函数时接收 `h` 并返回 VNode |
+| sectionsStyle | `object` | 分组容器 `el-row` 的样式（用于背景/圆角/内边距等） |
+| sections | `Array` | 分组内容；元素可为字段节点，或继续嵌套分组节点 |
+| rowStyle | `object` | 当 `sections` 为二维数组时，每一行 `el-row` 的样式 |
+| labelWidth | `string \| number` | 分组内默认标签宽度（字段可覆盖） |
+| required | `boolean` | 分组内默认必填标识（字段可覆盖） |
+| colProps | `object` | 分组内默认列布局（字段可覆盖） |
+| labelStyle | `object` | 分组内默认 label 样式（字段可覆盖） |
+
+#### sections 支持二维数组（行布局）
+
+用于类似示例中 A/B/C 区那种“每一行多个字段”的布局：
+
+```js
+{
+  sectionsTitle: 'A 区',
+  rowStyle: { margin: '14px 0px' },
+  sectionsStyle: { padding: '14px' },
+  sections: [
+    [
+      { field: 'titleNameA1', component: 'Input', label: '标题名称1', colProps: { span: 8 } },
+      { field: 'proportionA1', component: 'Input', label: '占比', colProps: { span: 4 } },
+      { field: 'selectDataA1', component: 'Select', label: '选择数据', colProps: { span: 12 } }
+    ],
+    [
+      { field: 'titleNameA2', component: 'Input', label: '标题名称2', colProps: { span: 8 } },
+      { field: 'proportionA2', component: 'Input', label: '占比', colProps: { span: 4 } },
+      { field: 'selectDataA2', component: 'Select', label: '选择数据', colProps: { span: 12 } }
+    ]
+  ]
+}
+```
+
+#### 分组属性继承规则
+
+分组节点（root/section）会为字段节点提供默认值，字段自身可覆盖：
+
+- `labelWidth`：字段 > 分组 > 顶层分组
+- `required`：字段 > 分组 > 顶层分组
+- `colProps`：字段 > 分组 > 顶层分组
+- `labelStyle`：字段 > 分组 > 顶层分组
+
+#### 自定义组件写法建议
+
+- 优先使用 `component: '组件名'` + `componentProps`（props 会自动透传到组件）。
+- 需要完全自定义渲染时使用 `render`，可通过 `schema.componentProps` 读取并自行透传。
+
 ### 说明
 
 按钮 `submitButtonOptions`/`resetButtonOptions` 直接透传到 `el-button`，可使用其标准属性（如 `type`、`size`、`loading` 等）。
@@ -1116,9 +1174,9 @@ fieldMapToTime: [
 ```ts
 export interface RenderCallbackParams {
   schema: FormSchema;
-  values: any;
   model: any;
   field: string;
+  h: Function;
 }
 ```
 
@@ -1130,7 +1188,7 @@ export interface RenderCallbackParams {
 
 参数有 4 个
 
-`schema`: 表单的整个 schemas
+`schema`: 当前表单项 schema
 
 `formActionType`: 操作表单的函数。与 useForm 返回的操作函数一致
 
