@@ -322,6 +322,7 @@ export default {
   Result,
   ApiSelect,
   ApiCascader,
+  ApiTree,
   BasicForm,
   BasicTable,
   BasicTableColumn,
