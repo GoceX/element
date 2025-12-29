@@ -1,44 +1,72 @@
 <template>
-  <table @click="handleYearTableClick" class="el-year-table">
+  <table @click="handleYearTableClick" @mousemove="handleMouseMove" class="el-year-table">
     <tbody>
-    <tr>
-      <td class="available" :class="getCellStyle(startYear + 0)">
-        <a class="cell">{{ startYear }}</a>
-      </td>
-      <td class="available" :class="getCellStyle(startYear + 1)">
-        <a class="cell">{{ startYear + 1 }}</a>
-      </td>
-      <td class="available" :class="getCellStyle(startYear + 2)">
-        <a class="cell">{{ startYear + 2 }}</a>
-      </td>
-      <td class="available" :class="getCellStyle(startYear + 3)">
-        <a class="cell">{{ startYear + 3 }}</a>
-      </td>
-    </tr>
-    <tr>
-      <td class="available" :class="getCellStyle(startYear + 4)">
-        <a class="cell">{{ startYear + 4 }}</a>
-      </td>
-      <td class="available" :class="getCellStyle(startYear + 5)">
-        <a class="cell">{{ startYear + 5 }}</a>
-      </td>
-      <td class="available" :class="getCellStyle(startYear + 6)">
-        <a class="cell">{{ startYear + 6 }}</a>
-      </td>
-      <td class="available" :class="getCellStyle(startYear + 7)">
-        <a class="cell">{{ startYear + 7 }}</a>
-      </td>
-    </tr>
-    <tr>
-      <td class="available" :class="getCellStyle(startYear + 8)">
-        <a class="cell">{{ startYear + 8 }}</a>
-      </td>
-      <td class="available" :class="getCellStyle(startYear + 9)">
-        <a class="cell">{{ startYear + 9 }}</a>
-      </td>
-      <td></td>
-      <td></td>
-    </tr>
+      <tr>
+        <td class="available" :class="getCellStyle(startYear + 0)">
+          <div>
+            <a class="cell">{{ startYear }}</a>
+          </div>
+        </td>
+        <td class="available" :class="getCellStyle(startYear + 1)">
+          <div>
+            <a class="cell">{{ startYear + 1 }}</a>
+          </div>
+        </td>
+        <td class="available" :class="getCellStyle(startYear + 2)">
+          <div>
+            <a class="cell">{{ startYear + 2 }}</a>
+          </div>
+        </td>
+        <td class="available" :class="getCellStyle(startYear + 3)">
+          <div>
+            <a class="cell">{{ startYear + 3 }}</a>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="available" :class="getCellStyle(startYear + 4)">
+          <div>
+            <a class="cell">{{ startYear + 4 }}</a>
+          </div>
+        </td>
+        <td class="available" :class="getCellStyle(startYear + 5)">
+          <div>
+            <a class="cell">{{ startYear + 5 }}</a>
+          </div>
+        </td>
+        <td class="available" :class="getCellStyle(startYear + 6)">
+          <div>
+            <a class="cell">{{ startYear + 6 }}</a>
+          </div>
+        </td>
+        <td class="available" :class="getCellStyle(startYear + 7)">
+          <div>
+            <a class="cell">{{ startYear + 7 }}</a>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="available" :class="getCellStyle(startYear + 8)">
+          <div>
+            <a class="cell">{{ startYear + 8 }}</a>
+          </div>
+        </td>
+        <td class="available" :class="getCellStyle(startYear + 9)">
+          <div>
+            <a class="cell">{{ startYear + 9 }}</a>
+          </div>
+        </td>
+        <td class="available" :class="getCellStyle(startYear + 10)">
+          <div>
+            <a class="cell">{{ startYear + 10 }}</a>
+          </div>
+        </td>
+        <td class="available" :class="getCellStyle(startYear + 11)">
+          <div>
+            <a class="cell">{{ startYear + 11 }}</a>
+          </div>
+        </td>
+      </tr>
     </tbody>
   </table>
 </template>
@@ -56,21 +84,45 @@
 
   export default {
     props: {
-      disabledDate: {},
-      value: {},
+      disabledDate: {
+        type: Function
+      },
+      value: {
+        type: [Date, Array, String],
+        default: null
+      },
       defaultValue: {
         validator(val) {
           // null or valid Date Object
           return val === null || (val instanceof Date && isDate(val));
         }
       },
-      date: {},
-      selectionMode: {}
+      date: {
+        type: Date
+      },
+      selectionMode: {
+        type: String
+      },
+      minDate: {
+        type: [Date, String, Number]
+      },
+      maxDate: {
+        type: [Date, String, Number]
+      },
+      rangeState: {
+        default() {
+          return {
+            endDate: null,
+            selecting: false
+          };
+        },
+        type: Object
+      }
     },
 
     computed: {
       startYear() {
-        return Math.floor(this.date.getFullYear() / 10) * 10;
+        return this.date && this.date.getFullYear ? this.date.getFullYear() - 6 : new Date().getFullYear() - 6;
       }
     },
 
@@ -82,29 +134,101 @@
         style.disabled = typeof this.disabledDate === 'function'
           ? datesInYear(year).every(this.disabledDate)
           : false;
-        style.current = arrayFindIndex(coerceTruthyValueToArray(this.value), date => date.getFullYear() === year) >= 0;
+        style.current = arrayFindIndex(coerceTruthyValueToArray(this.value), date => isDate(date) && date.getFullYear() === year) >= 0;
         style.today = today.getFullYear() === year;
-        style.default = this.defaultValue && this.defaultValue.getFullYear() === year;
+        style.default = this.defaultValue && isDate(this.defaultValue) && this.defaultValue.getFullYear() === year;
+
+        if (this.selectionMode === 'range') {
+          let minYear = this.minDate ? this.minDate.getFullYear() : -1;
+          let maxYear = this.maxDate ? this.maxDate.getFullYear() : -1;
+          
+          if (this.rangeState.selecting && this.rangeState.endDate) {
+            const endDateYear = this.rangeState.endDate.getFullYear();
+            if (endDateYear < minYear) {
+               maxYear = minYear;
+               minYear = endDateYear;
+            } else {
+               maxYear = endDateYear;
+            }
+          }
+
+          style['in-range'] = minYear >= 0 && maxYear >= 0 && year >= minYear && year <= maxYear;
+          style['start-date'] = minYear >= 0 && year === minYear;
+          style['end-date'] = maxYear >= 0 && year === maxYear;
+        }
 
         return style;
       },
 
       handleYearTableClick(event) {
-        const target = event.target;
+        let target = event.target;
         if (target.tagName === 'A') {
-          if (hasClass(target.parentNode, 'disabled')) return;
-          const year = target.textContent || target.innerText;
-          if (this.selectionMode === 'years') {
-            const value = this.value || [];
-            const idx = arrayFindIndex(value, date => date.getFullYear() === Number(year));
-            const newValue = idx > -1
-              ? [...value.slice(0, idx), ...value.slice(idx + 1)]
-              : [...value, new Date(year)];
-            this.$emit('pick', newValue);
-          } else {
-            this.$emit('pick', Number(year));
-          }
+          target = target.parentNode.parentNode;
         }
+        if (target.tagName === 'DIV') {
+          target = target.parentNode;
+        }
+        if (target.tagName !== 'TD') return;
+        if (hasClass(target, 'disabled')) return;
+
+        const column = target.cellIndex;
+        const row = target.parentNode.rowIndex;
+        const year = this.startYear + row * 4 + column;
+
+        if (this.selectionMode === 'years') {
+          const value = this.value || [];
+          const idx = arrayFindIndex(value, date => isDate(date) && date.getFullYear() === Number(year));
+          const newValue = idx > -1
+            ? [...value.slice(0, idx), ...value.slice(idx + 1)]
+            : [...value, new Date(year)];
+          this.$emit('pick', newValue);
+        } else if (this.selectionMode === 'range') {
+          const newDate = new Date(year, 0, 1);
+          if (!this.rangeState.selecting) {
+            this.$emit('pick', {minDate: newDate, maxDate: null});
+            this.rangeState.selecting = true;
+          } else {
+            if (newDate >= this.minDate) {
+              this.$emit('pick', {minDate: this.minDate, maxDate: newDate});
+            } else {
+              this.$emit('pick', {minDate: newDate, maxDate: this.minDate});
+            }
+            this.rangeState.selecting = false;
+          }
+        } else {
+          this.$emit('pick', Number(year));
+        }
+      },
+      
+      handleMouseMove(event) {
+        if (!this.rangeState.selecting) return;
+
+        let target = event.target;
+        if (target.tagName === 'A') {
+          target = target.parentNode.parentNode;
+        }
+        if (target.tagName === 'DIV') {
+          target = target.parentNode;
+        }
+        if (target.tagName !== 'TD') return;
+        
+        const column = target.cellIndex;
+        const row = target.parentNode.rowIndex;
+        const year = this.startYear + row * 4 + column;
+        
+        // Check if disabled
+        if (hasClass(target, 'disabled')) return;
+
+        if (this.rangeState.endDate && this.rangeState.endDate.getFullYear() === year) return;
+
+        this.$emit('changerange', {
+          minDate: this.minDate,
+          maxDate: this.maxDate,
+          rangeState: {
+            selecting: true,
+            endDate: new Date(year, 0, 1)
+          }
+        });
       }
     }
   };

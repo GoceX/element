@@ -32,7 +32,7 @@
                 class="el-picker-panel__icon-btn el-icon-d-arrow-right"></button>
               <div>{{ leftLabel }}</div>
             </div>
-            <month-table
+            <quarter-table
               selection-mode="range"
               :date="leftDate"
               :default-value="defaultValue"
@@ -58,7 +58,7 @@
                 class="el-picker-panel__icon-btn el-icon-d-arrow-right"></button>
               <div>{{ rightLabel }}</div>
             </div>
-            <month-table
+            <quarter-table
               selection-mode="range"
               :date="rightDate"
               :default-value="defaultValue"
@@ -80,12 +80,11 @@
     isDate,
     modifyWithTimeString,
     prevYear,
-    nextYear,
-    nextMonth
+    nextYear
   } from 'rowinself-ui/src/utils/date-util';
   import Clickoutside from 'rowinself-ui/src/utils/clickoutside';
   import Locale from 'rowinself-ui/src/mixins/locale';
-  import MonthTable from '../basic/month-table';
+  import QuarterTable from '../basic/quarter-table';
   import ElInput from 'rowinself-ui/packages/input';
   import ElButton from 'rowinself-ui/packages/button';
 
@@ -93,16 +92,15 @@
     if (Array.isArray(defaultValue)) {
       return [new Date(defaultValue[0]), new Date(defaultValue[1])];
     } else if (defaultValue) {
-      return [new Date(defaultValue), nextMonth(new Date(defaultValue))];
+      return [new Date(defaultValue), nextYear(new Date(defaultValue))];
     } else {
-      return [new Date(), nextMonth(new Date())];
+      return [new Date(), nextYear(new Date())];
     }
   };
   export default {
-
     directives: { Clickoutside },
 
-    components: { MonthTable, ElInput, ElButton },
+    components: { QuarterTable, ElInput, ElButton },
     mixins: [Locale],
 
     data() {

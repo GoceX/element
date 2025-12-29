@@ -32,7 +32,7 @@
                 class="el-picker-panel__icon-btn el-icon-d-arrow-right"></button>
               <div>{{ leftLabel }}</div>
             </div>
-            <month-table
+            <year-table
               selection-mode="range"
               :date="leftDate"
               :default-value="defaultValue"
@@ -58,7 +58,7 @@
                 class="el-picker-panel__icon-btn el-icon-d-arrow-right"></button>
               <div>{{ rightLabel }}</div>
             </div>
-            <month-table
+            <year-table
               selection-mode="range"
               :date="rightDate"
               :default-value="defaultValue"
@@ -80,12 +80,11 @@
     isDate,
     modifyWithTimeString,
     prevYear,
-    nextYear,
-    nextMonth
+    nextYear
   } from 'rowinself-ui/src/utils/date-util';
   import Clickoutside from 'rowinself-ui/src/utils/clickoutside';
   import Locale from 'rowinself-ui/src/mixins/locale';
-  import MonthTable from '../basic/month-table';
+  import YearTable from '../basic/year-table';
   import ElInput from 'rowinself-ui/packages/input';
   import ElButton from 'rowinself-ui/packages/button';
 
@@ -93,16 +92,15 @@
     if (Array.isArray(defaultValue)) {
       return [new Date(defaultValue[0]), new Date(defaultValue[1])];
     } else if (defaultValue) {
-      return [new Date(defaultValue), nextMonth(new Date(defaultValue))];
+      return [new Date(defaultValue), nextYear(new Date(defaultValue), 10)];
     } else {
-      return [new Date(), nextMonth(new Date())];
+      return [new Date(), nextYear(new Date(), 10)];
     }
   };
   export default {
-
     directives: { Clickoutside },
 
-    components: { MonthTable, ElInput, ElButton },
+    components: { YearTable, ElInput, ElButton },
     mixins: [Locale],
 
     data() {
@@ -114,7 +112,7 @@
         minDate: '',
         maxDate: '',
         leftDate: new Date(),
-        rightDate: nextYear(new Date()),
+        rightDate: nextYear(new Date(), 12),
         rangeState: {
           endDate: null,
           selecting: false,
@@ -136,11 +134,15 @@
       },
 
       leftLabel() {
-        return this.leftDate.getFullYear() + ' ' + this.t('el.datepicker.year');
+        const year = this.leftDate.getFullYear();
+        const startYear = year - 6;
+        return `${startYear} - ${startYear + 11}`;
       },
 
       rightLabel() {
-        return this.rightDate.getFullYear() + ' ' + this.t('el.datepicker.year');
+        const year = this.rightDate.getFullYear();
+        const startYear = year - 6;
+        return `${startYear} - ${startYear + 11}`;
       },
 
       leftYear() {
@@ -148,11 +150,11 @@
       },
 
       rightYear() {
-        return this.rightDate.getFullYear() === this.leftDate.getFullYear() ? this.leftDate.getFullYear() + 1 : this.rightDate.getFullYear();
+        return this.rightDate.getFullYear() === this.leftDate.getFullYear() ? this.leftDate.getFullYear() + 12 : this.rightDate.getFullYear();
       },
 
       enableYearArrow() {
-        return this.unlinkPanels && this.rightYear > this.leftYear + 1;
+        return this.unlinkPanels && this.rightYear > this.leftYear + 12;
       }
     },
 
@@ -170,14 +172,14 @@
               const minDateYear = this.minDate.getFullYear();
               const maxDateYear = this.maxDate.getFullYear();
               this.rightDate = minDateYear === maxDateYear
-                ? nextYear(this.maxDate)
+                ? nextYear(this.maxDate, 12)
                 : this.maxDate;
             } else {
-              this.rightDate = nextYear(this.leftDate);
+              this.rightDate = nextYear(this.leftDate, 12);
             }
           } else {
             this.leftDate = calcDefaultValue(this.defaultValue)[0];
-            this.rightDate = nextYear(this.leftDate);
+            this.rightDate = nextYear(this.leftDate, 12);
           }
         }
       },
@@ -188,7 +190,7 @@
           this.leftDate = left;
           this.rightDate = val && val[1] && left.getFullYear() !== right.getFullYear() && this.unlinkPanels
             ? right
-            : nextYear(this.leftDate);
+            : nextYear(this.leftDate, 12);
         }
       }
     },
@@ -198,7 +200,7 @@
         this.minDate = null;
         this.maxDate = null;
         this.leftDate = calcDefaultValue(this.defaultValue)[0];
-        this.rightDate = nextYear(this.leftDate);
+        this.rightDate = nextYear(this.leftDate, 12);
         this.$emit('pick', null);
       },
 
@@ -236,26 +238,26 @@
 
       // leftPrev*, rightNext* need to take care of `unlinkPanels`
       leftPrevYear() {
-        this.leftDate = prevYear(this.leftDate);
+        this.leftDate = prevYear(this.leftDate, 12);
         if (!this.unlinkPanels) {
-          this.rightDate = prevYear(this.rightDate);
+          this.rightDate = prevYear(this.rightDate, 12);
         }
       },
 
       rightNextYear() {
         if (!this.unlinkPanels) {
-          this.leftDate = nextYear(this.leftDate);
+          this.leftDate = nextYear(this.leftDate, 12);
         }
-        this.rightDate = nextYear(this.rightDate);
+        this.rightDate = nextYear(this.rightDate, 12);
       },
 
       // leftNext*, rightPrev* are called when `unlinkPanels` is true
       leftNextYear() {
-        this.leftDate = nextYear(this.leftDate);
+        this.leftDate = nextYear(this.leftDate, 12);
       },
 
       rightPrevYear() {
-        this.rightDate = prevYear(this.rightDate);
+        this.rightDate = prevYear(this.rightDate, 12);
       },
 
       handleConfirm(visible = false) {

@@ -33,7 +33,7 @@
    * @class fecha
    */
   var fecha = {};
-  var token = /d{1,4}|M{1,4}|yy(?:yy)?|S{1,3}|Do|ZZ|([HhMsDm])\1?|[aA]|"[^"]*"|'[^']*'/g;
+  var token = /d{1,4}|M{1,4}|yy(?:yy)?|S{1,3}|Do|ZZ|([HhMsDmqQ])\1?|[aA]|"[^"]*"|'[^']*'/g;
   var twoDigits = '\\d\\d?';
   var threeDigits = '\\d{3}';
   var fourDigits = '\\d{4}';
@@ -121,6 +121,18 @@
     MMMM: function(dateObj, i18n) {
       return i18n.monthNames[dateObj.getMonth()];
     },
+    q: function(dateObj) {
+      return Math.floor(dateObj.getMonth() / 3) + 1;
+    },
+    qq: function(dateObj) {
+      return pad(Math.floor(dateObj.getMonth() / 3) + 1);
+    },
+    Q: function(dateObj) {
+      return Math.floor(dateObj.getMonth() / 3) + 1;
+    },
+    QQ: function(dateObj) {
+      return pad(Math.floor(dateObj.getMonth() / 3) + 1);
+    },
     yy: function(dateObj) {
       return pad(String(dateObj.getFullYear()), 4).substr(2);
     },
@@ -197,6 +209,18 @@
     }],
     yyyy: [fourDigits, function (d, v) {
       d.year = v;
+    }],
+    q: [twoDigits, function (d, v) {
+      d.month = (v - 1) * 3;
+    }],
+    qq: [twoDigits, function (d, v) {
+      d.month = (v - 1) * 3;
+    }],
+    Q: [twoDigits, function (d, v) {
+      d.month = (v - 1) * 3;
+    }],
+    QQ: [twoDigits, function (d, v) {
+      d.month = (v - 1) * 3;
     }],
     S: ['\\d', function (d, v) {
       d.millisecond = v * 100;

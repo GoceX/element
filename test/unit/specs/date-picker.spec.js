@@ -5,7 +5,11 @@ import {
   triggerEvent,
   wait
 } from '../util';
+import Vue from 'vue';
 import DatePicker from 'packages/date-picker';
+import RangePicker from 'packages/range-picker';
+
+Vue.component(RangePicker.name, RangePicker);
 
 const DELAY = 50;
 
@@ -39,7 +43,8 @@ describe('DatePicker', () => {
   it('select date', done => {
     vm = createVue({
       template: `
-        <el-date-picker ref="compo" v-model="value"></el-date-picker>
+        <el-date-picker ref="compo" v-model="value">
+        </el-date-picker>
       `,
       data() {
         return {
@@ -86,7 +91,8 @@ describe('DatePicker', () => {
   it('clear value', done => {
     vm = createVue({
       template: `
-        <el-date-picker v-model="value" ref="compo"></el-date-picker>
+        <el-date-picker v-model="value" ref="compo">
+        </el-date-picker>
       `,
       data() {
         return {
@@ -374,7 +380,7 @@ describe('DatePicker', () => {
       let emitted = false;
       vm = createVue({
         template: `
-          <el-date-picker
+          <el-range-picker
             ref="compo"
             v-model="value"
             type="daterange"
@@ -917,7 +923,55 @@ describe('DatePicker', () => {
       }, DELAY);
     });
 
-    // TODO: implement the same feature for range panels
+    it('works for type=daterange, when blur', done => {
+      vm = createVue({
+        template: '<el-range-picker ref="compo" v-model="value" format="yyyy-MM-dd" type="daterange" />',
+        data() {
+          return {
+            value: [new Date(2025, 11, 1), new Date(2026, 0, 28)]
+          };
+        }
+      }, true);
+
+      const inputs = vm.$el.querySelectorAll('input');
+
+      inputs[0].blur();
+      inputs[0].focus();
+
+      setTimeout(_ => {
+        vm.$refs.compo.userInput = ['', ''];
+        vm.$refs.compo.handleStartChange();
+        setTimeout(_ => {
+          expect(vm.value).to.equal(null);
+          done();
+        }, DELAY);
+      }, DELAY);
+    });
+
+    it('works for type=daterange, when keydown.enter', done => {
+      vm = createVue({
+        template: '<el-range-picker ref="compo" v-model="value" format="yyyy-MM-dd" type="daterange" />',
+        data() {
+          return {
+            value: [new Date(2025, 11, 1), new Date(2026, 0, 28)]
+          };
+        }
+      }, true);
+
+      const inputs = vm.$el.querySelectorAll('input');
+
+      inputs[0].blur();
+      inputs[0].focus();
+
+      setTimeout(_ => {
+        vm.$refs.compo.userInput = ['', ''];
+        keyDown(inputs[0], ENTER);
+        setTimeout(_ => {
+          expect(vm.value).to.equal(null);
+          done();
+        }, DELAY);
+      }, DELAY);
+    });
   });
 
   describe('navigation', () => {
@@ -1650,7 +1704,7 @@ describe('DatePicker', () => {
 
     it('works', done => {
       vm = createVue({
-        template: '<el-date-picker type="daterange" v-model="value" ref="compo" />',
+        template: '<el-range-picker type="daterange" v-model="value" ref="compo" />',
         data() {
           return {
             value: ''
@@ -1690,9 +1744,53 @@ describe('DatePicker', () => {
       }, DELAY);
     });
 
+    it('shows start after first pick and clears hover preview on mouseleave', done => {
+      vm = createVue({
+        template: '<el-range-picker type="daterange" v-model="value" format="yyyy-MM-dd" ref="compo" />',
+        data() {
+          return {
+            value: ''
+          };
+        }
+      }, true);
+
+      const rangePicker = vm.$refs.compo;
+      const inputs = rangePicker.$el.querySelectorAll('input');
+      inputs[0].focus();
+
+      setTimeout(_ => {
+        const panels = rangePicker.picker.$el.querySelectorAll('.el-date-range-picker__content');
+        panels[0].querySelector('td.available').click();
+
+        setTimeout(_ => {
+          expect(inputs[0].value.length).to.equal(10);
+          expect(inputs[1].value).to.equal('');
+          expect(document.activeElement).to.equal(inputs[1]);
+
+          const hoverCell = panels[1].querySelector('td.available');
+          triggerEvent(hoverCell, 'mousemove', true, true);
+
+          setTimeout(_ => {
+            expect(inputs[1].value.length).to.equal(10);
+            expect(inputs[1].classList.contains('is-preview')).to.equal(true);
+
+            const table = panels[1].querySelector('.el-date-table');
+            triggerEvent(table, 'mouseleave', true, true);
+
+            setTimeout(_ => {
+              expect(inputs[0].value.length).to.equal(10);
+              expect(inputs[1].value).to.equal('');
+              expect(inputs[1].classList.contains('is-preview')).to.equal(false);
+              done();
+            }, DELAY);
+          }, DELAY);
+        }, DELAY);
+      }, DELAY);
+    });
+
     it('works: reverse selection', done => {
       vm = createVue({
-        template: '<el-date-picker type="daterange" v-model="value" ref="compo" />',
+        template: '<el-range-picker type="daterange" v-model="value" ref="compo" />',
         data() {
           return {
             value: ''
@@ -1734,9 +1832,63 @@ describe('DatePicker', () => {
       }, DELAY);
     });
 
+    it('swap range when start input is after end', done => {
+      vm = createVue({
+        template: '<el-range-picker type="daterange" v-model="value" format="yyyy-MM-dd" ref="compo" />',
+        data() {
+          return {
+            value: [new Date(2025, 11, 1), new Date(2026, 0, 28)]
+          };
+        }
+      }, true);
+
+      const rangePicker = vm.$refs.compo;
+      const inputs = rangePicker.$el.querySelectorAll('input');
+      inputs[0].focus();
+
+      setTimeout(_ => {
+        inputs[0].value = '2026-02-01';
+        triggerEvent(inputs[0], 'input');
+        triggerEvent(inputs[0], 'change');
+
+        setTimeout(_ => {
+          expect(vm.value[0].getTime()).to.equal(new Date(2026, 0, 28).getTime());
+          expect(vm.value[1].getTime()).to.equal(new Date(2026, 1, 1).getTime());
+          done();
+        }, DELAY);
+      }, DELAY);
+    });
+
+    it('swap range when end input is before start', done => {
+      vm = createVue({
+        template: '<el-range-picker type="daterange" v-model="value" format="yyyy-MM-dd" ref="compo" />',
+        data() {
+          return {
+            value: [new Date(2025, 11, 1), new Date(2026, 0, 28)]
+          };
+        }
+      }, true);
+
+      const rangePicker = vm.$refs.compo;
+      const inputs = rangePicker.$el.querySelectorAll('input');
+      inputs[0].focus();
+
+      setTimeout(_ => {
+        inputs[1].value = '2025-11-01';
+        triggerEvent(inputs[1], 'input');
+        triggerEvent(inputs[1], 'change');
+
+        setTimeout(_ => {
+          expect(vm.value[0].getTime()).to.equal(new Date(2025, 10, 1).getTime());
+          expect(vm.value[1].getTime()).to.equal(new Date(2025, 11, 1).getTime());
+          done();
+        }, DELAY);
+      }, DELAY);
+    });
+
     it('type:daterange unlink:true', done => {
       vm = createVue({
-        template: '<el-date-picker type="daterange" unlink-panels v-model="value" ref="compo" />',
+        template: '<el-range-picker type="daterange" unlink-panels v-model="value" ref="compo" />',
         data() {
           return {
             value: [new Date(2000, 9, 1), new Date(2000, 9, 2)]
@@ -1761,7 +1913,7 @@ describe('DatePicker', () => {
     });
 
     it('unlink panels', done => {
-      vm = createTest(DatePicker, {
+      vm = createTest(RangePicker, {
         type: 'daterange',
         unlinkPanels: true
       }, true);
@@ -1796,7 +1948,7 @@ describe('DatePicker', () => {
       // The following test uses Australian Eastern Daylight Time (AEDT)
       // AEST -> AEDT shift happened on 2016-10-02 02:00:00
       vm = createVue({
-        template: '<el-date-picker type="daterange" v-model="value" ref="compo" />',
+        template: '<el-range-picker type="daterange" v-model="value" ref="compo" />',
         data() {
           return {
             value: [new Date(2016, 9, 1), new Date(2016, 9, 3)]
@@ -1819,7 +1971,7 @@ describe('DatePicker', () => {
 
     it('clear value', done => {
       vm = createVue({
-        template: '<el-date-picker type="daterange" v-model="value" ref="compo" />',
+        template: '<el-range-picker type="daterange" v-model="value" ref="compo" />',
         data() {
           return {
             value: [new Date(2000, 9, 1), new Date(2000, 9, 2)]
@@ -1897,7 +2049,7 @@ describe('DatePicker', () => {
         let expectValue = [new Date(2000, 9, 1), new Date(2000, 9, 2)];
 
         vm = createVue({
-          template: '<el-date-picker type="daterange" v-model="value" ref="compo" :default-value="defaultValue" />',
+          template: '<el-range-picker type="daterange" v-model="value" ref="compo" :default-value="defaultValue" />',
           data() {
             return {
               value: '',
@@ -1927,7 +2079,7 @@ describe('DatePicker', () => {
         let expectValue = [new Date(2000, 0, 1), new Date(2000, 1, 1)];
 
         vm = createVue({
-          template: '<el-date-picker type="daterange" v-model="value" ref="compo" :default-value="defaultValue" />',
+          template: '<el-range-picker type="daterange" v-model="value" ref="compo" :default-value="defaultValue" />',
           data() {
             return {
               value: '',
@@ -1956,7 +2108,7 @@ describe('DatePicker', () => {
   describe('type:datetimerange', () => {
     let vm;
     beforeEach(done => {
-      vm = createTest(DatePicker, {
+      vm = createTest(RangePicker, {
         type: 'datetimerange',
         value: [new Date(2000, 10, 10, 10, 10), new Date(2000, 10, 11, 10, 10)]
       }, true);
@@ -2001,7 +2153,7 @@ describe('DatePicker', () => {
       destroyVM(vm); // nuke beforeEach's vm before creating our own
       vm = createVue({
         template: `
-          <el-date-picker ref="compo" type="datetimerange" v-model="value" :default-time="defaultTime"></el-date-picker>
+          <el-range-picker ref="compo" type="datetimerange" v-model="value" :default-time="defaultTime"></el-date-picker>
         `,
         data() {
           return {
@@ -2063,7 +2215,7 @@ describe('DatePicker', () => {
       destroyVM(vm); // nuke beforeEach's vm before creating our own
       vm = createVue({
         template: `
-          <el-date-picker ref="compo" type="datetimerange" v-model="value" :format="format"></el-date-picker>
+          <el-range-picker ref="compo" type="datetimerange" v-model="value" :format="format"></el-date-picker>
         `,
         data() {
           return {
@@ -2113,7 +2265,7 @@ describe('DatePicker', () => {
       destroyVM(vm); // nuke beforeEach's vm before creating our own
       vm = createVue({
         template: `
-          <el-date-picker ref="compo" type="datetimerange" v-model="value" :default-time="defaultTime"></el-date-picker>
+          <el-range-picker ref="compo" type="datetimerange" v-model="value" :default-time="defaultTime"></el-date-picker>
         `,
         data() {
           return {
@@ -2306,7 +2458,7 @@ describe('DatePicker', () => {
       destroyVM(vm); // nuke beforeEach's vm before creating our own
 
       vm = createVue({
-        template: '<el-date-picker type="datetimerange" value-format="yyyy-MM-dd HH:mm:ss" v-model="value" :picker-options="pickerOptions" ref="compo" />',
+        template: '<el-range-picker type="datetimerange" value-format="yyyy-MM-dd HH:mm:ss" v-model="value" :picker-options="pickerOptions" ref="compo" />',
         data() {
           return {
             pickerOptions: {
@@ -2347,7 +2499,7 @@ describe('DatePicker', () => {
 
     it('works', done => {
       vm = createVue({
-        template: '<el-date-picker type="monthrange" v-model="value" ref="compo" />',
+        template: '<el-range-picker type="monthrange" v-model="value" ref="compo" />',
         data() {
           return {
             value: ''
@@ -2389,7 +2541,7 @@ describe('DatePicker', () => {
 
     it('works: reverse selection', done => {
       vm = createVue({
-        template: '<el-date-picker type="monthrange" v-model="value" ref="compo" />',
+        template: '<el-range-picker type="monthrange" v-model="value" ref="compo" />',
         data() {
           return {
             value: ''
@@ -2433,7 +2585,7 @@ describe('DatePicker', () => {
 
     it('type:monthrange unlink:true', done => {
       vm = createVue({
-        template: '<el-date-picker type="monthrange" unlink-panels v-model="value" ref="compo" />',
+        template: '<el-range-picker type="monthrange" unlink-panels v-model="value" ref="compo" />',
         data() {
           return {
             value: [new Date(2000, 9), new Date(2000, 10)]
@@ -2458,7 +2610,7 @@ describe('DatePicker', () => {
     });
 
     it('unlink panels', done => {
-      vm = createTest(DatePicker, {
+      vm = createTest(RangePicker, {
         type: 'monthrange',
         unlinkPanels: true
       }, true);
@@ -2489,7 +2641,7 @@ describe('DatePicker', () => {
       // The following test uses Australian Eastern Daylight Time (AEDT)
       // AEST -> AEDT shift happened on 2016-10-02 02:00:00
       vm = createVue({
-        template: '<el-date-picker type="monthrange" v-model="value" ref="compo" />',
+        template: '<el-range-picker type="monthrange" v-model="value" ref="compo" />',
         data() {
           return {
             value: [new Date(2016, 6), new Date(2016, 12)]
@@ -2512,7 +2664,7 @@ describe('DatePicker', () => {
 
     it('clear value', done => {
       vm = createVue({
-        template: '<el-date-picker type="monthrange" v-model="value" ref="compo" />',
+        template: '<el-range-picker type="monthrange" v-model="value" ref="compo" />',
         data() {
           return {
             value: [new Date(2000, 9), new Date(2000, 10)]
@@ -2592,7 +2744,7 @@ describe('DatePicker', () => {
         let expectValue = [new Date(2000, 9), new Date(2000, 10)];
 
         vm = createVue({
-          template: '<el-date-picker type="monthrange" v-model="value" ref="compo" :default-value="defaultValue" />',
+          template: '<el-range-picker type="monthrange" v-model="value" ref="compo" :default-value="defaultValue" />',
           data() {
             return {
               value: '',
@@ -2622,7 +2774,7 @@ describe('DatePicker', () => {
         let expectValue = [new Date(2000, 0), new Date(2000, 2)];
 
         vm = createVue({
-          template: '<el-date-picker type="monthrange" v-model="value" ref="compo" :default-value="defaultValue" />',
+          template: '<el-range-picker type="monthrange" v-model="value" ref="compo" :default-value="defaultValue" />',
           data() {
             return {
               value: '',

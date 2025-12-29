@@ -9,14 +9,14 @@
 
   &.el-input,
   &.el-input__inner {
-    width: 220px;
+    width: auto;
   }
 
   @include m((monthrange)) {
 
     &.el-input,
     &.el-input__inner {
-      width: 300px;
+      width: auto;
     }
   }
 
@@ -24,7 +24,7 @@
 
     &.el-input,
     &.el-input__inner {
-      width: 350px;
+      width: auto;
     }
   }
 
@@ -32,7 +32,15 @@
 
     &.el-input,
     &.el-input__inner {
-      width: 400px;
+      width: auto;
+    }
+  }
+
+  @include m(datetime) {
+
+    &.el-input,
+    &.el-input__inner {
+      width: auto;
     }
   }
 
@@ -48,7 +56,7 @@
   }
 
   .el-range__icon {
-    font-size: $--font-size-medium;
+    font-size: $--font-size-base;
     margin-left: -5px;
     color: $--color-text-placeholder;
     float: left;
@@ -86,7 +94,7 @@
   }
 
   .el-range__close-icon {
-    font-size: 14px;
+    font-size: $--font-size-base;
     color: $--color-text-placeholder;
     width: 25px;
     display: inline-block;
@@ -100,6 +108,7 @@
     display: inline-flex;
     align-items: center;
     padding: 3px 10px;
+    justify-content: space-between;
   }
 
   .el-range-input {

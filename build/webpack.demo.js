@@ -13,9 +13,11 @@ const config = require('./config');
 
 const isProd = process.env.NODE_ENV === 'production';
 const isPlay = !!process.env.PLAY_ENV;
+const sassImplementation = process.env.SASS_IMPL === 'sass' ? require('sass') : require('node-sass');
 
 const webpackConfig = {
   mode: process.env.NODE_ENV,
+  cache: true,
   entry: isProd ? {
     docs: './examples/entry.js'
   } : (isPlay ? './examples/play.js' : './examples/entry.js'),
@@ -63,13 +65,19 @@ const webpackConfig = {
         enforce: 'pre',
         test: /\.(vue|jsx?)$/,
         exclude: /node_modules/,
-        loader: 'eslint-loader'
+        loader: 'eslint-loader',
+        options: {
+          cache: true
+        }
       },
       {
         test: /\.(jsx?|babel|es6)$/,
         include: process.cwd(),
         exclude: config.jsexclude,
-        loader: 'babel-loader'
+        loader: 'babel-loader',
+        options: {
+          cacheDirectory: true
+        }
       },
       {
         test: /\.vue$/,
@@ -84,11 +92,17 @@ const webpackConfig = {
         test: /\.(scss|css)$/,
         use: [
           isProd ? MiniCssExtractPlugin.loader : 'style-loader',
-          'css-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              sourceMap: false
+            }
+          },
           {
             loader: 'sass-loader',
             options: {
-              implementation: require('sass')
+              sourceMap: false,
+              implementation: sassImplementation
             }
           }
         ]
@@ -146,7 +160,7 @@ const webpackConfig = {
   optimization: {
     minimizer: []
   },
-  devtool: '#eval-source-map'
+  devtool: isProd ? false : 'eval-cheap-module-source-map'
 };
 
 if (isProd) {

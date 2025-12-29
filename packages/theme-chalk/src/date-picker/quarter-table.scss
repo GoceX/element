@@ -1,7 +1,7 @@
 @import "../common/var";
 @import "../mixins/mixins";
 
-@include b(month-table) {
+@include b(quarter-table) {
   font-size: $--font-size-medium;
   margin: -1px;
   border-collapse: collapse;
@@ -62,6 +62,11 @@
       }
     }
 
+    &.current:not(.disabled) .cell {
+      color: $--color-white;
+      background-color: $--datepicker-active-color;
+    }
+
     &.start-date div,
     &.end-date div {
       color: $--color-white;
@@ -81,11 +86,6 @@
     &.end-date div {
       border-top-right-radius: 24px;
       border-bottom-right-radius: 24px;
-    }
-
-    &.current:not(.disabled) .cell {
-      color: $--color-white;
-      background-color: $--datepicker-active-color;
     }
   }
 }

@@ -96,6 +96,7 @@ import BasicForm from '../packages/basic-form/index.js';
 import BasicTable from '../packages/basic-table/index.js';
 import BasicTableColumn from '../packages/basic-table-column/index.js';
 import TableAction from '../packages/table-action/index.js';
+import RangePicker from '../packages/range-picker/index.js';
 import locale from 'rowinself-ui/src/locale';
 import CollapseTransition from 'rowinself-ui/src/transitions/collapse-transition';
 
@@ -191,6 +192,7 @@ const components = [
   BasicTable,
   BasicTableColumn,
   TableAction,
+  RangePicker,
   CollapseTransition
 ];
 
@@ -226,7 +228,7 @@ if (typeof window !== 'undefined' && window.Vue) {
 }
 
 export default {
-  version: '1.0.3',
+  version: '1.0.4',
   locale: locale.use,
   i18n: locale.i18n,
   install,
@@ -326,5 +328,6 @@ export default {
   BasicForm,
   BasicTable,
   BasicTableColumn,
-  TableAction
+  TableAction,
+  RangePicker
 };

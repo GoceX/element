@@ -1,13 +1,13 @@
 <template>
   <table @click="handleMonthTableClick" @mousemove="handleMouseMove" class="el-month-table">
     <tbody>
-    <tr v-for="(row, key) in rows" :key="key">
-      <td :class="getCellStyle(cell)" v-for="(cell, key) in row" :key="key">
-        <div>
-          <a class="cell">{{ t('el.datepicker.months.' + months[cell.text]) }}</a>
-        </div>
-      </td>
-    </tr>
+      <tr v-for="(row, key) in rows" :key="key">
+        <td :class="getCellStyle(cell)" v-for="(cell, key) in row" :key="key">
+          <div>
+            <a class="cell">{{ t('el.datepicker.months.' + months[cell.text]) }}</a>
+          </div>
+        </td>
+      </tr>
     </tbody>
   </table>
 </template>
@@ -46,33 +46,97 @@
     return idx >= 0 ? [...arr.slice(0, idx), ...arr.slice(idx + 1)] : arr;
   };
   export default {
-    props: {
-      disabledDate: {},
-      value: {},
-      selectionMode: {
-        default: 'month'
-      },
-      minDate: {},
+    mixins: [Locale],
 
-      maxDate: {},
+    props: {
+      disabledDate: {
+        type: Function
+      },
+      value: {
+        type: [Date, String, Number, Array]
+      },
+      selectionMode: {
+        default: 'month',
+        type: String,
+        validator(val) {
+          return ['month', 'months', 'range'].indexOf(val) > -1;
+        }
+      },
+      minDate: {
+        type: [Date, String, Number]
+      },
+
+      maxDate: {
+        type: [Date, String, Number]
+      },
       defaultValue: {
         validator(val) {
           // null or valid Date Object
           return val === null || isDate(val) || (Array.isArray(val) && val.every(isDate));
         }
       },
-      date: {},
+      date: {
+        type: Date
+      },
       rangeState: {
         default() {
           return {
             endDate: null,
             selecting: false
           };
-        }
+        },
+        type: Object
       }
     },
 
-    mixins: [Locale],
+    data() {
+      return {
+        months: ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'],
+        tableRows: [ [], [], [] ],
+        lastRow: null,
+        lastColumn: null
+      };
+    },
+
+    computed: {
+      rows() {
+        // TODO: refactory rows / getCellClasses
+        const rows = this.tableRows;
+        const disabledDate = this.disabledDate;
+        const selectedDate = [];
+        const now = getMonthTimestamp(new Date());
+
+        for (let i = 0; i < 3; i++) {
+          const row = rows[i];
+          for (let j = 0; j < 4; j++) {
+            let cell = row[j];
+            if (!cell) {
+              cell = { row: i, column: j, type: 'normal', inRange: false, start: false, end: false };
+            }
+
+            cell.type = 'normal';
+
+            const index = i * 4 + j;
+            const time = new Date(this.date.getFullYear(), index).getTime();
+            cell.inRange = time >= getMonthTimestamp(this.minDate) && time <= getMonthTimestamp(this.maxDate);
+            cell.start = this.minDate && time === getMonthTimestamp(this.minDate);
+            cell.end = this.maxDate && time === getMonthTimestamp(this.maxDate);
+            const isToday = time === now;
+
+            if (isToday) {
+              cell.type = 'today';
+            }
+            cell.text = index;
+            let cellDate = new Date(time);
+            cell.disabled = typeof disabledDate === 'function' && disabledDate(cellDate);
+            cell.selected = arrayFind(selectedDate, date => date.getTime() === cellDate.getTime());
+
+            this.$set(row, j, cell);
+          }
+        }
+        return rows;
+      }
+    },
 
     watch: {
       'rangeState.endDate'(newVal) {
@@ -90,15 +154,6 @@
           this.markRange(this.minDate, this.maxDate);
         }
       }
-    },
-
-    data() {
-      return {
-        months: ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'],
-        tableRows: [ [], [], [] ],
-        lastRow: null,
-        lastColumn: null
-      };
     },
 
     methods: {
@@ -223,46 +278,6 @@
         } else {
           this.$emit('pick', month);
         }
-      }
-    },
-
-    computed: {
-      rows() {
-        // TODO: refactory rows / getCellClasses
-        const rows = this.tableRows;
-        const disabledDate = this.disabledDate;
-        const selectedDate = [];
-        const now = getMonthTimestamp(new Date());
-
-        for (let i = 0; i < 3; i++) {
-          const row = rows[i];
-          for (let j = 0; j < 4; j++) {
-            let cell = row[j];
-            if (!cell) {
-              cell = { row: i, column: j, type: 'normal', inRange: false, start: false, end: false };
-            }
-
-            cell.type = 'normal';
-
-            const index = i * 4 + j;
-            const time = new Date(this.date.getFullYear(), index).getTime();
-            cell.inRange = time >= getMonthTimestamp(this.minDate) && time <= getMonthTimestamp(this.maxDate);
-            cell.start = this.minDate && time === getMonthTimestamp(this.minDate);
-            cell.end = this.maxDate && time === getMonthTimestamp(this.maxDate);
-            const isToday = time === now;
-
-            if (isToday) {
-              cell.type = 'today';
-            }
-            cell.text = index;
-            let cellDate = new Date(time);
-            cell.disabled = typeof disabledDate === 'function' && disabledDate(cellDate);
-            cell.selected = arrayFind(selectedDate, date => date.getTime() === cellDate.getTime());
-
-            this.$set(row, j, cell);
-          }
-        }
-        return rows;
       }
     }
   };

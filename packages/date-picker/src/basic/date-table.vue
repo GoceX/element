@@ -5,28 +5,29 @@
     class="el-date-table"
     @click="handleClick"
     @mousemove="handleMouseMove"
+    @mouseleave="handleMouseLeave"
     :class="{ 'is-week-mode': selectionMode === 'week' }">
     <tbody>
-    <tr>
-      <th v-if="showWeekNumber">{{ t('el.datepicker.week') }}</th>
-      <th v-for="(week, key) in WEEKS" :key="key">{{ t('el.datepicker.weeks.' + week) }}</th>
-    </tr>
-    <tr
-      class="el-date-table__row"
-      v-for="(row, key) in rows"
-      :class="{ current: isWeekActive(row[1]) }"
-      :key="key">
-      <td
-        v-for="(cell, key) in row"
-        :class="getCellClasses(cell)"
+      <tr>
+        <th v-if="showWeekNumber">{{ t('el.datepicker.week') }}</th>
+        <th v-for="(week, key) in WEEKS" :key="key">{{ t('el.datepicker.weeks.' + week) }}</th>
+      </tr>
+      <tr
+        class="el-date-table__row"
+        v-for="(row, key) in rows"
+        :class="{ current: isWeekActive(row[1]) }"
         :key="key">
-        <div>
-          <span>
-            {{ cell.text }}
-          </span>
-        </div>
-      </td>
-    </tr>
+        <td
+          v-for="(cell, key) in row"
+          :class="getCellClasses(cell)"
+          :key="key">
+          <div>
+            <span>
+              {{ cell.text }}
+            </span>
+          </div>
+        </td>
+      </tr>
     </tbody>
   </table>
 </template>
@@ -65,7 +66,9 @@
         validator: val => val >= 1 && val <= 7
       },
 
-      value: {},
+      value: {
+        type: [Date, String, Number, Array]
+      },
 
       defaultValue: {
         validator(val) {
@@ -74,10 +77,13 @@
         }
       },
 
-      date: {},
+      date: {
+        type: Date
+      },
 
       selectionMode: {
-        default: 'day'
+        default: 'day',
+        type: String
       },
 
       showWeekNumber: {
@@ -85,13 +91,21 @@
         default: false
       },
 
-      disabledDate: {},
-  
-      cellClassName: {},
+      disabledDate: {
+        type: Function
+      },
 
-      minDate: {},
+      cellClassName: {
+        type: [Function, String, Object, Array]
+      },
 
-      maxDate: {},
+      minDate: {
+        type: [Date, String, Number]
+      },
+
+      maxDate: {
+        type: [Date, String, Number]
+      },
 
       rangeState: {
         default() {
@@ -99,8 +113,17 @@
             endDate: null,
             selecting: false
           };
-        }
+        },
+        type: Object
       }
+    },
+
+    data() {
+      return {
+        tableRows: [ [], [], [], [], [], [] ],
+        lastRow: null,
+        lastColumn: null
+      };
     },
 
     computed: {
@@ -233,15 +256,15 @@
       }
     },
 
-    data() {
-      return {
-        tableRows: [ [], [], [], [], [], [] ],
-        lastRow: null,
-        lastColumn: null
-      };
-    },
-
     methods: {
+      getWeekStartEnd(date) {
+        const day = date.getDay();
+        const offset = (day - this.firstDayOfWeek + 7) % 7;
+        const weekStart = prevDate(date, offset);
+        const weekEnd = nextDate(weekStart, 6);
+        return { start: weekStart, end: weekEnd };
+      },
+
       cellMatchesDate(cell, date) {
         const value = new Date(date);
         return this.year === value.getFullYear() &&
@@ -271,7 +294,7 @@
           classes.push('current');
         }
 
-        if (cell.inRange && ((cell.type === 'normal' || cell.type === 'today') || this.selectionMode === 'week')) {
+        if (cell.inRange && ((cell.type === 'normal' || cell.type === 'today') || this.selectionMode === 'week' || this.selectionMode === 'week-range')) {
           classes.push('in-range');
 
           if (cell.start) {
@@ -292,7 +315,15 @@
         }
 
         if (cell.customClass) {
-          classes.push(cell.customClass);
+          if (Array.isArray(cell.customClass)) {
+            classes = classes.concat(cell.customClass.filter(Boolean));
+          } else if (typeof cell.customClass === 'object') {
+            classes = classes.concat(Object.keys(cell.customClass).filter(key => cell.customClass[key]));
+          } else if (typeof cell.customClass === 'string') {
+            classes = classes.concat(cell.customClass.split(' ').filter(Boolean));
+          } else {
+            classes.push(cell.customClass);
+          }
         }
 
         return classes.join(' ');
@@ -353,7 +384,7 @@
       },
 
       handleMouseMove(event) {
-        if (!this.rangeState.selecting) return;
+        if (this.selectionMode !== 'range' && this.selectionMode !== 'week-range') return;
 
         let target = event.target;
         if (target.tagName === 'SPAN') {
@@ -367,23 +398,41 @@
         const row = target.parentNode.rowIndex - 1;
         const column = target.cellIndex;
 
-        // can not select disabled date
         if (this.rows[row][column].disabled) return;
 
-        // only update rangeState when mouse moves to a new cell
-        // this avoids frequent Date object creation and improves performance
         if (row !== this.lastRow || column !== this.lastColumn) {
           this.lastRow = row;
           this.lastColumn = column;
+
+          let endDate = this.getDateOfCell(row, column);
+          if (this.selectionMode === 'week-range') {
+            const { end } = this.getWeekStartEnd(endDate);
+            endDate = end;
+          }
+
           this.$emit('changerange', {
             minDate: this.minDate,
             maxDate: this.maxDate,
             rangeState: {
-              selecting: true,
-              endDate: this.getDateOfCell(row, column)
+              selecting: this.rangeState.selecting,
+              endDate: endDate
             }
           });
         }
+      },
+
+      handleMouseLeave() {
+        if (this.selectionMode !== 'range' && this.selectionMode !== 'week-range') return;
+        this.lastRow = null;
+        this.lastColumn = null;
+        this.$emit('changerange', {
+          minDate: this.minDate,
+          maxDate: this.maxDate,
+          rangeState: {
+            selecting: this.rangeState.selecting,
+            endDate: null
+          }
+        });
       },
 
       handleClick(event) {
@@ -428,6 +477,20 @@
             value: value,
             date: newDate
           });
+        } else if (this.selectionMode === 'week-range') {
+          const { start, end } = this.getWeekStartEnd(newDate);
+          if (!this.rangeState.selecting) {
+            this.$emit('pick', {minDate: start, maxDate: null});
+            this.rangeState.selecting = true;
+          } else {
+            if (start >= this.minDate) {
+              this.$emit('pick', {minDate: this.minDate, maxDate: end});
+            } else {
+              const { end: minEnd } = this.getWeekStartEnd(this.minDate);
+              this.$emit('pick', {minDate: start, maxDate: minEnd});
+            }
+            this.rangeState.selecting = false;
+          }
         } else if (this.selectionMode === 'dates') {
           const value = this.value || [];
           const newValue = cell.selected

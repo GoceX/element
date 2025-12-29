@@ -12,6 +12,7 @@ package-lock.json
 lib
 .idea
 .vscode
+.trae
 examples/rowinself-ui
 examples/pages/en-US
 examples/pages/zh-CN
@@ -24,3 +25,5 @@ waiter.config.js
 build/bin/algolia-key.js
 .envrc
 .history/
+
+*copy*

@@ -19,8 +19,7 @@
               @change="handleMinChange"
               :arrow-control="arrowControl"
               @select-range="setMinSelectionRange"
-              :date="minDate">
-            </time-spinner>
+              :date="minDate"/>
           </div>
         </div>
         <div class="el-time-range-picker__cell">
@@ -35,8 +34,7 @@
               @change="handleMaxChange"
               :arrow-control="arrowControl"
               @select-range="setMaxSelectionRange"
-              :date="maxDate">
-            </time-spinner>
+              :date="maxDate"/>
           </div>
         </div>
       </div>
@@ -83,9 +81,24 @@
   };
 
   export default {
-    mixins: [Locale],
 
     components: { TimeSpinner },
+    mixins: [Locale],
+
+    data() {
+      return {
+        popperClass: '',
+        minDate: new Date(),
+        maxDate: new Date(),
+        value: [],
+        oldValue: [new Date(), new Date()],
+        defaultValue: null,
+        format: 'HH:mm:ss',
+        visible: false,
+        selectionRange: [0, 2],
+        arrowControl: false
+      };
+    },
 
     computed: {
       showSeconds() {
@@ -108,21 +121,6 @@
         if ((this.format || '').indexOf('a') !== -1) return 'a';
         return '';
       }
-    },
-
-    data() {
-      return {
-        popperClass: '',
-        minDate: new Date(),
-        maxDate: new Date(),
-        value: [],
-        oldValue: [new Date(), new Date()],
-        defaultValue: null,
-        format: 'HH:mm:ss',
-        visible: false,
-        selectionRange: [0, 2],
-        arrowControl: false
-      };
     },
 
     watch: {

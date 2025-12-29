@@ -1,21 +1,59 @@
 {
+  "root": true,
   "env": {
     "browser": true,
+    "node": true,
     "es6": true
   },
-  "globals": {
-    "ga": true,
-    "chrome": true
-  },
-  "plugins": ["html", "json"],
-  "extends": "elemefe",
-  "rules": {
-    "no-restricted-globals": ["error", "event", "fdescribe"]
-  },
+  "parser": "vue-eslint-parser",
+  "plugins": [
+    "vue"
+  ],
   "parserOptions": {
-    "ecmaVersion": 6,
+    "ecmaVersion": 2017,
+    "sourceType": "module",
     "ecmaFeatures": {
       "jsx": true
     }
+  },
+  "extends": [
+    "plugin:vue/recommended"
+  ],
+  "rules": {
+    "no-unused-vars": "off",
+    "no-use-before-define": "off",
+    "space-before-function-paren": "off",
+    "vue/attributes-order": "off",
+    "vue/custom-event-name-casing": "off",
+    "vue/v-on-event-hyphenation": "off",
+    "vue/one-component-per-file": "off",
+    "vue/html-closing-bracket-newline": "off",
+    "vue/max-attributes-per-line": [
+      "error",
+      {
+        "singleline": {
+          "max": 10
+        },
+        "multiline": {
+          "max": 1
+        }
+      }
+    ],
+    "vue/multiline-html-element-content-newline": "off",
+    "vue/singleline-html-element-content-newline": "off",
+    "vue/attribute-hyphenation": "off",
+    "vue/require-default-prop": "off",
+    "vue/html-self-closing": [
+      "error",
+      {
+        "html": {
+          "void": "always",
+          "normal": "never",
+          "component": "always"
+        },
+        "svg": "always",
+        "math": "always"
+      }
+    ]
   }
 }

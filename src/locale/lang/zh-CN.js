@@ -33,6 +33,12 @@ export default {
       month10: '10 月',
       month11: '11 月',
       month12: '12 月',
+      quarters: {
+        Q1: 'Q1',
+        Q2: 'Q2',
+        Q3: 'Q3',
+        Q4: 'Q4'
+      },
       // week: '周次',
       weeks: {
         sun: '日',

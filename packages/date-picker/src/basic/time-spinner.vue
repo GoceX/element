@@ -113,8 +113,12 @@
     },
 
     props: {
-      date: {},
-      defaultValue: {}, // reserved for future use
+      date: {
+        type: Date
+      },
+      defaultValue: {
+        type: Date
+      }, // reserved for future use
       showSeconds: {
         type: Boolean,
         default: true
@@ -124,6 +128,13 @@
         type: String,
         default: '' // 'a': am/pm; 'A': AM/PM
       }
+    },
+
+    data() {
+      return {
+        selectableRange: [],
+        currentScrollbar: null
+      };
     },
 
     computed: {
@@ -166,13 +177,6 @@
           seconds < 59 ? seconds + 1 : undefined
         ];
       }
-    },
-
-    data() {
-      return {
-        selectableRange: [],
-        currentScrollbar: null
-      };
     },
 
     mounted() {

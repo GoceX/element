@@ -1,5 +1,5 @@
 <template>
-  <transition name="el-zoom-in-top" @before-enter="handleMenuEnter" @after-leave="$emit('dodestroy')">
+  <transition name="el-slide-up" @before-enter="handleMenuEnter" @after-leave="$emit('dodestroy')">
     <div
       ref="popper"
       v-show="visible"
@@ -7,7 +7,8 @@
       :class="popperClass"
       class="el-picker-panel time-select el-popper">
       <el-scrollbar noresize wrap-class="el-picker-panel__content">
-        <div class="time-select-item"
+        <div 
+          class="time-select-item"
           v-for="item in items"
           :class="{ selected: value === item.value, disabled: item.disabled, default: item.value === defaultValue }"
           :disabled="item.disabled"
@@ -76,6 +77,45 @@
   export default {
     components: { ElScrollbar },
 
+    data() {
+      return {
+        popperClass: '',
+        start: '09:00',
+        end: '18:00',
+        step: '00:30',
+        value: '',
+        defaultValue: '',
+        visible: false,
+        minTime: '',
+        maxTime: '',
+        width: 0
+      };
+    },
+
+    computed: {
+      items() {
+        const start = this.start;
+        const end = this.end;
+        const step = this.step;
+
+        const result = [];
+
+        if (start && end && step) {
+          let current = start;
+          while (compareTime(current, end) <= 0) {
+            result.push({
+              value: current,
+              disabled: compareTime(current, this.minTime || '-1:-1') <= 0 ||
+                compareTime(current, this.maxTime || '100:100') >= 0
+            });
+            current = nextTime(current, step);
+          }
+        }
+
+        return result;
+      }
+    },
+
     watch: {
       value(val) {
         if (!val) return;
@@ -135,44 +175,5 @@
         }
       }
     },
-
-    data() {
-      return {
-        popperClass: '',
-        start: '09:00',
-        end: '18:00',
-        step: '00:30',
-        value: '',
-        defaultValue: '',
-        visible: false,
-        minTime: '',
-        maxTime: '',
-        width: 0
-      };
-    },
-
-    computed: {
-      items() {
-        const start = this.start;
-        const end = this.end;
-        const step = this.step;
-
-        const result = [];
-
-        if (start && end && step) {
-          let current = start;
-          while (compareTime(current, end) <= 0) {
-            result.push({
-              value: current,
-              disabled: compareTime(current, this.minTime || '-1:-1') <= 0 ||
-                compareTime(current, this.maxTime || '100:100') >= 0
-            });
-            current = nextTime(current, step);
-          }
-        }
-
-        return result;
-      }
-    }
   };
 </script>

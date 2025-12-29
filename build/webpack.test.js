@@ -1,67 +1,58 @@
 const path = require('path');
-const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
-const config = require('./config');
-
-const webpackConfig = {
+module.exports = {
   mode: 'development',
-  entry: {
-    app: ['./src/index.js']
-  },
-  output: {
-    path: path.resolve(process.cwd(), './dist'),
-    publicPath: '/dist/',
-    filename: '[name].js',
-    chunkFilename: '[id].js'
-  },
+
+  // ❌ 测试环境不需要 entry / output
+  entry: undefined,
+  output: {},
+
   resolve: {
     extensions: ['.js', '.vue', '.json'],
-    alias: Object.assign(config.alias, {
-      'vue$': 'vue/dist/vue.common.js'
-    }),
-    modules: ['node_modules']
+    alias: {
+      vue$: 'vue/dist/vue.common.js',
+      '@': path.resolve(process.cwd(), 'src'),
+      'main': path.resolve(process.cwd(), 'src'),
+      'packages': path.resolve(process.cwd(), 'packages'),
+      'rowinself-ui': path.resolve(process.cwd())
+    }
   },
+
   module: {
     rules: [
       {
-        test: /\.(jsx?|babel|es6)$/,
-        include: process.cwd(),
-        exclude: config.jsexclude,
+        test: /\.jsx?$/,
+        exclude: /node_modules/,
         loader: 'babel-loader'
       },
       {
         test: /\.vue$/,
-        loader: 'vue-loader',
-        options: {
-          compilerOptions: {
-            preserveWhitespace: false
-          }
-        }
+        loader: 'vue-loader'
       },
+
+      // ✅ 测试环境不注入样式
       {
         test: /\.css$/,
-        loaders: ['style-loader', 'css-loader']
+        loader: 'null-loader'
       },
       {
-        test: /\.(svg|otf|ttf|woff2?|eot|gif|png|jpe?g)(\?\S*)?$/,
-        loader: 'url-loader',
-        query: {
-          limit: 10000,
-          name: path.posix.join('static', '[name].[hash:7].[ext]')
-        }
+        test: /\.scss$/,
+        loader: 'null-loader'
+      },
+
+      // ✅ 测试环境直接忽略资源文件
+      {
+        test: /\.(svg|otf|ttf|woff2?|eot|gif|png|jpe?g)$/,
+        loader: 'null-loader'
       }
     ]
   },
+
   plugins: [
     new VueLoaderPlugin()
-  ]
+  ],
+
+  // ✅ 关键：减少日志但不“无输出”
+  stats: 'errors-warnings'
 };
-
-if (!process.env.CI_ENV) {
-  webpackConfig.plugins.push(
-    new ProgressBarPlugin()
-  );
-}
-
-module.exports = webpackConfig;

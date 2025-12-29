@@ -1,144 +1,115 @@
 <template>
-  <transition name="el-zoom-in-top" @after-enter="handleEnter" @after-leave="handleLeave">
+  <!-- 
+    日期选择器面板模板
+    包含了日期、年份、月份、季度选择以及时间选择功能
+  -->
+  <transition name="el-slide-up" @after-enter="handleEnter" @after-leave="handleLeave">
     <div
       v-show="visible"
       class="el-picker-panel el-date-picker el-popper"
       :class="[{
-        'has-sidebar': $slots.sidebar || shortcuts,
+        'has-sidebar': $slots.sidebar || (shortcuts && shortcuts.length),
         'has-time': showTime
-      }, popperClass]">
+    }, popperClass]">
       <div class="el-picker-panel__body-wrapper">
+        <!-- 侧边栏插槽 -->
         <slot name="sidebar" class="el-picker-panel__sidebar"></slot>
-        <div class="el-picker-panel__sidebar" v-if="shortcuts">
+        <!-- 快捷选项侧边栏 -->
+        <div class="el-picker-panel__sidebar" v-if="shortcuts && shortcuts.length">
           <button
             type="button"
             class="el-picker-panel__shortcut"
             v-for="(shortcut, key) in shortcuts"
             :key="key"
-            @click="handleShortcutClick(shortcut)">{{ shortcut.text }}</button>
+            @click="handleShortcutClick(shortcut)">
+            {{ shortcut.text }}
+          </button>
         </div>
         <div class="el-picker-panel__body">
-          <div class="el-date-picker__time-header" v-if="showTime">
-            <span class="el-date-picker__editor-wrap">
-              <el-input
-                :placeholder="t('el.datepicker.selectDate')"
-                :value="visibleDate"
-                size="small"
-                @input="val => userInputDate = val"
-                @change="handleVisibleDateChange" />
-            </span>
-            <span class="el-date-picker__editor-wrap" v-clickoutside="handleTimePickClose">
-              <el-input
-                ref="input"
-                @focus="timePickerVisible = true"
-                :placeholder="t('el.datepicker.selectTime')"
-                :value="visibleTime"
-                size="small"
-                @input="val => userInputTime = val"
-                @change="handleVisibleTimeChange" />
-              <time-picker
-                ref="timepicker"
-                :time-arrow-control="arrowControl"
-                @pick="handleTimePick"
-                :visible="timePickerVisible"
-                @mounted="proxyTimePickerDataProperties">
-              </time-picker>
-            </span>
-          </div>
-          <div
-            class="el-date-picker__header"
-            :class="{ 'el-date-picker__header--bordered': currentView === 'year' || currentView === 'month' }"
-            v-show="currentView !== 'time'">
-            <button
-              type="button"
-              @click="prevYear"
-              :aria-label="t(`el.datepicker.prevYear`)"
-              class="el-picker-panel__icon-btn el-date-picker__prev-btn el-icon-d-arrow-left">
-            </button>
-            <button
-              type="button"
-              @click="prevMonth"
-              v-show="currentView === 'date'"
-              :aria-label="t(`el.datepicker.prevMonth`)"
-              class="el-picker-panel__icon-btn el-date-picker__prev-btn el-icon-arrow-left">
-            </button>
-            <span
-              @click="showYearPicker"
-              role="button"
-              class="el-date-picker__header-label">{{ yearLabel }}</span>
-            <span
-              @click="showMonthPicker"
-              v-show="currentView === 'date'"
-              role="button"
-              class="el-date-picker__header-label"
-              :class="{ active: currentView === 'month' }">{{t(`el.datepicker.month${ month + 1 }`)}}</span>
-            <button
-              type="button"
-              @click="nextYear"
-              :aria-label="t(`el.datepicker.nextYear`)"
-              class="el-picker-panel__icon-btn el-date-picker__next-btn el-icon-d-arrow-right">
-            </button>
-            <button
-              type="button"
-              @click="nextMonth"
-              v-show="currentView === 'date'"
-              :aria-label="t(`el.datepicker.nextMonth`)"
-              class="el-picker-panel__icon-btn el-date-picker__next-btn el-icon-arrow-right">
-            </button>
-          </div>
+          <!-- 主体内容包装器 -->
+          <date-time
+            v-show="currentView === 'date'"
+            :date="date"
+            :show-time="showTime"
+            :show-seconds="showSeconds"
+            :am-pm-mode="amPmMode"
+            :arrow-control="arrowControl"
+            :selection-mode="selectionMode"
+            :first-day-of-week="firstDayOfWeek"
+            :value="value"
+            :default-value="defaultValue ? new Date(defaultValue) : null"
+            :cell-class-name="cellClassName"
+            :disabled-date="disabledDate"
+            :current-view="currentView"
+            :current-year="currentYear"
+            :current-month="currentMonth"
+            :year-options="yearOptions"
+            :month-options="monthOptions"
+            @update:currentYear="currentYear = $event"
+            @update:currentMonth="currentMonth = $event"
+            @handle-today="handleToday"
+            @time-change="handleTimeSpinnerChange"
+            @pick="handleDatePick"
+          />
 
-          <div class="el-picker-panel__content">
-            <date-table
-              v-show="currentView === 'date'"
-              @pick="handleDatePick"
-              :selection-mode="selectionMode"
-              :first-day-of-week="firstDayOfWeek"
-              :value="value"
-              :default-value="defaultValue ? new Date(defaultValue) : null"
-              :date="date"
-              :cell-class-name="cellClassName"
-              :disabled-date="disabledDate">
-            </date-table>
-            <year-table
+          <div v-show="currentView !== 'date'">
+            <year-panel
               v-show="currentView === 'year'"
+              :linked-date="date"
+              :value="value"
+              :default-value="defaultValue ? new Date(defaultValue) : null"
+              :disabled-date="disabledDate"
+              :selection-mode="selectionMode"
               @pick="handleYearPick"
-              :selection-mode="selectionMode"
-              :value="value"
-              :default-value="defaultValue ? new Date(defaultValue) : null"
-              :date="date"
-              :disabled-date="disabledDate">
-            </year-table>
-            <month-table
+              @update:date="date = $event"/>
+            <!-- 月份选择表格 -->
+            <month-panel
               v-show="currentView === 'month'"
-              @pick="handleMonthPick"
-              :selection-mode="selectionMode"
+              :linked-date="date"
               :value="value"
               :default-value="defaultValue ? new Date(defaultValue) : null"
-              :date="date"
-              :disabled-date="disabledDate">
-            </month-table>
+              :disabled-date="disabledDate"
+              :selection-mode="monthTableSelectionMode"
+              @pick="handleMonthPick"
+              @show-year-picker="showYearPicker"
+              @update:date="date = $event"/>
+            <quarter-panel
+              v-show="currentView === 'quarter'"
+              :linked-date="date"
+              :value="value"
+              :default-value="defaultValue ? new Date(defaultValue) : null"
+              :disabled-date="disabledDate"
+              :selection-mode="selectionMode"
+              @pick="handleQuarterPanelPick"
+              @update:date="date = $event"/>
           </div>
         </div>
-      </div>
 
-      <div
-        class="el-picker-panel__footer"
-        v-show="footerVisible && (currentView === 'date' || currentView === 'month' || currentView === 'year')">
-        <el-button
-          size="mini"
-          type="text"
-          class="el-picker-panel__link-btn"
-          @click="changeToNow"
-          v-show="selectionMode !== 'dates' && selectionMode !== 'months' && selectionMode !== 'years'">
-          {{ t('el.datepicker.now') }}
-        </el-button>
-        <el-button
-          plain
-          size="mini"
-          class="el-picker-panel__link-btn"
-          @click="confirm">
-          {{ t('el.datepicker.confirm') }}
-        </el-button>
+        <!-- 底部操作栏 -->
+        <div
+          class="el-picker-panel__footer"
+          v-show="footerVisible &&
+          (currentView === 'date' || currentView === 'month' || currentView === 'year')"
+        >
+          <!-- 此刻按钮 -->
+          <el-button
+            size="mini"
+            type="text"
+            class="el-picker-panel__link-btn"
+            @click="changeToNow"
+            v-show="selectionMode !== 'dates' && selectionMode !== 'months' && selectionMode !== 'years'">
+            {{ t('el.datepicker.now') }}
+          </el-button>
+
+          <!-- 确定按钮 -->
+          <el-button
+            type="text"
+            size="mini"
+            class="el-picker-panel__link-btn"
+            @click="confirm">
+            {{ t('el.datepicker.confirm') }}
+          </el-button>
+        </div>
       </div>
     </div>
   </transition>
@@ -168,26 +139,180 @@
   import Locale from 'rowinself-ui/src/mixins/locale';
   import ElInput from 'rowinself-ui/packages/input';
   import ElButton from 'rowinself-ui/packages/button';
+  import ElSelect from 'rowinself-ui/packages/select';
+  import ElOption from 'rowinself-ui/packages/option';
+  import YearPanel from './year';
+  import MonthPanel from './month';
+  import QuarterPanel from './quarter';
+  import DateTime from './date-time';
   import TimePicker from './time';
-  import YearTable from '../basic/year-table';
-  import MonthTable from '../basic/month-table';
-  import DateTable from '../basic/date-table';
 
   export default {
-    mixins: [Locale],
 
     directives: { Clickoutside },
+
+    components: {
+      TimePicker, YearPanel, MonthPanel, QuarterPanel,  ElInput, ElButton, DateTime, ElSelect, ElOption
+    },
+    mixins: [Locale],
+
+    data() {
+      return {
+        popperClass: '',
+        date: new Date(),
+        value: '',
+        defaultValue: null, // use getDefaultValue() for time computation
+        defaultTime: null,
+        showTime: false,
+        selectionMode: 'day',
+        shortcuts: '',
+        visible: false,
+        currentView: 'date',
+        disabledDate: null,
+        cellClassName: '',
+        selectableRange: [],
+        firstDayOfWeek: 7,
+        showWeekNumber: false,
+        timePickerVisible: false,
+        format: '',
+        arrowControl: false,
+        userInputDate: null,
+        userInputTime: null
+      };
+    },
+
+    computed: {
+      monthTableSelectionMode() {
+        if (this.selectionMode === 'months') {
+          return 'months';
+        }
+        return 'month';
+      },
+
+      year() {
+        return this.date.getFullYear();
+      },
+
+      month() {
+        return this.date.getMonth();
+      },
+
+      week() {
+        return getWeekNumber(this.date);
+      },
+
+      monthDate() {
+        return this.date.getDate();
+      },
+
+      footerVisible() {
+        return this.showTime || this.selectionMode === 'dates' || this.selectionMode === 'months' || this.selectionMode === 'years';
+      },
+
+      visibleTime() {
+        if (this.userInputTime !== null) {
+          return this.userInputTime;
+        } else {
+          return formatDate(this.value || this.defaultValue, this.timeFormat);
+        }
+      },
+
+      visibleDate() {
+        if (this.userInputDate !== null) {
+          return this.userInputDate;
+        } else {
+          return formatDate(this.value || this.defaultValue, this.dateFormat);
+        }
+      },
+
+      yearLabel() {
+        const yearTranslation = this.t('el.datepicker.year');
+        return this.year + ' ' + yearTranslation;
+      },
+
+      timeFormat() {
+        if (this.format) {
+          return extractTimeFormat(this.format);
+        } else {
+          return 'HH:mm:ss';
+        }
+      },
+
+      dateFormat() {
+        if (this.format) {
+          return extractDateFormat(this.format);
+        } else {
+          return 'yyyy-MM-dd';
+        }
+      },
+
+      amPmMode() {
+        if ((this.timeFormat || '').indexOf('A') !== -1) return 'A';
+        if ((this.timeFormat || '').indexOf('a') !== -1) return 'a';
+        return '';
+      },
+
+      showSeconds() {
+        return (this.timeFormat || '').indexOf('ss') !== -1;
+      },
+
+      currentYear: {
+        get() {
+          return this.date.getFullYear();
+        },
+        set(val) {
+          const year = Number(val);
+          if (isNaN(year)) return;
+          const date = changeYearMonthAndClampDate(this.date, year, this.month);
+          this.date = date;
+        }
+      },
+
+      currentMonth: {
+        get() {
+          return this.date.getMonth();
+        },
+        set(val) {
+          const month = Number(val);
+          if (isNaN(month)) return;
+          const date = changeYearMonthAndClampDate(this.date, this.year, month);
+          this.date = date;
+        }
+      },
+
+      yearOptions() {
+        const currentYear = this.date.getFullYear();
+        const start = currentYear - 50;
+        const end = currentYear + 5;
+        const options = [];
+        for (let i = start; i <= end; i++) {
+          options.push(i);
+        }
+        return options;
+      },
+
+      monthOptions() {
+        const options = [];
+        for (let i = 0; i < 12; i++) {
+          options.push({
+            value: i,
+            label: this.t(`el.datepicker.month${i + 1}`)
+          });
+        }
+        return options;
+      }
+    },
 
     watch: {
       showTime(val) {
         /* istanbul ignore if */
         if (!val) return;
-        this.$nextTick(_ => {
-          const inputElm = this.$refs.input.$el;
-          if (inputElm) {
-            this.pickerWidth = inputElm.getBoundingClientRect().width + 10;
-          }
-        });
+        // this.$nextTick(_ => {
+        //   const inputElm = this.$refs.input.$el;
+        //   if (inputElm) {
+        //     this.pickerWidth = inputElm.getBoundingClientRect().width + 10;
+        //   }
+        // });
       },
 
       value(val) {
@@ -223,6 +348,8 @@
           this.currentView = 'year';
         } else if (newVal === 'months') {
           this.currentView = 'month';
+        } else if (newVal === 'quarter') {
+          this.currentView = 'quarter';
         }
       }
     },
@@ -248,6 +375,8 @@
         this.date = this.getDefaultValue();
         this.$emit('pick', null);
       },
+
+
 
       emit(value, ...args) {
         if (!value) {
@@ -292,24 +421,26 @@
       },
 
       prevYear() {
-        if (this.currentView === 'year') {
-          this.date = prevYear(this.date, 10);
-        } else {
-          this.date = prevYear(this.date);
-        }
+        this.date = prevYear(this.date);
       },
 
       nextYear() {
-        if (this.currentView === 'year') {
-          this.date = nextYear(this.date, 10);
-        } else {
-          this.date = nextYear(this.date);
-        }
+        this.date = nextYear(this.date);
       },
 
       handleShortcutClick(shortcut) {
         if (shortcut.onClick) {
           shortcut.onClick(this);
+        }
+      },
+
+      handleTimeSpinnerChange(value) {
+        if (isDate(value)) {
+          const newDate = this.value
+            ? modifyTime(this.value, value.getHours(), value.getMinutes(), value.getSeconds())
+            : modifyWithTimeString(this.getDefaultValue(), this.defaultTime);
+          this.date = newDate;
+          this.emit(this.date, true);
         }
       },
 
@@ -346,6 +477,11 @@
         }
       },
 
+      handleQuarterPanelPick(date) {
+        this.date = date;
+        this.$emit('pick', date);
+      },
+
       handleDatePick(value) {
         if (this.selectionMode === 'day') {
           let newDate = this.value
@@ -379,11 +515,16 @@
       },
 
       changeToNow() {
-        // NOTE: not a permanent solution
-        //       consider disable "now" button in the future
-        if ((!this.disabledDate || !this.disabledDate(new Date())) && this.checkDateWithinRange(new Date())) {
-          this.date = new Date();
-          this.emit(this.date);
+        const now = new Date();
+        this.date = now;
+        this.emit(now);
+      },
+
+      handleToday() {
+        const now = new Date();
+        if ((!this.disabledDate || !this.disabledDate(now)) && this.checkDateWithinRange(now)) {
+          this.date = now;
+          this.emit(now, true);
         }
       },
 
@@ -406,6 +547,8 @@
           this.currentView = 'month';
         } else if (this.selectionMode === 'year' || this.selectionMode === 'years') {
           this.currentView = 'year';
+        } else if (this.selectionMode === 'quarter') {
+          this.currentView = 'quarter';
         } else {
           this.currentView = 'date';
         }
@@ -423,7 +566,23 @@
       handleKeydown(event) {
         const keyCode = event.keyCode;
         const list = [38, 40, 37, 39];
+        const isCtrlYearKey = event.ctrlKey && (keyCode === 37 || keyCode === 39);
+        const isPageMonthKey = keyCode === 33 || keyCode === 34;
         if (this.visible && !this.timePickerVisible) {
+          if (isCtrlYearKey) {
+            this.handleKeyYearControl(keyCode);
+            event.stopPropagation();
+            event.preventDefault();
+            return;
+          }
+
+          if (isPageMonthKey) {
+            this.handleKeyMonthControl(keyCode);
+            event.stopPropagation();
+            event.preventDefault();
+            return;
+          }
+
           if (list.indexOf(keyCode) !== -1) {
             this.handleKeyControl(keyCode);
             event.stopPropagation();
@@ -433,6 +592,62 @@
             this.emit(this.date, false);
           }
         }
+      },
+
+      handleKeyMonthControl(keyCode) {
+        const step = keyCode === 33 ? -1 : 1;
+        const maxTries = 24;
+        let tryCount = 0;
+        let nextDateCandidate = new Date(this.date.getTime());
+
+        while (tryCount < maxTries) {
+          nextDateCandidate = this.shiftDateByMonth(nextDateCandidate, step);
+          if (typeof this.disabledDate === 'function' && this.disabledDate(nextDateCandidate)) {
+            tryCount += 1;
+            continue;
+          }
+          this.date = nextDateCandidate;
+          this.$emit('pick', nextDateCandidate, true);
+          break;
+        }
+      },
+
+      handleKeyYearControl(keyCode) {
+        const step = keyCode === 37 ? -1 : 1;
+        const maxTries = 24;
+        let tryCount = 0;
+        let nextDateCandidate = new Date(this.date.getTime());
+
+        while (tryCount < maxTries) {
+          nextDateCandidate = this.shiftDateByYear(nextDateCandidate, step);
+          if (typeof this.disabledDate === 'function' && this.disabledDate(nextDateCandidate)) {
+            tryCount += 1;
+            continue;
+          }
+          this.date = nextDateCandidate;
+          this.$emit('pick', nextDateCandidate, true);
+          break;
+        }
+      },
+
+      shiftDateByMonth(date, step) {
+        const currentYear = date.getFullYear();
+        const currentMonth = date.getMonth();
+        const targetMonth = currentMonth + step;
+        const normalized = this.normalizeYearMonth(currentYear, targetMonth);
+        return changeYearMonthAndClampDate(date, normalized.year, normalized.month);
+      },
+
+      shiftDateByYear(date, step) {
+        const targetYear = date.getFullYear() + step;
+        return changeYearMonthAndClampDate(date, targetYear, date.getMonth());
+      },
+
+      normalizeYearMonth(year, month) {
+        if (month >= 0 && month <= 11) return { year, month };
+        const deltaYear = Math.floor(month / 12);
+        const normalizedMonth = ((month % 12) + 12) % 12;
+        return { year: year + deltaYear, month: normalizedMonth };
       },
 
       handleKeyControl(keyCode) {
@@ -510,100 +725,5 @@
           : true;
       }
     },
-
-    components: {
-      TimePicker, YearTable, MonthTable, DateTable, ElInput, ElButton
-    },
-
-    data() {
-      return {
-        popperClass: '',
-        date: new Date(),
-        value: '',
-        defaultValue: null, // use getDefaultValue() for time computation
-        defaultTime: null,
-        showTime: false,
-        selectionMode: 'day',
-        shortcuts: '',
-        visible: false,
-        currentView: 'date',
-        disabledDate: '',
-        cellClassName: '',
-        selectableRange: [],
-        firstDayOfWeek: 7,
-        showWeekNumber: false,
-        timePickerVisible: false,
-        format: '',
-        arrowControl: false,
-        userInputDate: null,
-        userInputTime: null
-      };
-    },
-
-    computed: {
-      year() {
-        return this.date.getFullYear();
-      },
-
-      month() {
-        return this.date.getMonth();
-      },
-
-      week() {
-        return getWeekNumber(this.date);
-      },
-
-      monthDate() {
-        return this.date.getDate();
-      },
-
-      footerVisible() {
-        return this.showTime || this.selectionMode === 'dates' || this.selectionMode === 'months' || this.selectionMode === 'years';
-      },
-
-      visibleTime() {
-        if (this.userInputTime !== null) {
-          return this.userInputTime;
-        } else {
-          return formatDate(this.value || this.defaultValue, this.timeFormat);
-        }
-      },
-
-      visibleDate() {
-        if (this.userInputDate !== null) {
-          return this.userInputDate;
-        } else {
-          return formatDate(this.value || this.defaultValue, this.dateFormat);
-        }
-      },
-
-      yearLabel() {
-        const yearTranslation = this.t('el.datepicker.year');
-        if (this.currentView === 'year') {
-          const startYear = Math.floor(this.year / 10) * 10;
-          if (yearTranslation) {
-            return startYear + ' ' + yearTranslation + ' - ' + (startYear + 9) + ' ' + yearTranslation;
-          }
-          return startYear + ' - ' + (startYear + 9);
-        }
-        return this.year + ' ' + yearTranslation;
-      },
-
-      timeFormat() {
-        if (this.format) {
-          return extractTimeFormat(this.format);
-        } else {
-          return 'HH:mm:ss';
-        }
-      },
-
-      dateFormat() {
-        if (this.format) {
-          return extractDateFormat(this.format);
-        } else {
-          return 'yyyy-MM-dd';
-        }
-      }
-    }
   };
 </script>

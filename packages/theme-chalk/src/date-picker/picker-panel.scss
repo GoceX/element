@@ -103,7 +103,7 @@
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 110px;
+  width: 80px;
   border-right: 1px solid $--datepicker-inner-border-color;
   box-sizing: border-box;
   padding-top: 6px;
@@ -113,5 +113,5 @@
 
 .el-picker-panel *[slot=sidebar]+.el-picker-panel__body,
 .el-picker-panel__sidebar+.el-picker-panel__body {
-  margin-left: 110px;
+  margin-left: 80px;
 }

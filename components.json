@@ -94,5 +94,6 @@
   "basic-form": "./packages/basic-form/index.js",
   "basic-table": "./packages/basic-table/index.js",
   "basic-table-column": "./packages/basic-table-column/index.js",
-  "table-action": "./packages/table-action/index.js"
+  "table-action": "./packages/table-action/index.js",
+  "range-picker": "./packages/range-picker/index.js"
 }

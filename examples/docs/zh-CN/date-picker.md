@@ -1,4 +1,3 @@
-
 ## DatePicker 日期选择器
 
 用于选择或输入日期
@@ -24,6 +23,7 @@
       v-model="value2"
       align="right"
       type="date"
+      showTime
       placeholder="选择日期"
       :picker-options="pickerOptions">
     </el-date-picker>
@@ -80,7 +80,7 @@
     <el-date-picker
       v-model="value1"
       type="week"
-      format="yyyy 第 WW 周"
+      format="yyyy 年 第 WW 周"
       placeholder="选择周">
     </el-date-picker>
   </div>
@@ -89,46 +89,165 @@
     <el-date-picker
       v-model="value2"
       type="month"
+      format="yyyy 年 MM 月"
       placeholder="选择月">
     </el-date-picker>
   </div>
 </div>
 <div class="container">
   <div class="block">
-    <span class="demonstration">年</span>
+    <span class="demonstration">季度</span>
     <el-date-picker
       v-model="value3"
-      type="year"
-      placeholder="选择年">
+      type="quarter"
+      format="yyyy 年 第 Q 季度"
+      placeholder="选择季度">
     </el-date-picker>
   </div>
   <div class="block">
-    <span class="demonstration">多个日期</span>
+    <span class="demonstration">年</span>
     <el-date-picker
-      type="dates"
       v-model="value4"
-      placeholder="选择一个或多个日期">
+      type="year"
+      format="yyyy年"
+      placeholder="选择年">
     </el-date-picker>
   </div>
 </div>
 <div class="container">
   <div class="block">
-    <span class="demonstration">多个月</span>
+    <span class="demonstration">日期时间</span>
     <el-date-picker
-      type="months"
       v-model="value5"
-      placeholder="选择一个或多个月">
-    </el-date-picker>
-  </div>
-  <div class="block">
-    <span class="demonstration">多个年</span>
-    <el-date-picker
-      type="years"
-      v-model="value6"
-      placeholder="选择一个或多个年">
+      type="date"
+      show-time
+      format="yyyy年MM月dd日 HH:mm:ss"
+      placeholder="选择日期时间">
     </el-date-picker>
   </div>
 </div>
+
+<script>
+  export default {
+    data() {
+      return {
+        value1: '',
+        value2: '',
+        value3: '',
+        value4: '',
+        value5: ''
+      };
+    }
+  };
+</script>
+```
+:::
+
+###  多选
+
+通过扩展基础的日期选择，可以选择多个周、月、年或日期
+
+:::demo
+```html
+<div class="block">
+  <span class="demonstration">多个日期</span>
+  <el-date-picker
+    v-model="value1"
+    type="dates"
+    format="yyyy年MM月dd日"
+    placeholder="选择一个或多个日期">
+  </el-date-picker>
+</div>
+<div class="block">
+  <span class="demonstration">多个月</span>
+  <el-date-picker
+    v-model="value2"
+    type="months"
+    format="yyyy年MM月"
+    placeholder="选择一个或多个月">
+  </el-date-picker>
+</div>
+<div class="block">
+  <span class="demonstration">多个年</span>
+  <el-date-picker
+    v-model="value3"
+    type="years"
+    format="yyyy年"
+    placeholder="选择一个或多个年">
+  </el-date-picker>
+</div>
+
+
+<script>
+  export default {
+    data() {
+      return {
+        value1: '',
+        value2: '',
+        value3: ''
+      };
+    }
+  };
+</script>
+```
+:::
+
+### 选择日期范围
+
+可在一个选择器中便捷地选择一个时间范围
+
+:::demo
+```html
+<template>
+  <div class="container">
+    <div class="block">
+      <span class="demonstration">日</span>
+      <el-range-picker
+        v-model="value1"
+        type="date"
+        format="yyyy年MM月dd日"
+        range-separator="至"
+        start-placeholder="开始日期"
+        end-placeholder="结束日期">
+      </el-range-picker>
+    </div>
+    <div class="block">
+      <span class="demonstration">周</span>
+      <el-range-picker
+        v-model="value2"
+        type="week"
+        format="yyyy 年 第 WW 周"
+        range-separator="至"
+        start-placeholder="开始周"
+        end-placeholder="结束周">
+      </el-range-picker>
+    </div>
+  </div>
+  <div class="container">
+    <div class="block">
+      <span class="demonstration">月</span>
+      <el-range-picker
+        v-model="value3"
+        type="month"
+        format="yyyy 年 MM 月"
+        range-separator="至"
+        start-placeholder="开始月份"
+        end-placeholder="结束月份">
+      </el-range-picker>
+    </div>
+    <div class="block">
+      <span class="demonstration">年</span>
+      <el-range-picker
+        v-model="value4"
+        type="year"
+        format="yyyy年"
+        range-separator="至"
+        start-placeholder="开始年份"
+        end-placeholder="结束年份">
+      </el-range-picker>
+    </div>
+  </div>
+</template>
 
 <script>
   export default {
@@ -147,35 +266,32 @@
 ```
 :::
 
-### 选择日期范围
-
-可在一个选择器中便捷地选择一个时间范围
-
-:::demo 在选择日期范围时，默认情况下左右面板会联动。如果希望两个面板各自独立切换当前月份，可以使用`unlink-panels`属性解除联动。
+### 选择日期时间范围
+:::demo
 ```html
 <template>
   <div class="block">
-    <span class="demonstration">默认</span>
-    <el-date-picker
-      v-model="value1"
-      type="daterange"
+    <span class="demonstration">时间</span>
+    <el-range-picker
+      v-model="value5"
+      type="time"
+      format="HH:mm:ss"
       range-separator="至"
-      start-placeholder="开始日期"
-      end-placeholder="结束日期">
-    </el-date-picker>
+      start-placeholder="开始时间"
+      end-placeholder="结束时间">
+    </el-range-picker>
   </div>
   <div class="block">
-    <span class="demonstration">带快捷选项</span>
-    <el-date-picker
-      v-model="value2"
-      type="daterange"
-      align="right"
-      unlink-panels
+    <span class="demonstration">日期时间</span>
+    <el-range-picker
+      v-model="value6"
+      type="date"
+      show-time
+      format="yyyy年MM月dd日 HH:mm:ss"
       range-separator="至"
-      start-placeholder="开始日期"
-      end-placeholder="结束日期"
-      :picker-options="pickerOptions">
-    </el-date-picker>
+      start-placeholder="开始日期时间"
+      end-placeholder="结束日期时间">
+    </el-range-picker>
   </div>
 </template>
 
@@ -183,111 +299,18 @@
   export default {
     data() {
       return {
-        pickerOptions: {
-          shortcuts: [{
-            text: '最近一周',
-            onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-              picker.$emit('pick', [start, end]);
-            }
-          }, {
-            text: '最近一个月',
-            onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-              picker.$emit('pick', [start, end]);
-            }
-          }, {
-            text: '最近三个月',
-            onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
-              picker.$emit('pick', [start, end]);
-            }
-          }]
-        },
         value1: '',
-        value2: ''
+        value2: '',
+        value3: '',
+        value4: '',
+        value5: '',
+        value6: ''
       };
     }
   };
 </script>
 ```
 :::
-
-
-### 选择月份范围
-
-可在一个选择器中便捷地选择一个月份范围
-
-:::demo 在选择月份范围时，默认情况下左右面板会联动。如果希望两个面板各自独立切换当前年份，可以使用`unlink-panels`属性解除联动。
-```html
-<template>
-  <div class="block">
-    <span class="demonstration">默认</span>
-    <el-date-picker
-      v-model="value1"
-      type="monthrange"
-      range-separator="至"
-      start-placeholder="开始月份"
-      end-placeholder="结束月份">
-    </el-date-picker>
-  </div>
-  <div class="block">
-    <span class="demonstration">带快捷选项</span>
-    <el-date-picker
-      v-model="value2"
-      type="monthrange"
-      align="right"
-      unlink-panels
-      range-separator="至"
-      start-placeholder="开始月份"
-      end-placeholder="结束月份"
-      :picker-options="pickerOptions">
-    </el-date-picker>
-  </div>
-</template>
-
-<script>
-  export default {
-    data() {
-      return {
-        pickerOptions: {
-          shortcuts: [{
-            text: '本月',
-            onClick(picker) {
-              picker.$emit('pick', [new Date(), new Date()]);
-            }
-          }, {
-            text: '今年至今',
-            onClick(picker) {
-              const end = new Date();
-              const start = new Date(new Date().getFullYear(), 0);
-              picker.$emit('pick', [start, end]);
-            }
-          }, {
-            text: '最近六个月',
-            onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setMonth(start.getMonth() - 6);
-              picker.$emit('pick', [start, end]);
-            }
-          }]
-        },
-        value1: '',
-        value2: ''
-      };
-    }
-  };
-</script>
-```
-:::
-
 
 ###  日期格式
 
@@ -372,41 +395,10 @@
 ```
 :::
 
-###  默认显示日期
-
-在选择日期范围时，指定起始日期和结束日期的默认时刻。
-
-:::demo 选择日期范围时，默认情况下，起始日期和结束日期的时间部分均为当天的 0 点 0 分 0 秒。通过`default-time`可以分别指定二者的具体时刻。`default-time`接受一个数组，其中的值为形如`12:00:00`的字符串，第一个值控制起始日期的时刻，第二个值控制结束日期的时刻。
-```html
-<template>
-  <div class="block">
-    <p>组件值：{{ value }}</p>
-    <el-date-picker
-      v-model="value"
-      type="daterange"
-      start-placeholder="开始日期"
-      end-placeholder="结束日期"
-      :default-time="['00:00:00', '23:59:59']">
-    </el-date-picker>
-  </div>
-</template>
-
-<script>
-  export default {
-    data() {
-      return {
-        value: ''
-      };
-    }
-  };
-</script>
-```
-:::
-
 ### Attributes
 | 参数      | 说明          | 类型      | 可选值                           | 默认值  |
 |---------- |-------------- |---------- |--------------------------------  |-------- |
-| value / v-model | 绑定值 | date(DatePicker) / array(DateRangePicker) | — | — |
+| value / v-model | 绑定值 | date(DatePicker) / array(RangePicker) | — | — |
 | readonly | 完全只读 | boolean | — | false |
 | disabled | 禁用 | boolean | — | false |
 | editable | 文本框可输入 | boolean | — | true |
@@ -415,7 +407,7 @@
 | placeholder | 非范围选择时的占位内容 | string | — | — |
 | start-placeholder | 范围选择时开始日期的占位内容 | string | — | — |
 | end-placeholder | 范围选择时结束日期的占位内容 | string | — | — |
-| type | 显示类型 | string | year/month/date/dates/months/years week/datetime/datetimerange/ daterange/monthrange | date |
+| type | 显示类型 | string | date/week/month/year/quarter/dates/months/years/time | date |
 | format | 显示在输入框中的格式 | string | 见[日期格式](#/zh-CN/component/date-picker#ri-qi-ge-shi) | yyyy-MM-dd |
 | align | 对齐方式 | string | left, center, right | left |
 | popper-class | DatePicker 下拉框的类名 | string | — | — |
@@ -430,6 +422,7 @@
 | clear-icon | 自定义清空图标的类名 | string | — | el-icon-circle-close |
 | validate-event | 输入时是否触发表单的校验 | boolean | - | true |
 | append-to-body | DetePicker 自身是否插入至 body 元素上。   | boolean   | — | true |
+| show-time | 是否显示时间选择 (el-range-picker type='date' 时可用) | boolean | - | false |
 
 ### Picker Options
 | 参数      | 说明          | 类型      | 可选值                           | 默认值  |
@@ -438,7 +431,7 @@
 | disabledDate | 设置禁用状态，参数为当前日期，要求返回 Boolean | Function | — | — |
 | cellClassName | 设置日期的 className | Function(Date) | — | — |
 | firstDayOfWeek | 周起始日 | Number | 1 到 7 | 7 |
-| onPick | 选中日期后会执行的回调，只有当 `daterange` 或 `datetimerange` 才生效 | Function({ maxDate, minDate }) | — | — |
+| onPick | 选中日期后会执行的回调，只有当范围选择时才生效 | Function({ maxDate, minDate }) | — | — |
 
 ### Shortcuts
 | 参数      | 说明          | 类型      | 可选值                           | 默认值  |

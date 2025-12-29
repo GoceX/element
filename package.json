@@ -1,6 +1,6 @@
 {
   "name": "rowinself-ui",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A Component Library for Vue.js.",
   "main": "lib/rowinself-ui.common.js",
   "files": [
@@ -101,6 +101,7 @@
     "eslint-loader": "^2.0.0",
     "eslint-plugin-html": "^4.0.1",
     "eslint-plugin-json": "^1.2.0",
+    "eslint-plugin-vue": "^4.7.1",
     "file-loader": "^1.1.11",
     "file-save": "^0.2.0",
     "gulp": "^4.0.0",
@@ -127,6 +128,7 @@
     "mini-css-extract-plugin": "^0.4.1",
     "mocha": "^6.0.2",
     "node-sass": "^4.14.1",
+    "null-loader": "^4.0.1",
     "optimize-css-assets-webpack-plugin": "^5.0.1",
     "postcss": "^7.0.14",
     "progress-bar-webpack-plugin": "^1.11.0",
