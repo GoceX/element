@@ -68,6 +68,7 @@
           :min-date="minDate"
           :max-date="maxDate"
           :range-state="rangeState"
+          :is-range-picker="isRangePicker"
           @pick="handlePick"
           @changerange="handleChangeRange"
         />
@@ -145,6 +146,10 @@
       firstDayOfWeek: {
         type: Number,
         default: 7
+      },
+      isRangePicker: {
+        type: Boolean,
+        default: false
       }
     },
     data() {

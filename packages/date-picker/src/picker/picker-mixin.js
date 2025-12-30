@@ -1195,10 +1195,14 @@ export default {
       this.picker.$on('dodestroy', this.doDestroy);
       // 监听 pick 事件
       this.picker.$on('pick', (date = '', visible = false) => {
-        this.userInput = null;
-        this.pickerVisible = this.picker.visible = visible;
-        this.emitInput(date);
-        this.picker.resetView && this.picker.resetView();
+        if (this.onPick) {
+          this.onPick(date, visible);
+        } else {
+          this.userInput = null;
+          this.pickerVisible = this.picker.visible = visible;
+          this.emitInput(date);
+          this.picker.resetView && this.picker.resetView();
+        }
       });
 
       // 监听 update:date 事件，同步面板日期

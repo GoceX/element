@@ -57,6 +57,7 @@
 
 <script>
 import PickerMixin from './picker-mixin';
+import DatePanel from '../panel/date';
 import DateRangePanel from '../panel/date-range';
 import DateTimeRangePanel from '../panel/date-time-range';
 import MonthRangePanel from '../panel/month-range';
@@ -107,7 +108,11 @@ export default {
 
   data() {
     return {
-      focusedInputIndex: -1
+      focusedInputIndex: -1,
+      partialDates: [null, null],
+      isSwitching: false,
+      isProgrammaticFocus: false,
+      lastActiveIndex: -1
     };
   },
 
@@ -150,13 +155,16 @@ export default {
         this.panel = getPanel(type);
         // 特殊处理 date 类型开启 showTime 的情况
         if (type === 'date' && this.showTime) {
-            this.panel = DateTimeRangePanel;
+            this.panel = DatePanel;
         }
         this.mountPicker();
+        if (type === 'date' && this.showTime && this.picker) {
+          this.picker.isRangePicker = true;
+        }
       } else {
         this.panel = getPanel(type);
         if (type === 'date' && this.showTime) {
-            this.panel = DateTimeRangePanel;
+            this.panel = DatePanel;
         }
       }
     },
@@ -167,24 +175,47 @@ export default {
         if (this.type === 'date') {
             if (this.picker) {
                 this.unmountPicker();
-                this.panel = val ? DateTimeRangePanel : DateRangePanel;
+                this.panel = val ? DatePanel : DateRangePanel;
                 this.mountPicker();
+                if (val && this.picker) {
+                  this.picker.isRangePicker = true;
+                }
             } else {
-                this.panel = val ? DateTimeRangePanel : DateRangePanel;
+                this.panel = val ? DatePanel : DateRangePanel;
             }
         }
-    }
-  },
-  
-  watch: {
+    },
     focusedInputIndex(val) {
       if (this.picker) {
         this.picker.focusedInputIndex = val;
+        if (this.type === 'date' && this.showTime) {
+          this.syncSplitValue();
+        }
       }
     },
     pickerVisible(val) {
+      if (val) {
+        this.isSwitching = false;
+      }
       if (val && this.picker) {
         this.picker.focusedInputIndex = this.focusedInputIndex;
+        if (this.type === 'date' && this.showTime) {
+          this.$nextTick(() => {
+            this.syncSplitValue();
+          });
+        }
+      }
+    },
+    parsedValue(val) {
+      if (this.type === 'date' && this.showTime) {
+        if (val && val.length === 2) {
+          this.partialDates = [...val];
+        } else {
+          this.partialDates = [null, null];
+        }
+        if (this.picker) {
+          this.syncSplitValue();
+        }
       }
     }
   },
@@ -193,12 +224,103 @@ export default {
     // 初始化面板
     this.panel = getPanel(this.type);
     if (this.type === 'date' && this.showTime) {
-        this.panel = DateTimeRangePanel;
+        this.panel = DatePanel;
+        this.picker.isRangePicker = true;
     }
   },
 
   methods: {
+    syncSplitValue() {
+      if (!this.picker) return;
+      let index = this.focusedInputIndex;
+      if (index === -1) {
+        index = this.lastActiveIndex;
+      }
+      index = index === 1 ? 1 : 0;
+      const val = this.partialDates[index];
+      this.picker.value = val;
+      if (Array.isArray(this.defaultValue)) {
+        this.picker.defaultValue = this.defaultValue[index];
+      }
+    },
+    onPick(date, visible) {
+      if (this.type === 'date' && this.showTime) {
+        let index = this.focusedInputIndex;
+        if (index === -1) {
+          index = this.lastActiveIndex;
+        }
+        index = index === 1 ? 1 : 0;
+        const otherIndex = index === 1 ? 0 : 1;
+        
+        // Update partialDates
+        this.$set(this.partialDates, index, date);
+        
+        const newValue = [...this.partialDates];
+        
+        // Intermediate pick (preview)
+        if (visible) {
+          const str0 = newValue[0] ? this.formatToString(newValue[0]) : '';
+          const str1 = newValue[1] ? this.formatToString(newValue[1]) : '';
+          this.userInput = [str0, str1];
+          
+          if (this.picker) {
+            this.picker.value = date;
+            this.picker.isRangePicker = true;
+          }
+          
+          this.pickerVisible = this.picker.visible = true;
+          return;
+        }
+
+        // Confirm pick
+        if (this.picker) {
+          this.picker.isRangePicker = false;
+          this.picker.value = date;
+        }
+
+        if (this.isSwitching) {
+          // We have already switched focus once, so this is the second confirmation.
+          this.userInput = null;
+          this.pickerVisible = this.picker.visible = false;
+          this.emitInput(newValue);
+          this.isSwitching = false;
+        } else {
+          // First confirmation, switch to other
+          this.isSwitching = true;
+          this.focusedInputIndex = otherIndex;
+          this.$nextTick(() => {
+            const inputRef = otherIndex === 0 ? this.$refs.minInput : this.$refs.maxInput;
+            if (inputRef) {
+              this.isProgrammaticFocus = true;
+              inputRef.focus();
+            }
+            if (this.picker) {
+              this.picker.isRangePicker = true;
+            }
+          });
+          
+          this.pickerVisible = this.picker.visible = true;
+          
+          // Update preview
+          const str0 = newValue[0] ? this.formatToString(newValue[0]) : '';
+          const str1 = newValue[1] ? this.formatToString(newValue[1]) : '';
+          this.userInput = [str0, str1];
+        }
+      } else {
+        this.userInput = null;
+        this.pickerVisible = this.picker.visible = visible;
+        this.emitInput(date);
+        this.picker.resetView && this.picker.resetView();
+      }
+    },
     handleInputFocus(index) {
+      this.lastActiveIndex = index;
+      if (this.isProgrammaticFocus) {
+        this.isProgrammaticFocus = false;
+      } else {
+        // Reset switching state on manual focus
+        this.isSwitching = false;
+      }
       this.focusedInputIndex = index;
       this.handleFocus();
     },

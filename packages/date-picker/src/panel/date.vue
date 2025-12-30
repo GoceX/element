@@ -45,6 +45,7 @@
             :current-month="currentMonth"
             :year-options="yearOptions"
             :month-options="monthOptions"
+            :is-range-picker="isRangePicker"
             @update:currentYear="currentYear = $event"
             @update:currentMonth="currentMonth = $event"
             @handle-today="handleToday"
@@ -177,7 +178,8 @@
         format: '',
         arrowControl: false,
         userInputDate: null,
-        userInputTime: null
+        userInputTime: null,
+        isRangePicker: false
       };
     },
 

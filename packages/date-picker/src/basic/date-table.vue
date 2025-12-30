@@ -115,6 +115,11 @@
           };
         },
         type: Object
+      },
+
+      isRangePicker: {
+        type: Boolean,
+        default: false
       }
     },
 
@@ -253,6 +258,16 @@
         if (getDateTimestamp(newVal) !== getDateTimestamp(oldVal)) {
           this.markRange(this.minDate, this.maxDate);
         }
+      },
+      
+      value(newVal) {
+         if (this.isRangePicker && this.selectionMode === 'day') {
+             // Force update for range picker day mode
+             // We don't have a direct 'markRange' equivalent for single date styling update,
+             // but re-evaluating getCellClasses happens on render.
+             // We can use a key or similar to force update if needed, but Vue should handle reactivity.
+             // However, for cell classes logic update, we rely on the reactivity of 'value'.
+         }
       }
     },
 
@@ -292,6 +307,9 @@
 
         if (selectionMode === 'day' && (cell.type === 'normal' || cell.type === 'today') && this.cellMatchesDate(cell, this.value)) {
           classes.push('current');
+          if (this.isRangePicker) {
+            classes.push('is-range-picker-preview');
+          }
         }
 
         if (cell.inRange && ((cell.type === 'normal' || cell.type === 'today') || this.selectionMode === 'week' || this.selectionMode === 'week-range')) {
@@ -388,7 +406,7 @@
       },
 
       handleMouseMove(event) {
-        if (this.selectionMode !== 'range' && this.selectionMode !== 'week-range') return;
+        if (!this.rangeState.selecting && !this.isRangePicker) return;
 
         let target = event.target;
         if (target.tagName === 'SPAN') {
@@ -402,6 +420,7 @@
         const row = target.parentNode.rowIndex - 1;
         const column = target.cellIndex;
 
+        // can not select disabled date
         if (this.rows[row][column].disabled) return;
 
         if (row !== this.lastRow || column !== this.lastColumn) {
@@ -414,14 +433,21 @@
             endDate = end;
           }
 
-          this.$emit('changerange', {
-            minDate: this.minDate,
-            maxDate: this.maxDate,
-            rangeState: {
-              selecting: this.rangeState.selecting,
-              endDate: endDate
-            }
-          });
+          if (this.selectionMode === 'range' || this.selectionMode === 'week-range') {
+            this.$emit('changerange', {
+              minDate: this.minDate,
+              maxDate: this.maxDate,
+              rangeState: {
+                selecting: true,
+                endDate: endDate
+              }
+            });
+          } else if (this.isRangePicker && this.selectionMode === 'day') {
+             // Real-time preview for RangePicker with type="date"
+             if (endDate) {
+                this.$emit('pick', { date: endDate, visible: true });
+             }
+          }
         }
       },
 
@@ -471,7 +497,9 @@
             this.rangeState.selecting = false;
           }
         } else if (this.selectionMode === 'day') {
-          this.$emit('pick', newDate);
+          // Changed: For RangePicker, emit visible=false to indicate confirmation
+          const visible = this.isRangePicker ? false : undefined;
+          this.$emit('pick', newDate, visible);
         } else if (this.selectionMode === 'week') {
           const weekNumber = getWeekNumber(newDate);
           const value = newDate.getFullYear() + 'w' + weekNumber;
@@ -506,3 +534,17 @@
     }
   };
 </script>
+
+<style>
+  .el-date-table td.current:not(.disabled) span {
+    color: #FFF;
+    background-color: #409EFF;
+  }
+  
+  .el-date-table td.current.is-range-picker-preview:not(.disabled) span {
+      background-color: transparent;
+      color: #409EFF;
+      border: 1px dashed #409EFF;
+      box-sizing: border-box;
+  }
+</style>

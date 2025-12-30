@@ -228,6 +228,6 @@
 
 @include b(date-picker) {
   &.has-time {
-    width: 434px;
+    width: auto;
   }
 }
