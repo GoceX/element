@@ -85,6 +85,17 @@ Dialog 组件的内容可以是任意的，甚至可以是表格或表单，下�
   </div>
 </el-dialog>
 
+<!-- BasicForm -->
+<el-button type="text" @click="dialogFormVisible = true">打开嵌套表单(BasicForm)的 Dialog</el-button>
+
+<el-dialog title="收货地址" center :visible.sync="dialogFormVisible">
+  <el-basic-form ref="form" :model="form" :schemas="schemas" :labelWidth="120" labelAlign="between" :showActionButtonGroup="false" @register="onRegister"/>
+  <div slot="footer" class="dialog-footer">
+    <el-button @click="dialogFormVisible = false">取 消</el-button>
+    <el-button type="primary" @click="handleSubmit">确 定</el-button>
+  </div>
+</el-dialog>
+
 <script>
   export default {
     data() {
@@ -109,8 +120,8 @@ Dialog 组件的内容可以是任意的，甚至可以是表格或表单，下�
         dialogTableVisible: false,
         dialogFormVisible: false,
         form: {
-          name: '',
-          region: '',
+          name: '测试数据',
+          region: 'beijing',
           date1: '',
           date2: '',
           delivery: false,
@@ -118,8 +129,48 @@ Dialog 组件的内容可以是任意的，甚至可以是表格或表单，下�
           resource: '',
           desc: ''
         },
-        formLabelWidth: '120px'
+        formLabelWidth: '120px',
+        schemas: [
+          {
+            field: 'name',
+            label: '活动名称',
+            component: 'Input',
+            colProps: { span: 12 },
+            componentProps: {
+              placeholder: '请输入活动名称'
+            }
+          },
+          {
+            field: 'region',
+            label: '活动区域',
+            component: 'Select',
+            colProps: { span: 12 },
+            componentProps: {
+              placeholder: '请选择活动区域',
+              options: [
+                { label: '上海', value: 'shanghai' },
+                { label: '北京', value: 'beijing' }
+              ]
+            }
+          }
+        ],
+        formActions:null
       };
+    },
+    methods: {
+      onRegister(actions) {
+        this.formActions = actions;
+      },
+      handleSubmit() {
+        this.formActions.validate().then((valid) => {
+          if (valid) {
+            console.log('校验通过', valid,this.form);
+            this.dialogFormVisible = false;
+          } else {
+            console.log('校验失败');
+          }
+        });
+      }
     }
   };
 </script>
@@ -234,4 +285,5 @@ Dialog 的内容是懒渲染的，即在第一次被打开之前，传入的默�
 | open  | Dialog 打开的回调 | — |
 | opened  | Dialog 打开动画结束时的回调 | — |
 | close  | Dialog 关闭的回调 | — |
+| closed | Dialog 关闭动画结束时的回调 | — |
 | closed | Dialog 关闭动画结束时的回调 | — |

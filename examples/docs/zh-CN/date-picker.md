@@ -407,7 +407,7 @@
 | placeholder | 非范围选择时的占位内容 | string | — | — |
 | start-placeholder | 范围选择时开始日期的占位内容 | string | — | — |
 | end-placeholder | 范围选择时结束日期的占位内容 | string | — | — |
-| type | 显示类型 | string | date/week/month/year/quarter/dates/months/years/time | date |
+| type | 显示类型 | string | date / week / month / year / quarter / datetime / dates / months / years / daterange / monthrange / datetimerange | date |
 | format | 显示在输入框中的格式 | string | 见[日期格式](#/zh-CN/component/date-picker#ri-qi-ge-shi) | yyyy-MM-dd |
 | align | 对齐方式 | string | left, center, right | left |
 | popper-class | DatePicker 下拉框的类名 | string | — | — |
@@ -417,12 +417,14 @@
 | default-time | 范围选择时选中日期所使用的当日内具体时刻 | string[] | 数组，长度为 2，每项值为字符串，形如`12:00:00`，第一项指定开始日期的时刻，第二项指定结束日期的时刻，不指定会使用时刻 `00:00:00` | — |
 | value-format | 可选，绑定值的格式。不指定则绑定值为 Date 对象 | string | 见[日期格式](#/zh-CN/component/date-picker#ri-qi-ge-shi) | — |
 | name | 原生属性 | string | — | — |
+| id | 原生属性 | string | — | — |
 | unlink-panels | 在范围选择器里取消两个日期面板之间的联动 | boolean | — | false |
 | prefix-icon | 自定义头部图标的类名 | string | — | el-icon-date |
 | clear-icon | 自定义清空图标的类名 | string | — | el-icon-circle-close |
 | validate-event | 输入时是否触发表单的校验 | boolean | - | true |
 | append-to-body | DetePicker 自身是否插入至 body 元素上。   | boolean   | — | true |
-| show-time | 是否显示时间选择 (el-range-picker type='date' 时可用) | boolean | - | false |
+| show-time | 是否显示时间选择 (type='date'、'daterange'时可用) | boolean | - | false |
+| time-arrow-control | 是否使用箭头进行时间选择 | boolean | — | false |
 
 ### Picker Options
 | 参数      | 说明          | 类型      | 可选值                           | 默认值  |

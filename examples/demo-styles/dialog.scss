@@ -2,18 +2,23 @@
   .dialog-footer button:first-child {
     margin-right: 10px;
   }
+
   .full-image {
     width: 100%;
   }
+
   .el-dialog__wrapper {
     margin: 0;
   }
+
   .el-select {
-    width: 300px;
+    width: auto;
   }
+
   .el-input {
-    width: 300px;
+    width: auto;
   }
+
   .el-button--text {
     margin-right: 15px;
   }
