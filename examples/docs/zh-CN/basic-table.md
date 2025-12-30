@@ -40,8 +40,8 @@ export default {
           showActionButtonGroup: true, // 显示“查询/清空”按钮
           submitButtonText: '查询',
           resetButtonText: '清空',
-          baseColProps: { span: 8 ,xl: 9,lg: 8,md: 12,sm: 12,xs: 12},
-          actionColOptions: { span: 8 ,xl: 6,lg: 8,md: 14,sm: 24,xs: 24,align: 'right' },
+          baseColProps: { span: 8 ,xl: 8,lg: 8,md: 12,sm: 12,xs: 12},
+          actionColOptions: { span: 24 ,xl: 24,lg: 24,md: 12,sm: 12,xs: 12,align: 'right' },
           submitButtonOptions: { type: 'primary', size: 'mini', icon: 'el-icon-search' },
           resetButtonOptions: { type: 'warning', size: 'mini', icon: 'el-icon-clear' },
           actionButton: [
@@ -56,6 +56,19 @@ export default {
 
           // 搜索项：管理员名称 + 角色筛选
           schemas: [
+            {
+              field: 'time',
+              component: 'DateRangePicker',
+              label: '交易时间',
+              componentProps: {
+                type: 'date',
+                rangeSeparator: '至',
+                startPlaceholder: '开始日期',
+                endPlaceholder: '结束日期',      
+                format: 'yyyy-MM-dd',
+                valueFormat: 'yyyy-MM-dd'
+              }
+            },
             {
               field: 'name',
               component: 'Input',
@@ -91,9 +104,199 @@ export default {
         /** 列配置：对应后端返回的字段 */
         columns: [
           { title: 'id', field: 'id', align: 'center', width: 50 },
-          { title: '用户名', field: 'username', align: 'center', minWidth: 120 },
+          { title: '用户名', field: 'username', align: 'center',autoSpan: true, minWidth: 120 },
           { title: '所属角色', field: 'role', align: 'center', minWidth: 150 },
           { title: '状态', field: 'status', align: 'center', width: 140 },
+          { title: '最后一次登录时间', field: 'loginTime', align: 'center', minWidth: 180 },
+          { title: '登录ip', field: 'loginIp', align: 'center', minWidth: 240 },
+          { title: '操作', field: 'action', align: 'center', width: 100, fixed: 'right',
+            resizable: false }
+        ],
+        api: this.fetchList,
+        immediate: false,
+        /* 渲染前数据处理 */
+        afterFetch: (res) => res,
+        /** 基本表格属性：模板通过 v-bind="basicProps" 绑定 */
+        striped: true,
+        bordered: true,
+        maxHeight: 370,
+        pagination: { pageSize: 10,background: true },
+        showIndexColumn: true,
+        indexColumnTitle:'',
+        indexColumnProps: { width: 60,minWidth: '40px' },
+        rowSelection: true,
+        clickToRowSelect: true,
+      }
+    };
+  },
+  methods: {
+    /**
+     * 获取操作按钮列表
+     * @param {Object} record 行数据
+     * @returns {Array} 操作按钮配置数组
+     */
+    getActionList(record) {
+      return [
+        {
+          // label: '',
+          icon: 'el-icon-edit-outline',
+          color: 'primary',
+          onClick: () => {
+            this.writeModelFun(record)
+          }
+        },
+        {
+          // label: '',
+          icon: 'el-icon-s-tools',
+          color: 'success',
+          onClick: () => {
+            this.writeModelFun(record)
+          }
+        },
+        {
+          // label: '',
+          icon: 'el-icon-delete',
+          color: 'danger',
+          popConfirm: {
+            title: '确定要删除这条记录吗？',
+            type: 'warning',
+            okText: '确定',
+            cancelText: '取消'
+          },
+          onClick: () => {
+            this.handleDelete(record)
+          }
+        }
+      ]
+    },
+    onRegister(props) { this.tableProps = props; },
+    manageRbacAddUser(params) {
+      return this.$http.post('/roleOptions', {})
+    },
+    fetchList(params) {
+      return this.$http.post('/userList', { params })
+    },
+    writeModelFun(row) {
+      this.$message({ message: '打开控制台查看数据', type: 'success' });
+      console.log('点击::: ', row)
+    },
+    addModelFun(){
+      this.$message({ message: '添加数据', type: 'success' });
+    },
+    handleDelete(row) {
+      this.$message({ message: '删除数据', type: 'success' });
+    }
+  }
+};
+</script>
+```
+:::
+
+### 实现合并行或列
+
+:::demo 传入 `columns` 渲染，并使用方法集进行分页、刷新、选择与数据更新（含远程加载模拟）。
+```html
+<template>
+   <el-basic-table
+      title=""
+      v-bind="tableConfig"
+      @register="onRegister"
+    >
+    <template #bodyCell="{ column, record }">
+      <template v-if="column.field === 'role'">
+        {{ record.role.name || '-' }}
+      </template>
+      <template v-if="column.field === 'status'">
+        <el-tag size="mini" :type="record.status == 1 ? 'success' : 'danger'">
+          {{ record.status == 1 ? '启用' : '禁用' }}
+        </el-tag>
+      </template>
+      <template v-if="column.field === 'action'">
+        <TableAction :actions="getActionList(record)" />
+      </template>
+    </template>
+  </el-basic-table>
+</template>
+<script>
+export default {
+  data() {
+    return {
+      tableProps: null,
+      tableConfig:{
+        /** 搜索表单配置：与 BasicTable 联动 */
+        useSearchForm: true,
+        formConfig: {
+          labelWidth: 120,
+          showActionButtonGroup: true, // 显示“查询/清空”按钮
+          submitButtonText: '查询',
+          resetButtonText: '清空',
+          baseColProps: { span: 8 ,xl: 8,lg: 8,md: 12,sm: 12,xs: 12},
+          actionColOptions: { span: 24 ,xl: 24,lg: 24,md: 12,sm: 12,xs: 12,align: 'right' },
+          submitButtonOptions: { type: 'primary', size: 'mini', icon: 'el-icon-search' },
+          resetButtonOptions: { type: 'warning', size: 'mini', icon: 'el-icon-clear' },
+          actionButton: [
+            {
+              type: 'success',
+              size: 'mini',
+              icon: 'el-icon-plus',
+              text: '添加',
+              click: this.addModelFun
+            }
+          ],
+
+          // 搜索项：管理员名称 + 角色筛选
+          schemas: [
+            {
+              field: 'time',
+              component: 'DateRangePicker',
+              label: '交易时间',
+              componentProps: {
+                type: 'date',
+                rangeSeparator: '至',
+                startPlaceholder: '开始日期',
+                endPlaceholder: '结束日期',      
+                format: 'yyyy-MM-dd',
+                valueFormat: 'yyyy-MM-dd'
+              }
+            },
+            {
+              field: 'name',
+              component: 'Input',
+              label: '管理员名称',
+              componentProps: { placeholder: '请输入管理员名称' }
+            },
+            {
+              field: 'administrator',
+              component: 'ApiSelect',
+              label: '角色名称',
+              componentProps: ({ schema, tableAction, formActionType, formModel }) => {
+                return {
+                  placeholder: '请选择',
+                  api: this.manageRbacAddUser,
+                  params: {},
+                  resultField: 'data.data',
+                  labelField: 'name',
+                  valueField: 'id',
+                  afterFetch: (res) => {
+                    // 处理角色选项
+                    formModel.administrator = res[0].id
+                    schema.disabled = res.length === 1
+                    tableAction.reload()
+                  },
+                  change: (val) => {
+                    console.log('val::: ', val)
+                  }
+                }
+              }
+            }
+          ]
+        },
+        /** 列配置：对应后端返回的字段 */
+        columns: [
+          { title: 'id', field: 'id', align: 'center', width: 50 ,autoSpan: true},
+          { title: '用户名', field: 'username', align: 'center', minWidth: 120 ,autoSpan: true},
+          { title: '所属角色', field: 'role', align: 'center', minWidth: 150 },
+          { title: '状态', field: 'status', align: 'center', width: 140, autoSpan: true },
           { title: '最后一次登录时间', field: 'loginTime', align: 'center', minWidth: 180 },
           { title: '登录ip', field: 'loginIp', align: 'center', minWidth: 240 },
           { title: '操作', field: 'action', align: 'center', width: 100, fixed: 'right',
@@ -176,6 +379,8 @@ export default {
 </script>
 ```
 :::
+
+
 
 ### Methods示例
 

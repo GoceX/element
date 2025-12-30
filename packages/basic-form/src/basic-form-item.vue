@@ -2,7 +2,7 @@
   <!-- 列内容插槽：若提供 renderColContent/colSlot，则在列级别渲染自定义内容 -->
   <el-col v-if="schema && (schema.renderColContent || schema.colSlot)" v-bind="schema.colProps || { span: 24 }">
     <RenderVNode v-if="schema.renderColContent" :render-fn="() => schema.renderColContent(itemCtx)" />
-    <slot v-else :name="schema.colSlot" v-bind="itemCtx" />
+    <slot v-else :name="schema.colSlot" v-bind="itemCtx" ></slot>
   </el-col>
   <!-- 分割线组件：占满一行，并在标签右侧显示可选的帮助信息 -->
   <el-col v-else-if="schema && schema.component === 'Divider'" v-bind="schema.colProps || { span: 24 }">
@@ -23,16 +23,27 @@
       <!-- 优先：解析具名插槽对应的渲染函数，使用 RenderVNode 渲染 -->
       <RenderVNode v-if="schema.slot && resolveSlotRender(schema)" :render-fn="resolveSlotRender(schema)" />
       <!-- 其次：直接渲染具名插槽，透传 model 与 field -->
-      <slot v-else-if="schema.slot" :name="schema.slot" :model="formModel" :field="schema.field" />
+      <slot v-else-if="schema.slot" :name="schema.slot" :model="formModel" :field="schema.field" ></slot>
       <!-- 其三：使用 schema.render(h,ctx) 渲染自定义内容 -->
       <RenderVNode v-else-if="schema.render" :render-fn="(h) => schema.render(itemCtx)" />
       <!-- 默认：按 componentTag 生成具体组件，v-model 双向绑定到 formModel[field] -->
-      <component v-else :is="componentTag(schema.component)" v-model="formModel[schema.field]" v-bind="finalComponentProps"
-        :disabled="computeDisabled(schema)" v-on="finalListeners(schema)">
+      <component 
+        v-else 
+        :is="componentTag(schema.component)" 
+        v-model="formModel[schema.field]" 
+        v-bind="finalComponentProps"
+        :disabled="computeDisabled(schema)" 
+        v-on="finalListeners(schema)">
         <!-- 组件内部插槽：根据 options/自定义生成 default/suffix 等插槽 -->
-        <template v-for="(slotRender, slotName) in renderComponentContent(schema)" v-slot:[slotName]>
-          <RenderVNode v-if="typeof slotRender === 'function'" :render-fn="(h) => slotRender(itemCtx)" />
-          <span v-else>{{ slotRender }}</span>
+        <!-- 遍历 schema 中的 renderComponentContent，动态生成具名插槽 -->
+        <!-- 注意：使用 :slot 语法以兼容旧版工具链或特定的 Vue 2 环境 -->
+        <template v-for="(slotRender, slotName) in renderComponentContent(schema)" :slot="slotName">
+          <RenderVNode 
+            v-if="typeof slotRender === 'function'" 
+            :key="`${slotName}-fn`"
+            :render-fn="(h) => slotRender(itemCtx)" 
+          />
+          <span v-else :key="`${slotName}-text`">{{ slotRender }}</span>
         </template>
       </component>
       <!-- 帮助信息提示：展示在表单项底部，可配置样式 -->

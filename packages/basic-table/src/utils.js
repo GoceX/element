@@ -104,11 +104,13 @@ export function createFetchParams({ pagination, fetchSetting, searchInfo, before
  * @param {Array<Object>} options.columns 列配置数组
  * @param {boolean} options.ellipsis 全局溢出省略
  * @param {boolean} options.showIndexColumn 是否显示索引列
+ * @param {string} options.indexColumnTitle 索引列标题
  * @param {Object} options.indexColumnProps 索引列属性
  * @param {Object|boolean} options.rowSelection 选择列配置或开关
  * @returns {Array<Object>} 渲染列数组
  */
-export function mapColumns({ columns, ellipsis, showIndexColumn, indexColumnProps, rowSelection }) {
+export function mapColumns({ columns, ellipsis, showIndexColumn, indexColumnTitle, indexColumnProps, rowSelection }) {
+  // console.log('mapColumns indexColumnProps:', indexColumnProps);
   const baseCols = (columns || []).map((c, i) => ({
     key: c.key != null ? c.key : (c.dataIndex != null ? c.dataIndex : (c.prop != null ? c.prop : (c.field != null ? c.field : `col_${i}`))),
     title: c.title,
@@ -133,19 +135,23 @@ export function mapColumns({ columns, ellipsis, showIndexColumn, indexColumnProp
     slot: c.slot,
     /** 溢出省略（优先列级；否则使用全局 ellipsis） */
     showOverflowTooltip: c.showOverflowTooltip != null ? c.showOverflowTooltip : !!ellipsis,
-    children: Array.isArray(c.children) ? c.children : undefined
+    children: Array.isArray(c.children) ? c.children : undefined,
+    /** 是否自动合并相同值的行 */
+    autoSpan: c.autoSpan
   }));
   // 前置特殊列（索引、选择）
   const special = [];
   if (showIndexColumn) {
+    console.log("indexColumnTitle::: ",indexColumnTitle)
     special.push({
       key: '__index__',
-      type: 'index',
-      title: '',
+      type: 'default', // 改为默认列以支持宽度自适应（type=index 时宽度固定）
+      title: indexColumnTitle !== undefined ? indexColumnTitle : '序号',
       dataIndex: '',
-      index: (indexColumnProps && indexColumnProps.index) || undefined,
-      width: (indexColumnProps && indexColumnProps.width) || undefined,
-      align: (indexColumnProps && indexColumnProps.align) || undefined
+      align: (indexColumnProps && indexColumnProps.align) || 'center',
+      width: (indexColumnProps && indexColumnProps.width !== undefined) ? indexColumnProps.width : undefined,
+      minWidth: (indexColumnProps && indexColumnProps.minWidth !== undefined) ? indexColumnProps.minWidth : '45px',
+      index: (indexColumnProps && indexColumnProps.index) || undefined
     });
   }
   if (rowSelection) {

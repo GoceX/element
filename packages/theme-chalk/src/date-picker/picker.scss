@@ -76,7 +76,7 @@
     margin-left: -5px;
     color: $--color-text-placeholder;
     float: left;
-    line-height: 32px;
+    line-height: $--input-height - 2px - 6px;
   }
 
   .el-range-input {
@@ -103,7 +103,7 @@
     padding: 0 5px;
     margin: 0;
     text-align: center;
-    line-height: 37px;
+    line-height: $--input-height - 2px - 6px;
     font-size: $--font-size-medium;
     width: 5%;
     color: $--color-text-primary;
@@ -115,7 +115,7 @@
     width: 25px;
     display: inline-block;
     float: right;
-    line-height: 32px;
+    line-height: $--input-height - 2px - 6px;
   }
 }
 
@@ -145,7 +145,7 @@
     }
 
     .el-range-separator {
-      line-height: 28px;
+      line-height: $--input-medium-height - 2px - 6px;
       font-size: $--input-medium-font-size;
     }
 
@@ -155,7 +155,7 @@
 
     .el-range__icon,
     .el-range__close-icon {
-      line-height: 28px;
+      line-height: $--input-medium-height - 2px - 6px;
     }
   }
 
@@ -165,7 +165,7 @@
     }
 
     .el-range-separator {
-      line-height: 24px;
+      line-height: $--input-small-height - 2px - 6px;
       font-size: $--input-small-font-size;
     }
 
@@ -175,7 +175,7 @@
 
     .el-range__icon,
     .el-range__close-icon {
-      line-height: 24px;
+      line-height: $--input-small-height - 2px - 6px;
     }
   }
 
@@ -185,7 +185,7 @@
     }
 
     .el-range-separator {
-      line-height: 20px;
+      line-height: $--input-mini-height - 2px - 6px;
       font-size: $--input-mini-font-size;
     }
 
@@ -195,7 +195,7 @@
 
     .el-range__icon,
     .el-range__close-icon {
-      line-height: 20px;
+      line-height: $--input-mini-height - 2px - 6px;
     }
   }
 

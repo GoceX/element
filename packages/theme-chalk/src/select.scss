@@ -9,6 +9,7 @@
 @import "scrollbar";
 
 @include b(select) {
+  width: 100%;
   display: inline-block;
   position: relative;
 

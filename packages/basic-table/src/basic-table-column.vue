@@ -102,6 +102,10 @@ export default {
       if (!this.slotName) return false;
       const slots = this.getBasicTableSlots();
       return slots && typeof slots[this.slotName] === 'function';
+    },
+    /** 是否为手动模拟的索引列 */
+    isIndexColumn() {
+      return this.column.key === '__index__';
     }
   },
   methods: {
@@ -221,6 +225,16 @@ export default {
     // 优先使用具名插槽 与示例保持一致
     if (this.slotName && this.hasNamedSlot) {
       scopedSlots.default = (scope) => this.renderNamedSlot(scope);
+    } else if (this.isIndexColumn) {
+      // 索引列手动渲染
+      scopedSlots.default = (scope) => {
+        const { index } = this.column;
+        let val = scope.$index + 1;
+        if (typeof index === 'function') {
+          val = index(scope.$index);
+        }
+        return this.$createElement('span', val);
+      };
     } else {
       // 未提供具名插槽时 尝试使用通用 bodyCell 插槽 否则回退到溢出渲染
       const slots = this.getBasicTableSlots();

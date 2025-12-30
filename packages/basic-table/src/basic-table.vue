@@ -30,11 +30,12 @@
       :empty-text="emptyText"
       :show-summary="showSummary"
       :summary-method="summaryMethod"
+      :span-method="handleSpanMethod"
       @selection-change="onSelectionChange"
       @row-click="onRowClick"
     >
       <el-basic-table-column
-      v-for="(col, idx) in normalizedColumns"
+        v-for="(col, idx) in normalizedColumns"
         :key="col.key || col.prop || idx"
         :column="col"
         :ellipsis="ellipsis"
@@ -127,6 +128,8 @@ export default {
     showSummary: Boolean,
     /** 合计计算方法 */
     summaryMethod: Function,
+    /** 合并单元格方法 */
+    spanMethod: Function,
     /** 分页配置对象，或 false 不显示 */
     pagination: Object,
     /** 表格 loading 状态 */
@@ -183,8 +186,10 @@ export default {
     // 特殊列控制
     /** 是否显示索引列 */
     showIndexColumn: { type: Boolean, default: true },
+    /** 索引列标题 */
+    indexColumnTitle: { type: String, default: '序号' },
     /** 索引列属性（宽度/对齐/index 回调） */
-    indexColumnProps: Object,
+    indexColumnProps: { type: Object, default: () => ({}) },
     // 尺寸与滚动
     /** 最大高度，超出滚动 */
     maxHeight: Number,
@@ -224,10 +229,12 @@ export default {
      * @returns {Array<Object>} 渲染列数组
      */
     normalizedColumns() {
+      // console.log('BasicTable indexColumnProps:', this.indexColumnProps);
       return mapColumns({
         columns: this.internalColumns,
         ellipsis: this.ellipsis,
         showIndexColumn: this.showIndexColumn,
+        indexColumnTitle: this.indexColumnTitle,
         indexColumnProps: this.indexColumnProps,
         rowSelection: this.rowSelection
       });
@@ -235,8 +242,65 @@ export default {
     // showPagination/tableActionContext 已拆分至 mixins，保持本组件只关注数据与渲染
   },
 
+  mounted() {
+    this.$emit('register', this.tableActionContext);
+    if (this.immediate && typeof this.api === 'function') this.reload();
+  },
+
   methods: {
     ...actions,
+    /**
+     * 处理单元格合并
+     */
+    handleSpanMethod({ row, column, rowIndex, columnIndex }) {
+      // 获取当前列的配置信息
+      const prop = column.property;
+      const colConfig = prop ? this.normalizedColumns.find(c => c.prop === prop || c.field === prop) : null;
+
+      // 补充 column.field 字段，兼容用户在 spanMethod 中使用 column.field
+      if (colConfig && colConfig.field && !column.field) {
+        column.field = colConfig.field;
+      }
+
+      // 优先使用传入的 spanMethod
+      if (typeof this.spanMethod === 'function') {
+        return this.spanMethod({ row, column, rowIndex, columnIndex });
+      }
+      
+      // 自动合并逻辑：检查列配置是否有 autoSpan
+      if (colConfig && colConfig.autoSpan) {
+          const data = this.internalData;
+          // 使用 getByPath 获取值，以支持嵌套字段
+          const getValue = (r, p) => {
+            if (!r || !p) return undefined;
+            // 简单属性直接获取，避免 getByPath 性能开销（如果 prop 不含点号）
+            if (p.indexOf('.') === -1) return r[p];
+            // 简单实现 getByPath，避免引入 utils 依赖（或者假设 prop 即为 key）
+            // 这里我们假设 data 中 key 与 prop 一致，或者使用 row[prop]
+            // Element UI 的 row[column.property] 通常能取到值
+            return r[p];
+          };
+
+          const currentValue = row[prop];
+          const prevRow = data[rowIndex - 1];
+
+          // 如果上一行值相同，则合并（当前隐藏）
+          if (prevRow && prevRow[prop] === currentValue) {
+            return { rowspan: 0, colspan: 0 };
+          }
+
+          // 否则计算向下合并行数
+          let rowspan = 1;
+          for (let i = rowIndex + 1; i < data.length; i++) {
+            if (data[i][prop] === currentValue) {
+              rowspan++;
+            } else {
+              break;
+            }
+          }
+          return { rowspan, colspan: 1 };
+        }
+    },
     /**
      * 运行时设置表格属性（列/数据/loading/分页/选中/索引列/标题/搜索条件等）
      * @param {Object} nextProps 需更新的属性集合
@@ -251,6 +315,8 @@ export default {
       if ('showIndexColumn' in propsToUpdate) this.$emit('update:showIndexColumn', !!propsToUpdate.showIndexColumn);
       if ('searchInfo' in propsToUpdate) { this.internalSearchInfo = propsToUpdate.searchInfo || {}; this.$emit('update:searchInfo', propsToUpdate.searchInfo); }
       if ('title' in propsToUpdate) this.$emit('update:title', propsToUpdate.title);
+      if ('indexColumnProps' in propsToUpdate) this.$emit('update:indexColumnProps', propsToUpdate.indexColumnProps);
+      if ('indexColumnTitle' in propsToUpdate) this.$emit('update:indexColumnTitle', propsToUpdate.indexColumnTitle);
     },
     setLoading(loading) { this.internalLoading = !!loading; },
     setColumns(nextColumns) { this.internalColumns = Array.isArray(nextColumns) ? nextColumns : []; },
@@ -265,11 +331,6 @@ export default {
     setTableData(values) { this.setDataSource(values); },
     /** 合并设置分页信息 */
     setPagination(info) { this.internalPagination = { ...this.internalPagination, ...(info || {}) }; }
-
-  },
-  mounted() {
-    this.$emit('register', this.tableActionContext);
-    if (this.immediate && typeof this.api === 'function') this.reload();
   }
 };
 </script>

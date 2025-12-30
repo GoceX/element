@@ -1,5 +1,6 @@
 <template>
-  <div class="el-table"
+  <div 
+    class="el-table"
     :class="[{
       'el-table--fit': fit,
       'el-table--striped': stripe,
@@ -24,10 +25,8 @@
         :store="store"
         :border="border"
         :default-sort="defaultSort"
-        :style="{
-          width: layout.bodyWidth ? layout.bodyWidth + 'px' : ''
-        }">
-      </table-header>
+        :style="{ width: layout.bodyWidth ? layout.bodyWidth + 'px' : '' }"
+      />
     </div>
     <div
       class="el-table__body-wrapper"
@@ -41,10 +40,8 @@
         :row-class-name="rowClassName"
         :row-style="rowStyle"
         :highlight="highlightCurrentRow"
-        :style="{
-           width: bodyWidth
-        }">
-      </table-body>
+        :style="{ width: bodyWidth }"
+      />
       <div
         v-if="!data || data.length === 0"
         class="el-table__empty-block"
@@ -73,20 +70,17 @@
         :sum-text="sumText || t('el.table.sumText')"
         :summary-method="summaryMethod"
         :default-sort="defaultSort"
-        :style="{
-          width: layout.bodyWidth ? layout.bodyWidth + 'px' : ''
-        }">
-      </table-footer>
+        :style="{ width: layout.bodyWidth ? layout.bodyWidth + 'px' : '' }"
+      />
     </div>
     <div
       v-if="fixedColumns.length > 0"
       v-mousewheel="handleFixedMousewheel"
       class="el-table__fixed"
       ref="fixedWrapper"
-      :style="[{
-        width: layout.fixedWidth ? layout.fixedWidth + 'px' : ''
-      },
-      fixedHeight]">
+      :style="[
+        { width: layout.fixedWidth ? layout.fixedWidth + 'px' : '' },
+        fixedHeight]">
       <div
         v-if="showHeader"
         class="el-table__fixed-header-wrapper"
@@ -98,15 +92,15 @@
           :store="store"
           :style="{
             width: bodyWidth
-          }"></table-header>
+        }"/>
       </div>
       <div
         class="el-table__fixed-body-wrapper"
         ref="fixedBodyWrapper"
-        :style="[{
-          top: layout.headerHeight + 'px'
-        },
-        fixedBodyHeight]">
+        :style="[
+          { top: layout.headerHeight + 'px' },
+          fixedBodyHeight]"
+      >
         <table-body
           fixed="left"
           :store="store"
@@ -114,14 +108,12 @@
           :highlight="highlightCurrentRow"
           :row-class-name="rowClassName"
           :row-style="rowStyle"
-          :style="{
-            width: bodyWidth
-          }">
-        </table-body>
+          :style="{ width: bodyWidth }"/>
         <div
           v-if="$slots.append"
           class="el-table__append-gutter"
-          :style="{ height: layout.appendHeight + 'px'}"></div>
+          :style="{ height: layout.appendHeight + 'px'}">
+        </div>
       </div>
       <div
         v-if="showSummary"
@@ -134,9 +126,8 @@
           :sum-text="sumText || t('el.table.sumText')"
           :summary-method="summaryMethod"
           :store="store"
-          :style="{
-            width: bodyWidth
-          }"></table-footer>
+          :style="{ width: bodyWidth }"
+        />
       </div>
     </div>
     <div
@@ -144,12 +135,15 @@
       v-mousewheel="handleFixedMousewheel"
       class="el-table__fixed-right"
       ref="rightFixedWrapper"
-      :style="[{
-        width: layout.rightFixedWidth ? layout.rightFixedWidth + 'px' : '',
-        right: layout.scrollY ? (border ? layout.gutterWidth : (layout.gutterWidth || 0)) + 'px' : ''
-      },
-      fixedHeight]">
-      <div v-if="showHeader"
+      :style="[
+        {
+          width: layout.rightFixedWidth ? layout.rightFixedWidth + 'px' : '',
+          right: layout.scrollY ? (border ? layout.gutterWidth : (layout.gutterWidth || 0)) + 'px' : ''
+        },
+        fixedHeight]"
+    >
+      <div 
+        v-if="showHeader"
         class="el-table__fixed-header-wrapper"
         ref="rightFixedHeaderWrapper">
         <table-header
@@ -157,17 +151,16 @@
           fixed="right"
           :border="border"
           :store="store"
-          :style="{
-            width: bodyWidth
-          }"></table-header>
+          :style="{ width: bodyWidth }"
+        />
       </div>
       <div
         class="el-table__fixed-body-wrapper"
         ref="rightFixedBodyWrapper"
-        :style="[{
-          top: layout.headerHeight + 'px'
-        },
-        fixedBodyHeight]">
+        :style="[
+          { top: layout.headerHeight + 'px' },
+          fixedBodyHeight]"
+      >
         <table-body
           fixed="right"
           :store="store"
@@ -175,14 +168,13 @@
           :row-class-name="rowClassName"
           :row-style="rowStyle"
           :highlight="highlightCurrentRow"
-          :style="{
-            width: bodyWidth
-          }">
-        </table-body>
-         <div
+          :style="{ width: bodyWidth }"
+        />
+        <div
           v-if="$slots.append"
           class="el-table__append-gutter"
-          :style="{ height: layout.appendHeight + 'px' }"></div>
+          :style="{ height: layout.appendHeight + 'px' }">
+        </div>
       </div>
       <div
         v-if="showSummary"
@@ -195,19 +187,18 @@
           :sum-text="sumText || t('el.table.sumText')"
           :summary-method="summaryMethod"
           :store="store"
-          :style="{
-            width: bodyWidth
-          }"></table-footer>
+          :style="{ width: bodyWidth }"
+        />
       </div>
     </div>
     <div
       v-if="rightFixedColumns.length > 0"
       class="el-table__fixed-right-patch"
       ref="rightFixedPatch"
-      :style="{
-        width: layout.scrollY ? layout.gutterWidth + 'px' : '0',
-        height: layout.headerHeight + 'px'
-      }"></div>
+      :style="{ width: layout.scrollY ? layout.gutterWidth + 'px' : '0',
+                height: layout.headerHeight + 'px' }"
+    >
+    </div>
     <div class="el-table__column-resize-proxy" ref="resizeProxy" v-show="resizeProxyVisible"></div>
   </div>
 </template>
@@ -231,11 +222,18 @@
   export default {
     name: 'ElTable',
 
-    mixins: [Locale, Migrating],
-
     directives: {
       Mousewheel
     },
+
+    components: {
+      TableHeader,
+      TableFooter,
+      TableBody,
+      ElCheckbox
+    },
+
+    mixins: [Locale, Migrating],
 
     props: {
       data: {
@@ -264,7 +262,12 @@
 
       rowKey: [String, Function],
 
-      context: {},
+      context: {
+        type: Object,
+        default() {
+          return {};
+        }
+      },
 
       showHeader: {
         type: Boolean,
@@ -339,166 +342,37 @@
       load: Function
     },
 
-    components: {
-      TableHeader,
-      TableFooter,
-      TableBody,
-      ElCheckbox
-    },
-
-    methods: {
-      getMigratingConfig() {
-        return {
-          events: {
-            expand: 'expand is renamed to expand-change'
-          }
-        };
-      },
-
-      setCurrentRow(row) {
-        this.store.commit('setCurrentRow', row);
-      },
-
-      toggleRowSelection(row, selected) {
-        this.store.toggleRowSelection(row, selected, false);
-        this.store.updateAllSelected();
-      },
-
-      toggleRowExpansion(row, expanded) {
-        this.store.toggleRowExpansionAdapter(row, expanded);
-      },
-
-      clearSelection() {
-        this.store.clearSelection();
-      },
-
-      clearFilter(columnKeys) {
-        this.store.clearFilter(columnKeys);
-      },
-
-      clearSort() {
-        this.store.clearSort();
-      },
-
-      handleMouseLeave() {
-        this.store.commit('setHoverRow', null);
-        if (this.hoverState) this.hoverState = null;
-      },
-
-      updateScrollY() {
-        const changed = this.layout.updateScrollY();
-        if (changed) {
-          this.layout.notifyObservers('scrollable');
-          this.layout.updateColumnsWidth();
-        }
-      },
-
-      handleFixedMousewheel(event, data) {
-        const bodyWrapper = this.bodyWrapper;
-        if (Math.abs(data.spinY) > 0) {
-          const currentScrollTop = bodyWrapper.scrollTop;
-          if (data.pixelY < 0 && currentScrollTop !== 0) {
-            event.preventDefault();
-          }
-          if (data.pixelY > 0 && bodyWrapper.scrollHeight - bodyWrapper.clientHeight > currentScrollTop) {
-            event.preventDefault();
-          }
-          bodyWrapper.scrollTop += Math.ceil(data.pixelY / 5);
-        } else {
-          bodyWrapper.scrollLeft += Math.ceil(data.pixelX / 5);
-        }
-      },
-
-      handleHeaderFooterMousewheel(event, data) {
-        const { pixelX, pixelY } = data;
-        if (Math.abs(pixelX) >= Math.abs(pixelY)) {
-          this.bodyWrapper.scrollLeft += data.pixelX / 5;
-        }
-      },
-
-      // TODO 使用 CSS transform
-      syncPostion() {
-        const { scrollLeft, scrollTop, offsetWidth, scrollWidth } = this.bodyWrapper;
-        const { headerWrapper, footerWrapper, fixedBodyWrapper, rightFixedBodyWrapper } = this.$refs;
-        if (headerWrapper) headerWrapper.scrollLeft = scrollLeft;
-        if (footerWrapper) footerWrapper.scrollLeft = scrollLeft;
-        if (fixedBodyWrapper) fixedBodyWrapper.scrollTop = scrollTop;
-        if (rightFixedBodyWrapper) rightFixedBodyWrapper.scrollTop = scrollTop;
-        const maxScrollLeftPosition = scrollWidth - offsetWidth - 1;
-        if (scrollLeft >= maxScrollLeftPosition) {
-          this.scrollPosition = 'right';
-        } else if (scrollLeft === 0) {
-          this.scrollPosition = 'left';
-        } else {
-          this.scrollPosition = 'middle';
-        }
-      },
-
-      throttleSyncPostion: throttle(16, function() {
-        this.syncPostion();
-      }),
-
-      onScroll(evt) {
-        let raf = window.requestAnimationFrame;
-        if (!raf) {
-          this.throttleSyncPostion();
-        } else {
-          raf(this.syncPostion);
-        }
-      },
-
-      bindEvents() {
-        this.bodyWrapper.addEventListener('scroll', this.onScroll, { passive: true });
-        if (this.fit) {
-          addResizeListener(this.$el, this.resizeListener);
-        }
-      },
-
-      unbindEvents() {
-        this.bodyWrapper.removeEventListener('scroll', this.onScroll, { passive: true });
-        if (this.fit) {
-          removeResizeListener(this.$el, this.resizeListener);
-        }
-      },
-
-      resizeListener() {
-        if (!this.$ready) return;
-        let shouldUpdateLayout = false;
-        const el = this.$el;
-        const { width: oldWidth, height: oldHeight } = this.resizeState;
-
-        const width = el.offsetWidth;
-        if (oldWidth !== width) {
-          shouldUpdateLayout = true;
-        }
-
-        const height = el.offsetHeight;
-        if ((this.height || this.shouldUpdateHeight) && oldHeight !== height) {
-          shouldUpdateLayout = true;
-        }
-
-        if (shouldUpdateLayout) {
-          this.resizeState.width = width;
-          this.resizeState.height = height;
-          this.doLayout();
-        }
-      },
-
-      doLayout() {
-        if (this.shouldUpdateHeight) {
-          this.layout.updateElsHeight();
-        }
-        this.layout.updateColumnsWidth();
-      },
-
-      sort(prop, order) {
-        this.store.commit('sort', { prop, order });
-      },
-
-      toggleAllSelection() {
-        this.store.commit('toggleAllSelection');
-      }
-
+    data() {
+      const { hasChildren = 'hasChildren', children = 'children' } = this.treeProps;
+      this.store = createStore(this, {
+        rowKey: this.rowKey,
+        defaultExpandAll: this.defaultExpandAll,
+        selectOnIndeterminate: this.selectOnIndeterminate,
+        // TreeTable 的相关配置
+        indent: this.indent,
+        lazy: this.lazy,
+        lazyColumnIdentifier: hasChildren,
+        childrenColumnName: children
+      });
+      const layout = new TableLayout({
+        store: this.store,
+        table: this,
+        fit: this.fit,
+        showHeader: this.showHeader
+      });
+      return {
+        layout,
+        isHidden: false,
+        renderExpanded: null,
+        resizeProxyVisible: false,
+        resizeState: {
+          width: null,
+          height: null
+        },
+        // 是否拥有多级表头
+        isGroup: false,
+        scrollPosition: 'left'
+      };
     },
 
     computed: {
@@ -675,38 +549,159 @@
     destroyed() {
       this.unbindEvents();
     },
+ methods: {
+      getMigratingConfig() {
+        return {
+          events: {
+            expand: 'expand is renamed to expand-change'
+          }
+        };
+      },
 
-    data() {
-      const { hasChildren = 'hasChildren', children = 'children' } = this.treeProps;
-      this.store = createStore(this, {
-        rowKey: this.rowKey,
-        defaultExpandAll: this.defaultExpandAll,
-        selectOnIndeterminate: this.selectOnIndeterminate,
-        // TreeTable 的相关配置
-        indent: this.indent,
-        lazy: this.lazy,
-        lazyColumnIdentifier: hasChildren,
-        childrenColumnName: children
-      });
-      const layout = new TableLayout({
-        store: this.store,
-        table: this,
-        fit: this.fit,
-        showHeader: this.showHeader
-      });
-      return {
-        layout,
-        isHidden: false,
-        renderExpanded: null,
-        resizeProxyVisible: false,
-        resizeState: {
-          width: null,
-          height: null
-        },
-        // 是否拥有多级表头
-        isGroup: false,
-        scrollPosition: 'left'
-      };
+      setCurrentRow(row) {
+        this.store.commit('setCurrentRow', row);
+      },
+
+      toggleRowSelection(row, selected) {
+        this.store.toggleRowSelection(row, selected, false);
+        this.store.updateAllSelected();
+      },
+
+      toggleRowExpansion(row, expanded) {
+        this.store.toggleRowExpansionAdapter(row, expanded);
+      },
+
+      clearSelection() {
+        this.store.clearSelection();
+      },
+
+      clearFilter(columnKeys) {
+        this.store.clearFilter(columnKeys);
+      },
+
+      clearSort() {
+        this.store.clearSort();
+      },
+
+      handleMouseLeave() {
+        this.store.commit('setHoverRow', null);
+        if (this.hoverState) this.hoverState = null;
+      },
+
+      updateScrollY() {
+        const changed = this.layout.updateScrollY();
+        if (changed) {
+          this.layout.notifyObservers('scrollable');
+          this.layout.updateColumnsWidth();
+        }
+      },
+
+      handleFixedMousewheel(event, data) {
+        const bodyWrapper = this.bodyWrapper;
+        if (Math.abs(data.spinY) > 0) {
+          const currentScrollTop = bodyWrapper.scrollTop;
+          if (data.pixelY < 0 && currentScrollTop !== 0) {
+            event.preventDefault();
+          }
+          if (data.pixelY > 0 && bodyWrapper.scrollHeight - bodyWrapper.clientHeight > currentScrollTop) {
+            event.preventDefault();
+          }
+          bodyWrapper.scrollTop += Math.ceil(data.pixelY / 5);
+        } else {
+          bodyWrapper.scrollLeft += Math.ceil(data.pixelX / 5);
+        }
+      },
+
+      handleHeaderFooterMousewheel(event, data) {
+        const { pixelX, pixelY } = data;
+        if (Math.abs(pixelX) >= Math.abs(pixelY)) {
+          this.bodyWrapper.scrollLeft += data.pixelX / 5;
+        }
+      },
+
+      // TODO 使用 CSS transform
+      syncPostion() {
+        const { scrollLeft, scrollTop, offsetWidth, scrollWidth } = this.bodyWrapper;
+        const { headerWrapper, footerWrapper, fixedBodyWrapper, rightFixedBodyWrapper } = this.$refs;
+        if (headerWrapper) headerWrapper.scrollLeft = scrollLeft;
+        if (footerWrapper) footerWrapper.scrollLeft = scrollLeft;
+        if (fixedBodyWrapper) fixedBodyWrapper.scrollTop = scrollTop;
+        if (rightFixedBodyWrapper) rightFixedBodyWrapper.scrollTop = scrollTop;
+        const maxScrollLeftPosition = scrollWidth - offsetWidth - 1;
+        if (scrollLeft >= maxScrollLeftPosition) {
+          this.scrollPosition = 'right';
+        } else if (scrollLeft === 0) {
+          this.scrollPosition = 'left';
+        } else {
+          this.scrollPosition = 'middle';
+        }
+      },
+
+      throttleSyncPostion: throttle(16, function() {
+        this.syncPostion();
+      }),
+
+      onScroll(evt) {
+        let raf = window.requestAnimationFrame;
+        if (!raf) {
+          this.throttleSyncPostion();
+        } else {
+          raf(this.syncPostion);
+        }
+      },
+
+      bindEvents() {
+        this.bodyWrapper.addEventListener('scroll', this.onScroll, { passive: true });
+        if (this.fit) {
+          addResizeListener(this.$el, this.resizeListener);
+        }
+      },
+
+      unbindEvents() {
+        this.bodyWrapper.removeEventListener('scroll', this.onScroll, { passive: true });
+        if (this.fit) {
+          removeResizeListener(this.$el, this.resizeListener);
+        }
+      },
+
+      resizeListener() {
+        if (!this.$ready) return;
+        let shouldUpdateLayout = false;
+        const el = this.$el;
+        const { width: oldWidth, height: oldHeight } = this.resizeState;
+
+        const width = el.offsetWidth;
+        if (oldWidth !== width) {
+          shouldUpdateLayout = true;
+        }
+
+        const height = el.offsetHeight;
+        if ((this.height || this.shouldUpdateHeight) && oldHeight !== height) {
+          shouldUpdateLayout = true;
+        }
+
+        if (shouldUpdateLayout) {
+          this.resizeState.width = width;
+          this.resizeState.height = height;
+          this.doLayout();
+        }
+      },
+
+      doLayout() {
+        if (this.shouldUpdateHeight) {
+          this.layout.updateElsHeight();
+        }
+        this.layout.updateColumnsWidth();
+      },
+
+      sort(prop, order) {
+        this.store.commit('sort', { prop, order });
+      },
+
+      toggleAllSelection() {
+        this.store.commit('toggleAllSelection');
+      }
+
     }
   };
 </script>
