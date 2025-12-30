@@ -25,8 +25,10 @@
       :name="name && name[0]"
       @input="handleStartInput"
       @change="handleStartChange"
-      @focus="handleFocus"
-      :class="['el-range-input', rangePreview && rangePreview.minIsPreview ? 'is-preview' : '']"/>
+      @focus="handleInputFocus(0)"
+      @blur="handleInputBlur"
+      ref="minInput"
+      :class="['el-range-input', rangePreview && rangePreview.minIsPreview ? 'is-preview' : '', focusedInputIndex === 0 ? 'is-focused' : '']"/>
     <slot name="range-separator">
       <span class="el-range-separator">{{ rangeSeparator }}</span>
     </slot>
@@ -40,8 +42,10 @@
       :name="name && name[1]"
       @input="handleEndInput"
       @change="handleEndChange"
-      @focus="handleFocus"
-      :class="['el-range-input', rangePreview && rangePreview.maxIsPreview ? 'is-preview' : '']"/>
+      @focus="handleInputFocus(1)"
+      @blur="handleInputBlur"
+      ref="maxInput"
+      :class="['el-range-input', rangePreview && rangePreview.maxIsPreview ? 'is-preview' : '', focusedInputIndex === 1 ? 'is-focused' : '']"/>
     <i
       @click="handleClickIcon"
       v-if="haveTrigger"
@@ -99,6 +103,12 @@ export default {
     showTime: Boolean,
     // 是否使用箭头控制时间
     timeArrowControl: Boolean
+  },
+
+  data() {
+    return {
+      focusedInputIndex: -1
+    };
   },
 
   computed: {
@@ -165,6 +175,19 @@ export default {
         }
     }
   },
+  
+  watch: {
+    focusedInputIndex(val) {
+      if (this.picker) {
+        this.picker.focusedInputIndex = val;
+      }
+    },
+    pickerVisible(val) {
+      if (val && this.picker) {
+        this.picker.focusedInputIndex = this.focusedInputIndex;
+      }
+    }
+  },
 
   created() {
     // 初始化面板
@@ -172,6 +195,38 @@ export default {
     if (this.type === 'date' && this.showTime) {
         this.panel = DateTimeRangePanel;
     }
-  }
+  },
+
+  methods: {
+    handleInputFocus(index) {
+      this.focusedInputIndex = index;
+      this.handleFocus();
+    },
+    handleInputBlur() {
+      this.focusedInputIndex = -1;
+    },
+    handlePickStartDate() {
+      this.$nextTick(() => {
+        if (this.$refs.maxInput) {
+          this.$refs.maxInput.focus();
+        }
+        this.focusedInputIndex = 1;
+      });
+    },
+    handlePickEndDate() {
+      this.$nextTick(() => {
+        if (this.$refs.minInput) {
+          this.$refs.minInput.focus();
+        }
+        this.focusedInputIndex = 0;
+      });
+    }
+  },
 };
 </script>
+
+<style scoped>
+.el-range-input.is-focused {
+  border-bottom: 2px solid #409EFF;
+}
+</style>

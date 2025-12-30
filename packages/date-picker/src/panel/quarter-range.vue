@@ -17,7 +17,7 @@
             @click="handleShortcutClick(shortcut)">{{ shortcut.text }}</button>
         </div>
         <div class="el-picker-panel__body">
-          <div class="el-picker-panel__content el-date-range-picker__content is-left">
+          <div class="el-picker-panel__content el-date-range-picker__content is-left" @mousedown.prevent>
             <div class="el-date-range-picker__header">
               <button
                 type="button"
@@ -43,7 +43,7 @@
               @changerange="handleChangeRange"
               @pick="handleRangePick"/>
           </div>
-          <div class="el-picker-panel__content el-date-range-picker__content is-right">
+          <div class="el-picker-panel__content el-date-range-picker__content is-right" @mousedown.prevent>
             <div class="el-date-range-picker__header">
               <button
                 type="button"
@@ -80,7 +80,8 @@
     isDate,
     modifyWithTimeString,
     prevYear,
-    nextYear
+    nextYear,
+    formatDate
   } from 'rowinself-ui/src/utils/date-util';
   import Clickoutside from 'rowinself-ui/src/utils/clickoutside';
   import Locale from 'rowinself-ui/src/mixins/locale';
@@ -124,7 +125,9 @@
         disabledDate: null,
         format: '',
         arrowControl: false,
-        unlinkPanels: false
+        unlinkPanels: false,
+        focusedInputIndex: 0,
+        isReverseSelecting: false
       };
     },
 
@@ -204,6 +207,12 @@
         this.minDate = val.minDate;
         this.maxDate = val.maxDate;
         this.rangeState = val.rangeState;
+        this.$emit('changerange', {
+          minDate: this.minDate,
+          maxDate: this.maxDate,
+          rangeState: this.rangeState
+        });
+        this.emitInputPreview();
       },
 
       handleRangePick(val, close = true) {
@@ -214,8 +223,30 @@
           return;
         }
         this.onPick && this.onPick(val);
+        
+        const isNewSelection = !this.minDate || (this.minDate && this.maxDate);
+        if (isNewSelection) {
+          if (this.focusedInputIndex === 1) {
+            this.isReverseSelecting = true;
+            this.minDate = minDate;
+            this.maxDate = null;
+            this.$emit('pick-end-date');
+            this.emitInputPreview();
+            return;
+          } else {
+            this.isReverseSelecting = false;
+          }
+        } else {
+          this.isReverseSelecting = false;
+        }
+
         this.maxDate = maxDate;
         this.minDate = minDate;
+        
+        if (this.minDate && !this.maxDate) {
+          this.$emit('pick-start-date');
+        }
+        this.emitInputPreview();
 
         // workaround for https://github.com/ElemeFE/element/issues/7539, should remove this block when we don't have to care about Chromium 55 - 57
         setTimeout(() => {
@@ -224,6 +255,53 @@
         }, 10);
         if (!close) return;
         this.handleConfirm();
+      },
+      
+      emitInputPreview() {
+        if (!this.rangeState || !this.rangeState.endDate) {
+          this.$emit('preview', null);
+          return;
+        }
+        const endDate = this.rangeState.endDate;
+        const format = this.format || (this.$parent && this.$parent.format) || 'yyyy-MM';
+
+        if (!this.minDate || (this.minDate && this.maxDate)) {
+          if (this.focusedInputIndex === 1) {
+            this.$emit('preview', {
+              min: '',
+              max: formatDate(endDate, format),
+              minIsPreview: false,
+              maxIsPreview: true
+            });
+          } else {
+            this.$emit('preview', {
+              min: formatDate(endDate, format),
+              max: '',
+              minIsPreview: true,
+              maxIsPreview: false
+            });
+          }
+          return;
+        }
+
+        if (this.minDate && !this.maxDate) {
+          if (this.isReverseSelecting) {
+            this.$emit('preview', {
+              min: formatDate(endDate, format),
+              max: formatDate(this.minDate, format),
+              minIsPreview: true,
+              maxIsPreview: false
+            });
+          } else {
+            this.$emit('preview', {
+              min: formatDate(this.minDate, format),
+              max: formatDate(endDate, format),
+              minIsPreview: false,
+              maxIsPreview: true
+            });
+          }
+          return;
+        }
       },
 
       handleShortcutClick(shortcut) {

@@ -6,7 +6,7 @@
     @click="handleClick"
     @mousemove="handleMouseMove"
     @mouseleave="handleMouseLeave"
-    :class="{ 'is-week-mode': selectionMode === 'week' }">
+    :class="{ 'is-week-mode': selectionMode === 'week', 'is-selecting': rangeState.selecting }">
     <tbody>
       <tr>
         <th v-if="showWeekNumber">{{ t('el.datepicker.week') }}</th>
@@ -303,6 +303,10 @@
 
           if (cell.end) {
             classes.push('end-date');
+          }
+
+          if (this.rangeState.selecting && this.rangeState.endDate && this.cellMatchesDate(cell, this.rangeState.endDate)) {
+            classes.push('is-preview-end');
           }
         }
 

@@ -150,6 +150,20 @@
     }
   }
 
+  @include when(selecting) {
+
+    // 预览选择时，仅中间范围显示虚线边框，首尾日期保持实心样式 (Preview selection: dashed border for intermediate cells only, solid style for start/end dates)
+    td.in-range:not(.start-date):not(.end-date) div {
+      border-top: 1px dashed $--datepicker-active-color;
+      border-bottom: 1px dashed $--datepicker-active-color;
+    }
+
+    // 鼠标当前位置（预览端点）添加特殊虚线样式，以区分已选择的锚点 (Cursor/Preview-End: dashed border on top of dark background)
+    td.in-range.is-preview-end div {
+      border: 1px dashed #fff;
+    }
+  }
+
   th {
     padding: 5px;
     color: $--datepicker-header-font-color;

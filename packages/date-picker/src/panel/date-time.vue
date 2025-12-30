@@ -56,7 +56,7 @@
           </slot>
         </div>
       </slot>
-      <div class="date-time-panel__content">
+      <div class="date-time-panel__content" @mousedown.prevent>
         <date-table
           :selection-mode="selectionMode"
           :first-day-of-week="firstDayOfWeek"
@@ -73,7 +73,7 @@
         />
       </div>
     </div>
-    <div class="date-time-panel__time-part" v-if="showTime">
+    <div class="date-time-panel__time-part" v-if="showTime" @mousedown.prevent>
       <div class="date-time-panel__time-header">{{ visibleTime }}</div>
       <div class="el-time-panel__content" :class="{ 'has-seconds': showSeconds }">
         <time-spinner

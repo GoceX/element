@@ -21,7 +21,7 @@
         </div>
         <div class="el-picker-panel__body">
           <div class="el-picker-panel__content el-date-range-picker__content is-left">
-            <div class="el-date-range-picker__content-part">
+            <div class="el-date-range-picker__content-part" @mousedown.prevent>
               <div class="el-date-range-picker__header">
                 <button
                   type="button"
@@ -62,7 +62,7 @@
             </div>
           </div>
           <div class="el-picker-panel__content el-date-range-picker__content is-right">
-            <div class="el-date-range-picker__content-part">
+            <div class="el-date-range-picker__content-part" @mousedown.prevent>
               <div class="el-date-range-picker__header">
                 <button
                   type="button"
@@ -116,7 +116,9 @@
     nextYear,
     prevMonth,
     nextMonth,
-    nextDate
+    nextDate,
+    formatDate,
+    getWeekNumber
   } from 'rowinself-ui/src/utils/date-util';
   import Clickoutside from 'rowinself-ui/src/utils/clickoutside';
   import Locale from 'rowinself-ui/src/mixins/locale';
@@ -162,7 +164,9 @@
         firstDayOfWeek: 7,
         format: '',
         arrowControl: false,
-        unlinkPanels: false
+        unlinkPanels: false,
+        focusedInputIndex: 0,
+        isReverseSelecting: false
       };
     },
 
@@ -274,6 +278,12 @@
         this.minDate = val.minDate;
         this.maxDate = val.maxDate;
         this.rangeState = val.rangeState;
+        this.$emit('changerange', {
+          minDate: this.minDate,
+          maxDate: this.maxDate,
+          rangeState: this.rangeState
+        });
+        this.emitInputPreview();
       },
 
       handleRangePick(val, close = true) {
@@ -285,8 +295,30 @@
           return;
         }
         this.onPick && this.onPick(val);
+        
+        const isNewSelection = !this.minDate || (this.minDate && this.maxDate);
+        if (isNewSelection) {
+          if (this.focusedInputIndex === 1) {
+            this.isReverseSelecting = true;
+            this.minDate = minDate;
+            this.maxDate = null;
+            this.$emit('pick-end-date');
+            this.emitInputPreview();
+            return;
+          } else {
+            this.isReverseSelecting = false;
+          }
+        } else {
+          this.isReverseSelecting = false;
+        }
+
         this.maxDate = maxDate;
         this.minDate = minDate;
+        
+        if (this.minDate && !this.maxDate) {
+          this.$emit('pick-start-date');
+        }
+        this.emitInputPreview();
 
         // workaround for https://github.com/ElemeFE/element/issues/7539
         setTimeout(() => {
@@ -295,6 +327,68 @@
         }, 10);
         if (!close) return;
         this.handleConfirm();
+      },
+      
+      emitInputPreview() {
+        if (!this.rangeState || !this.rangeState.endDate) {
+          this.$emit('preview', null);
+          return;
+        }
+        const endDate = this.rangeState.endDate;
+        const format = this.format || (this.$parent && this.$parent.format) || 'yyyywWW';
+
+        const formatWeek = (date) => {
+          let week = getWeekNumber(date);
+          let month = date.getMonth();
+          const trueDate = new Date(date);
+          if (week === 1 && month === 11) {
+            trueDate.setFullYear(trueDate.getFullYear() + 1);
+          }
+          if (week >= 52 && month === 0) {
+            trueDate.setFullYear(trueDate.getFullYear() - 1);
+          }
+          let str = formatDate(trueDate, format);
+          const weekStr = week < 10 ? '0' + week : week;
+          return str.replace(/WW/g, weekStr).replace(/W/g, week);
+        };
+
+        if (!this.minDate || (this.minDate && this.maxDate)) {
+          if (this.focusedInputIndex === 1) {
+            this.$emit('preview', {
+              min: '',
+              max: formatWeek(endDate),
+              minIsPreview: false,
+              maxIsPreview: true
+            });
+          } else {
+            this.$emit('preview', {
+              min: formatWeek(endDate),
+              max: '',
+              minIsPreview: true,
+              maxIsPreview: false
+            });
+          }
+          return;
+        }
+
+        if (this.minDate && !this.maxDate) {
+          if (this.isReverseSelecting) {
+            this.$emit('preview', {
+              min: formatWeek(endDate),
+              max: formatWeek(this.minDate),
+              minIsPreview: true,
+              maxIsPreview: false
+            });
+          } else {
+            this.$emit('preview', {
+              min: formatWeek(this.minDate),
+              max: formatWeek(endDate),
+              minIsPreview: false,
+              maxIsPreview: true
+            });
+          }
+          return;
+        }
       },
 
       handleShortcutClick(shortcut) {

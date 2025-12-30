@@ -22,7 +22,7 @@
         </div>
         <div class="el-picker-panel__body">
           <div class="el-picker-panel__content el-date-range-picker__content is-left">
-            <div class="el-date-range-picker__content-part">
+            <div class="el-date-range-picker__content-part" @mousedown.prevent>
               <div class="el-date-range-picker__header">
                 <button
                   type="button"
@@ -61,7 +61,7 @@
                 :first-day-of-week="firstDayOfWeek"
                 @pick="handleRangePick"/>
             </div>
-            <div class="el-date-range-picker__time-part" v-if="showTime">
+            <div class="el-date-range-picker__time-part" v-if="showTime" @mousedown.prevent>
               <div class="el-time-panel__content" :class="{ 'has-seconds': showSeconds }">
                 <time-spinner
                   ref="minSpinner"
@@ -75,7 +75,7 @@
             </div>
           </div>
           <div class="el-picker-panel__content el-date-range-picker__content is-right">
-            <div class="el-date-range-picker__content-part">
+            <div class="el-date-range-picker__content-part" @mousedown.prevent>
               <div class="el-date-range-picker__header">
                 <button
                   type="button"
@@ -114,7 +114,7 @@
                 :first-day-of-week="firstDayOfWeek"
                 @pick="handleRangePick"/>
             </div>
-            <div class="el-date-range-picker__time-part" v-if="showTime">
+            <div class="el-date-range-picker__time-part" v-if="showTime" @mousedown.prevent>
               <div class="el-time-panel__content" :class="{ 'has-seconds': showSeconds }">
                 <time-spinner
                   ref="maxSpinner"
@@ -359,6 +359,11 @@
         this.minDate = val.minDate;
         this.maxDate = val.maxDate;
         this.rangeState = val.rangeState;
+        this.$emit('changerange', {
+          minDate: this.minDate,
+          maxDate: this.maxDate,
+          rangeState: this.rangeState
+        });
         this.emitInputPreview();
       },
 
@@ -368,25 +373,45 @@
           return;
         }
         const endDate = this.rangeState.endDate;
-        if (!this.minDate) {
-          this.$emit('preview', {
-            min: formatDate(endDate, this.dateFormat),
-            max: '',
-            minIsPreview: true,
-            maxIsPreview: false
-          });
+        const format = this.format || (this.$parent && this.$parent.format) || this.dateFormat;
+
+        if (!this.minDate || (this.minDate && this.maxDate)) {
+          if (this.focusedInputIndex === 1) {
+            this.$emit('preview', {
+              min: '',
+              max: formatDate(endDate, format),
+              minIsPreview: false,
+              maxIsPreview: true
+            });
+          } else {
+            this.$emit('preview', {
+              min: formatDate(endDate, format),
+              max: '',
+              minIsPreview: true,
+              maxIsPreview: false
+            });
+          }
           return;
         }
+
         if (this.minDate && !this.maxDate) {
-          this.$emit('preview', {
-            min: formatDate(this.minDate, this.dateFormat),
-            max: formatDate(endDate, this.dateFormat),
-            minIsPreview: false,
-            maxIsPreview: true
-          });
+          if (this.isReverseSelecting) {
+            this.$emit('preview', {
+              min: formatDate(endDate, format),
+              max: formatDate(this.minDate, format),
+              minIsPreview: true,
+              maxIsPreview: false
+            });
+          } else {
+            this.$emit('preview', {
+              min: formatDate(this.minDate, format),
+              max: formatDate(endDate, format),
+              minIsPreview: false,
+              maxIsPreview: true
+            });
+          }
           return;
         }
-        this.$emit('preview', null);
       },
 
       handleDateInput(value, type) {
@@ -458,8 +483,32 @@
           return;
         }
         this.onPick && this.onPick(val);
+
+        // Detect if this is a new selection start
+        const isNewSelection = !this.minDate || (this.minDate && this.maxDate);
+        if (isNewSelection) {
+          if (this.focusedInputIndex === 1) {
+            // Reverse selection: User picked End Date first
+            this.isReverseSelecting = true;
+            this.minDate = minDate;
+            this.maxDate = null;
+            this.$emit('pick-end-date');
+            this.emitInputPreview();
+            return;
+          } else {
+            this.isReverseSelecting = false;
+          }
+        } else {
+          // Second pick
+          this.isReverseSelecting = false;
+        }
+
         this.maxDate = maxDate;
         this.minDate = minDate;
+        if (this.minDate && !this.maxDate) {
+          this.$emit('pick-start-date');
+        }
+        this.emitInputPreview();
 
         // workaround for https://github.com/ElemeFE/element/issues/7539, should remove this block when we don't have to care about Chromium 55 - 57
         setTimeout(() => {

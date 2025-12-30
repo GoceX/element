@@ -55,7 +55,8 @@ const DEFAULT_FORMATS = {
   quarter: "yyyy-'Q'q",
   weekrange: 'yyyyWW',
   yearrange: 'yyyy',
-  quarterrange: "yyyy-'Q'q"
+  quarterrange: "yyyy-'Q'q",
+  dates: 'yyyy-MM-dd'
 };
 
 /**
@@ -585,7 +586,13 @@ export default {
      */
     displayValue() {
       if (this.ranged && this.rangePreview && this.pickerVisible && this.userInput === null) {
-        return [this.rangePreview.min || '', this.rangePreview.max || ''];
+        const min = this.rangePreview.min instanceof Date
+          ? this.formatToString(this.rangePreview.min)
+          : (this.rangePreview.min || '');
+        const max = this.rangePreview.max instanceof Date
+          ? this.formatToString(this.rangePreview.max)
+          : (this.rangePreview.max || '');
+        return [min, max];
       }
       const formattedValue = formatAsFormatAndType(this.parsedValue, this.format, this.actualType, this.rangeSeparator);
       if (Array.isArray(this.userInput)) {
@@ -1142,6 +1149,7 @@ export default {
       this.picker.selectionMode = this.selectionMode;
       this.picker.unlinkPanels = this.unlinkPanels;
       this.picker.arrowControl = this.arrowControl || this.timeArrowControl || false;
+      this.picker.format = this.format;
       
       // 监听 format 变化
       this.$watch('format', (format) => {
@@ -1207,6 +1215,25 @@ export default {
         } else {
           this.refInput[1].setSelectionRange(start, end);
           this.refInput[1].focus();
+        }
+      });
+
+      // 监听 preview 事件
+      this.picker.$on('preview', (val) => {
+        this.rangePreview = val;
+      });
+
+      // 监听 pick-start-date 事件
+      this.picker.$on('pick-start-date', () => {
+        if (typeof this.handlePickStartDate === 'function') {
+          this.handlePickStartDate();
+        }
+      });
+
+      // 监听 pick-end-date 事件
+      this.picker.$on('pick-end-date', () => {
+        if (typeof this.handlePickEndDate === 'function') {
+          this.handlePickEndDate();
         }
       });
     }

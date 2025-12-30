@@ -49,7 +49,7 @@
             >
               <template slot="header">
                 <!-- 左侧头部：年月切换按钮 (Left Header: Year/Month switch buttons) -->
-                <div class="el-date-range-picker__header">
+                <div class="el-date-range-picker__header" @mousedown.prevent>
                   <button
                     type="button"
                     @click="leftPrevYear"
@@ -101,7 +101,7 @@
             >
               <template slot="header">
                 <!-- 右侧头部：年月切换按钮 (Right Header: Year/Month switch buttons) -->
-                <div class="el-date-range-picker__header">
+                <div class="el-date-range-picker__header" @mousedown.prevent>
                   <button
                     type="button"
                     @click="rightPrevYear"
@@ -133,7 +133,7 @@
       </div>
       
       <!-- 底部页脚：清除和确认按钮 (Footer: Clear and Confirm buttons) -->
-      <div class="el-picker-panel__footer" v-if="showTime">
+      <div class="el-picker-panel__footer" v-if="showTime" @mousedown.prevent>
         <el-button
           size="mini"
           type="text"
@@ -231,11 +231,16 @@
         timeUserInput: {
           min: null,
           max: null
-        }
+        },
+        focusedInputIndex: 0
       };
     },
 
     computed: {
+      isReverseSelecting() {
+        return this.focusedInputIndex === 1;
+      },
+
       /**
        * 确认按钮是否禁用
        * Check if the confirm button is disabled
@@ -438,22 +443,43 @@
           return;
         }
         const endDate = this.rangeState.endDate;
+        const format = this.format || this.dateFormat;
+
         if (!this.minDate) {
-          this.$emit('preview', {
-            min: formatDate(endDate, this.dateFormat),
-            max: '',
-            minIsPreview: true,
-            maxIsPreview: false
-          });
+          if (this.isReverseSelecting) {
+            this.$emit('preview', {
+              min: '',
+              max: formatDate(endDate, format),
+              minIsPreview: false,
+              maxIsPreview: true
+            });
+          } else {
+            this.$emit('preview', {
+              min: formatDate(endDate, format),
+              max: '',
+              minIsPreview: true,
+              maxIsPreview: false
+            });
+          }
           return;
         }
+
         if (this.minDate && !this.maxDate) {
-          this.$emit('preview', {
-            min: formatDate(this.minDate, this.dateFormat),
-            max: formatDate(endDate, this.dateFormat),
-            minIsPreview: false,
-            maxIsPreview: true
-          });
+          if (this.isReverseSelecting) {
+            this.$emit('preview', {
+              min: formatDate(endDate, format),
+              max: formatDate(this.minDate, format),
+              minIsPreview: true,
+              maxIsPreview: false
+            });
+          } else {
+            this.$emit('preview', {
+              min: formatDate(this.minDate, format),
+              max: formatDate(endDate, format),
+              minIsPreview: false,
+              maxIsPreview: true
+            });
+          }
           return;
         }
         this.$emit('preview', null);
@@ -564,6 +590,11 @@
           this.maxDate = maxDate;
           this.minDate = minDate;
         }, 10);
+
+        if (!val.maxDate && this.isReverseSelecting) {
+          this.$emit('pick-end-date');
+        }
+
         if (!close || this.showTime) return;
         this.handleConfirm();
       },

@@ -524,7 +524,7 @@
         const now = new Date();
         if ((!this.disabledDate || !this.disabledDate(now)) && this.checkDateWithinRange(now)) {
           this.date = now;
-          this.emit(now, true);
+          // this.emit(now, true);
         }
       },
 
