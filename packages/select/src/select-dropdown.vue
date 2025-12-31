@@ -19,14 +19,17 @@
 
     props: {
       placement: {
+        type: String,
         default: 'bottom-start'
       },
 
       boundariesPadding: {
+        type: Number,
         default: 0
       },
 
       popperOptions: {
+        type: Object,
         default() {
           return {
             gpuAcceleration: false
@@ -35,6 +38,7 @@
       },
 
       visibleArrow: {
+        type: Boolean,
         default: true
       },
 

@@ -1,15 +1,17 @@
 <template>
-  <div class="el-color-svpanel"
-      :style="{
-        backgroundColor: background
-      }">
+  <div 
+    class="el-color-svpanel"
+    :style="{
+      backgroundColor: background
+  }">
     <div class="el-color-svpanel__white"></div>
     <div class="el-color-svpanel__black"></div>
-    <div class="el-color-svpanel__cursor"
+    <div 
+      class="el-color-svpanel__cursor"
       :style="{
         top: cursorTop + 'px',
         left: cursorLeft + 'px'
-      }">
+    }">
       <div></div>
     </div>
   </div>
@@ -19,12 +21,21 @@
   import draggable from '../draggable';
 
   export default {
-    name: 'el-sl-panel',
+    name: 'ElSlPanel',
 
     props: {
       color: {
-        required: true
+        required: true,
+        type: Object
       }
+    },
+
+    data() {
+      return {
+        cursorTop: 0,
+        cursorLeft: 0,
+        background: 'hsl(0, 100%, 50%)'
+      };
     },
 
     computed: {
@@ -39,6 +50,19 @@
       colorValue() {
         this.update();
       }
+    },
+
+    mounted() {
+      draggable(this.$el, {
+        drag: (event) => {
+          this.handleDrag(event);
+        },
+        end: (event) => {
+          this.handleDrag(event);
+        }
+      });
+
+      this.update();
     },
 
     methods: {
@@ -75,26 +99,5 @@
         });
       }
     },
-
-    mounted() {
-      draggable(this.$el, {
-        drag: (event) => {
-          this.handleDrag(event);
-        },
-        end: (event) => {
-          this.handleDrag(event);
-        }
-      });
-
-      this.update();
-    },
-
-    data() {
-      return {
-        cursorTop: 0,
-        cursorLeft: 0,
-        background: 'hsl(0, 100%, 50%)'
-      };
-    }
   };
 </script>

@@ -46,6 +46,29 @@
       };
     },
 
+    computed: {
+      parentDirection() {
+        return this.$parent.direction;
+      },
+
+      itemStyle() {
+        const translateType = this.parentDirection === 'vertical' ? 'translateY' : 'translateX';
+        const value = `${translateType}(${ this.translate }px) scale(${ this.scale })`;
+        const style = {
+          transform: value
+        };
+        return autoprefixer(style);
+      }
+    },
+
+    created() {
+      this.$parent && this.$parent.updateItems();
+    },
+
+    destroyed() {
+      this.$parent && this.$parent.updateItems();
+    },
+
     methods: {
       processIndex(index, activeIndex, length) {
         if (activeIndex === 0 && index === length - 1) {
@@ -111,28 +134,5 @@
         }
       }
     },
-
-    computed: {
-      parentDirection() {
-        return this.$parent.direction;
-      },
-
-      itemStyle() {
-        const translateType = this.parentDirection === 'vertical' ? 'translateY' : 'translateX';
-        const value = `${translateType}(${ this.translate }px) scale(${ this.scale })`;
-        const style = {
-          transform: value
-        };
-        return autoprefixer(style);
-      }
-    },
-
-    created() {
-      this.$parent && this.$parent.updateItems();
-    },
-
-    destroyed() {
-      this.$parent && this.$parent.updateItems();
-    }
   };
 </script>

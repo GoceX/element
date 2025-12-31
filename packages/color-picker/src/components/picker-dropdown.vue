@@ -4,11 +4,11 @@
       class="el-color-dropdown"
       v-show="showPopper">
       <div class="el-color-dropdown__main-wrapper">
-        <hue-slider ref="hue" :color="color" vertical style="float: right;"></hue-slider>
-        <sv-panel ref="sl" :color="color"></sv-panel>
+        <hue-slider ref="hue" :color="color" vertical style="float: right;"/>
+        <sv-panel ref="sl" :color="color"/>
       </div>
-      <alpha-slider v-if="showAlpha" ref="alpha" :color="color"></alpha-slider>
-      <predefine v-if="predefine" :color="color" :colors="predefine"></predefine>
+      <alpha-slider v-if="showAlpha" ref="alpha" :color="color"/>
+      <predefine v-if="predefine" :color="color" :colors="predefine"/>
       <div class="el-color-dropdown__btns">
         <span class="el-color-dropdown__value">
           <el-input
@@ -16,8 +16,7 @@
             @keyup.native.enter="handleConfirm"
             @blur="handleConfirm"
             :validate-event="false"
-            size="mini">
-          </el-input>
+            size="mini"/>
         </span>
         <el-button
           size="mini"
@@ -49,9 +48,7 @@
   import ElButton from 'rowinself-ui/packages/button';
 
   export default {
-    name: 'el-color-picker-dropdown',
-
-    mixins: [Popper, Locale],
+    name: 'ElColorPickerDropdown',
 
     components: {
       SvPanel,
@@ -62,9 +59,12 @@
       Predefine
     },
 
+    mixins: [Popper, Locale],
+
     props: {
       color: {
-        required: true
+        required: true,
+        type: Object
       },
       showAlpha: Boolean,
       predefine: Array
@@ -81,22 +81,6 @@
         const parent = this.$parent;
         return !parent.value && !parent.showPanelColor ? '' : parent.color.value;
       }
-    },
-
-    methods: {
-      confirmValue() {
-        this.$emit('pick');
-      },
-
-      handleConfirm() {
-        this.color.fromString(this.customInput);
-      }
-    },
-
-    mounted() {
-      this.$parent.popperElm = this.popperElm = this.$el;
-      const parent = this.$parent;
-      this.referenceElm = (parent && parent.$refs && parent.$refs.trigger) ? parent.$refs.trigger : parent.$el;
     },
 
     watch: {
@@ -117,6 +101,22 @@
           this.customInput = val;
         }
       }
-    }
+    },
+
+    mounted() {
+      this.$parent.popperElm = this.popperElm = this.$el;
+      const parent = this.$parent;
+      this.referenceElm = (parent && parent.$refs && parent.$refs.trigger) ? parent.$refs.trigger : parent.$el;
+    },
+
+    methods: {
+      confirmValue() {
+        this.$emit('pick');
+      },
+
+      handleConfirm() {
+        this.color.fromString(this.customInput);
+      }
+    },
   };
 </script>

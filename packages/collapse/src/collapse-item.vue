@@ -1,5 +1,6 @@
 <template>
-  <div class="el-collapse-item"
+  <div 
+    class="el-collapse-item"
     :class="{'is-active': isActive, 'is-disabled': disabled }">
     <div
       role="tab"
@@ -21,7 +22,7 @@
         @focus="handleFocus"
         @blur="focusing = false"
       >
-        <slot name="title">{{title}}</slot>
+        <slot name="title">{{ title }}</slot>
         <i
           class="el-collapse-item__arrow el-icon-arrow-right"
           :class="{'is-active': isActive}">
@@ -54,9 +55,20 @@
 
     componentName: 'ElCollapseItem',
 
+    components: { ElCollapseTransition },
+
     mixins: [Emitter],
 
-    components: { ElCollapseTransition },
+    props: {
+      title: String,
+      name: {
+        type: [String, Number],
+        default() {
+          return this._uid;
+        }
+      },
+      disabled: Boolean
+    },
 
     data() {
       return {
@@ -72,17 +84,6 @@
     },
 
     inject: ['collapse'],
-
-    props: {
-      title: String,
-      name: {
-        type: [String, Number],
-        default() {
-          return this._uid;
-        }
-      },
-      disabled: Boolean
-    },
 
     computed: {
       isActive() {

@@ -1,6 +1,6 @@
 {
   "name": "rowinself-ui",
-  "version": "1.0.5",
+  "version": "1.0.8",
   "description": "A Component Library for Vue.js.",
   "main": "lib/rowinself-ui.common.js",
   "files": [
@@ -25,7 +25,8 @@
     "yalc:publish": "yalc publish",
     "yalc:push": "yalc push",
     "yalc:init": "npm run dist && yalc publish",
-    "yalc:watch": "chokidar 'src/**/*' 'packages/**/*' 'packages/theme-chalk/**/*' -i 'packages/**/lib/**' -i 'lib/**' -c \"sleep 5 && npm run dist && yalc push --changed\""
+    "yalc:watch": "chokidar 'src/**/*' 'packages/**/*' 'packages/theme-chalk/**/*' -i 'packages/**/lib/**' -i 'lib/**' -c \"sleep 5 && npm run dist && yalc push --changed\"",
+    "lint": "eslint --ext .js,.vue src packages build --fix"
   },
   "faas": [
     {

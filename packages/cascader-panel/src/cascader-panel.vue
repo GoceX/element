@@ -10,7 +10,7 @@
       v-for="(menu, index) in menus"
       :index="index"
       :key="index"
-      :nodes="menu"></cascader-menu>
+      :nodes="menu"/>
   </div>
 </template>
 
@@ -87,7 +87,7 @@ export default {
   },
 
   props: {
-    value: {},
+    value: { required: true, type: [String, Number, Array, Object] },
     options: Array,
     props: Object,
     border: {

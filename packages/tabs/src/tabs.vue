@@ -13,7 +13,9 @@
       activeName: String,
       closable: Boolean,
       addable: Boolean,
-      value: {},
+      value: {
+        type: [String, Number]
+      },
       editable: Boolean,
       tabPosition: {
         type: String,
@@ -52,6 +54,22 @@
           });
         }
       }
+    },
+  
+    created() {
+      if (!this.currentName) {
+        this.setCurrentName('0');
+      }
+
+      this.$on('tab-nav-update', this.calcPaneInstances.bind(null, true));
+    },
+
+    mounted() {
+      this.calcPaneInstances();
+    },
+
+    updated() {
+      this.calcPaneInstances();
     },
 
     methods: {
@@ -171,21 +189,5 @@
         </div>
       );
     },
-  
-    created() {
-      if (!this.currentName) {
-        this.setCurrentName('0');
-      }
-
-      this.$on('tab-nav-update', this.calcPaneInstances.bind(null, true));
-    },
-
-    mounted() {
-      this.calcPaneInstances();
-    },
-
-    updated() {
-      this.calcPaneInstances();
-    }
   };
 </script>

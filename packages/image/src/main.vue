@@ -14,7 +14,7 @@
       @click="clickHandler"
       :src="src"
       :style="imageStyle"
-      :class="{ 'el-image__inner--center': alignCenter, 'el-image__preview': preview }">
+      :class="{ 'el-image__inner--center': alignCenter, 'el-image__preview': preview }"/>
     <template v-if="preview">
       <image-viewer :z-index="zIndex" :initial-index="imageIndex" v-if="showViewer" :on-close="closeViewer" :url-list="previewSrcList"/>
     </template>
@@ -43,18 +43,18 @@
   export default {
     name: 'ElImage',
 
-    mixins: [Locale],
-    inheritAttrs: false,
-
     components: {
       ImageViewer
     },
+
+    mixins: [Locale],
+    inheritAttrs: false,
 
     props: {
       src: String,
       fit: String,
       lazy: Boolean,
-      scrollContainer: {},
+      scrollContainer: [String, Object],
       previewSrcList: {
         type: Array,
         default: () => []

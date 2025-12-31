@@ -70,18 +70,18 @@
   export default {
     name: 'ElAutocomplete',
 
-    mixins: [Emitter, Focus('input'), Migrating],
-
-    inheritAttrs: false,
-
-    componentName: 'ElAutocomplete',
-
     components: {
       ElInput,
       ElAutocompleteSuggestions
     },
 
     directives: { Clickoutside },
+
+    mixins: [Emitter, Focus('input'), Migrating],
+
+    inheritAttrs: false,
+
+    componentName: 'ElAutocomplete',
 
     props: {
       valueKey: {
@@ -159,6 +159,20 @@
           this.broadcast('ElAutocompleteSuggestions', 'visible', [val, $input.offsetWidth]);
         }
       }
+    },
+    mounted() {
+      this.debouncedGetData = debounce(this.debounce, this.getData);
+      this.$on('item-click', item => {
+        this.select(item);
+      });
+      let $input = this.getInput();
+      $input.setAttribute('role', 'textbox');
+      $input.setAttribute('aria-autocomplete', 'list');
+      $input.setAttribute('aria-controls', 'id');
+      $input.setAttribute('aria-activedescendant', `${this.id}-item-${this.highlightedIndex}`);
+    },
+    beforeDestroy() {
+      this.$refs.suggestions.$destroy();
     },
     methods: {
       getMigratingConfig() {
@@ -267,19 +281,5 @@
         return this.$refs.input.getInput();
       }
     },
-    mounted() {
-      this.debouncedGetData = debounce(this.debounce, this.getData);
-      this.$on('item-click', item => {
-        this.select(item);
-      });
-      let $input = this.getInput();
-      $input.setAttribute('role', 'textbox');
-      $input.setAttribute('aria-autocomplete', 'list');
-      $input.setAttribute('aria-controls', 'id');
-      $input.setAttribute('aria-activedescendant', `${this.id}-item-${this.highlightedIndex}`);
-    },
-    beforeDestroy() {
-      this.$refs.suggestions.$destroy();
-    }
   };
 </script>

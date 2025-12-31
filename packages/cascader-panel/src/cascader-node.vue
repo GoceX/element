@@ -15,7 +15,8 @@
 
     props: {
       node: {
-        required: true
+        required: true,
+        type: Object
       },
       nodeId: String
     },

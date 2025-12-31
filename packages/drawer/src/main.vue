@@ -23,7 +23,7 @@
           ref="drawer"
           role="dialog"
           tabindex="-1"
-          >
+        >
           <header class="el-drawer__header" id="el-drawer__title" v-if="withHeader">
             <slot name="title">
               <span role="heading" :title="title">{{ title }}</span>
@@ -112,6 +112,12 @@ export default {
       default: true
     }
   },
+  data() {
+    return {
+      closed: false,
+      prevActiveElement: null
+    };
+  },
   computed: {
     isHorizontal() {
       return this.direction === 'rtl' || this.direction === 'ltr';
@@ -119,12 +125,6 @@ export default {
     drawerSize() {
       return typeof this.size === 'number' ? `${this.size}px` : this.size;
     }
-  },
-  data() {
-    return {
-      closed: false,
-      prevActiveElement: null
-    };
   },
   watch: {
     visible(val) {
@@ -148,6 +148,21 @@ export default {
           }
         });
       }
+    }
+  },
+  mounted() {
+    if (this.visible) {
+      this.rendered = true;
+      this.open();
+      if (this.appendToBody) {
+        document.body.appendChild(this.$el);
+      }
+    }
+  },
+  destroyed() {
+    // if appendToBody is true, remove DOM node after destroy
+    if (this.appendToBody && this.$el && this.$el.parentNode) {
+      this.$el.parentNode.removeChild(this.$el);
     }
   },
   methods: {
@@ -186,20 +201,5 @@ export default {
       this.closeDrawer();
     }
   },
-  mounted() {
-    if (this.visible) {
-      this.rendered = true;
-      this.open();
-      if (this.appendToBody) {
-        document.body.appendChild(this.$el);
-      }
-    }
-  },
-  destroyed() {
-    // if appendToBody is true, remove DOM node after destroy
-    if (this.appendToBody && this.$el && this.$el.parentNode) {
-      this.$el.parentNode.removeChild(this.$el);
-    }
-  }
 };
 </script>

@@ -5,9 +5,17 @@
     - label-position / label-width / size / disabled 均透传外部 props
     - 回车提交行为由 handleEnterSubmit 统一处理
   -->
-  <el-form ref="formRef" :class="['el-basic-form']" :model="formModel" :rules="formRules"
-    :label-position="labelAlign || labelPosition" :label-width="normalizedLabelWidth" :inline="inline" :size="size"
-    :disabled="disabled" @keydown.native.enter.prevent="handleEnterSubmit">
+  <el-form 
+    ref="formRef" 
+    :class="['el-basic-form']" 
+    :model="formModel" 
+    :rules="formRules"
+    :label-position="labelAlign || labelPosition" 
+    :label-width="normalizedLabelWidth" 
+    :inline="inline" 
+    :size="size"
+    :disabled="disabled" 
+    @keydown.native.enter.prevent="handleEnterSubmit">
 
     <!--
       外层行容器：
@@ -27,13 +35,17 @@
           - 可选显示分组标题 sectionsTitle
           - schema.sectionsStyle 控制分组整体背景/圆角等样式
         -->
-        <el-col v-if="schema && schema.sections && schema.sections.length" :span="24"
+        <el-col 
+          v-if="schema && schema.sections && schema.sections.length" 
+          :span="24"
           :key="groupKey(schema, idx)">
           <RenderVNode v-if="typeof schema.sectionsTitle === 'function'" :render-fn="schema.sectionsTitle" />
           <el-divider v-else-if="schema.sectionsTitle" content-position="left">
             <template>{{ schema.sectionsTitle }}</template>
           </el-divider>
-          <el-row :gutter="28" :style="{ ...(schema.sectionsStyle || {}), marginLeft: '0px', marginRight: '0px' }"
+          <el-row 
+            :gutter="28" 
+            :style="{ ...(schema.sectionsStyle || {}), marginLeft: '0px', marginRight: '0px' }"
             :class="`el-basic-form__label-${labelAlign}`">
             <!--
               遍历分组内部的 section：
@@ -46,8 +58,11 @@
                 - 再次占满一整行(span=24)
                 - section.sectionsStyle 控制该块的背景/圆角
               -->
-              <el-col v-if="section && section.sections && section.sections.length" :span="24"
-                :key="groupKey(section, sIdx)" :style="section.sectionsStyle">
+              <el-col 
+                v-if="section && section.sections && section.sections.length" 
+                :span="24"
+                :key="groupKey(section, sIdx)" 
+                :style="section.sectionsStyle">
                 <el-divider v-if="section.sectionsTitle" content-position="left">
                   <RenderVNode v-if="typeof section.sectionsTitle === 'function'" :render-fn="section.sectionsTitle" />
                   <template v-else>{{ section.sectionsTitle }}</template>
@@ -64,13 +79,17 @@
                       - buildSectionItemSchema 负责合并 labelWidth/required/colProps 等继承属性
                       - 实际渲染完全复用 ElBasicFormItem 的能力
                     -->
-                    <ElBasicFormItem v-for="(sub, subIdx) in row"
+                    <ElBasicFormItem 
+                      v-for="(sub, subIdx) in row"
                       :key="sub && sub.field ? sub.field : subIdx"
-                      :schema="buildSectionItemSchema(sub, section, schema)" :form-model="formModel"
+                      :schema="buildSectionItemSchema(sub, section, schema)" 
+                      :form-model="formModel"
                       :global-auto-set-place-holder="computedAutoSetPlaceHolder"
                       :global-auto-set-clearable="computedAutoSetClearable"
-                      :global-rules-message-join-label="computedRulesMessageJoinLabel" :global-size="size"
-                      :global-disabled="disabled" :table-action="tableAction"
+                      :global-rules-message-join-label="computedRulesMessageJoinLabel" 
+                      :global-size="size"
+                      :global-disabled="disabled" 
+                      :table-action="tableAction"
                       :form-action-type="computedFormActionType" />
                   </el-row>
                 </template>
@@ -79,13 +98,17 @@
                   - 直接将每个 sub 作为一列 ElBasicFormItem 渲染
                 -->
                 <template v-else>
-                  <ElBasicFormItem v-for="(sub, subIdx) in section.sections"
+                  <ElBasicFormItem 
+                    v-for="(sub, subIdx) in section.sections"
                     :key="sub && sub.field ? sub.field : subIdx"
-                    :schema="buildSectionItemSchema(sub, section, schema)" :form-model="formModel"
+                    :schema="buildSectionItemSchema(sub, section, schema)" 
+                    :form-model="formModel"
                     :global-auto-set-place-holder="computedAutoSetPlaceHolder"
                     :global-auto-set-clearable="computedAutoSetClearable"
-                    :global-rules-message-join-label="computedRulesMessageJoinLabel" :global-size="size"
-                    :global-disabled="disabled" :table-action="tableAction"
+                    :global-rules-message-join-label="computedRulesMessageJoinLabel" 
+                    :global-size="size"
+                    :global-disabled="disabled" 
+                    :table-action="tableAction"
                     :form-action-type="computedFormActionType" />
                 </template>
               </el-col>
@@ -94,12 +117,17 @@
                 - 通过 buildSectionItemSchema 从分组/根 schema 继承属性
                 - 然后复用 ElBasicFormItem 渲染
               -->
-              <ElBasicFormItem v-else :key="section && section.field ? section.field : sIdx"
-                :schema="buildSectionItemSchema(section, null, schema)" :form-model="formModel"
+              <ElBasicFormItem 
+                v-else 
+                :key="section && section.field ? section.field : sIdx"
+                :schema="buildSectionItemSchema(section, null, schema)" 
+                :form-model="formModel"
                 :global-auto-set-place-holder="computedAutoSetPlaceHolder"
                 :global-auto-set-clearable="computedAutoSetClearable"
-                :global-rules-message-join-label="computedRulesMessageJoinLabel" :global-size="size"
-                :global-disabled="disabled" :table-action="tableAction"
+                :global-rules-message-join-label="computedRulesMessageJoinLabel" 
+                :global-size="size"
+                :global-disabled="disabled" 
+                :table-action="tableAction"
                 :form-action-type="computedFormActionType" />
             </template>
           </el-row>
@@ -109,11 +137,17 @@
           非分组模式：schema 直接是一个字段配置
           - 完全复用 ElBasicFormItem 的渲染逻辑
         -->
-        <ElBasicFormItem v-else :key="schema && schema.field ? schema.field : idx" :schema="schema"
-          :form-model="formModel" :global-auto-set-place-holder="computedAutoSetPlaceHolder"
+        <ElBasicFormItem 
+          v-else 
+          :key="schema && schema.field ? schema.field : idx" 
+          :schema="schema"
+          :form-model="formModel" 
+          :global-auto-set-place-holder="computedAutoSetPlaceHolder"
           :global-auto-set-clearable="computedAutoSetClearable"
-          :global-rules-message-join-label="computedRulesMessageJoinLabel" :global-size="size"
-          :global-disabled="disabled" :table-action="tableAction"
+          :global-rules-message-join-label="computedRulesMessageJoinLabel" 
+          :global-size="size"
+          :global-disabled="disabled" 
+          :table-action="tableAction"
           :form-action-type="computedFormActionType" />
       </template>
 
@@ -122,15 +156,24 @@
         - 包含提交/重置/高级展开按钮
         - 所有配置项均来自 basic-form-runtime-sections 的计算属性
       -->
-      <BasicFormAction v-if="showActionButtonGroup" :action-col-options="computedActionColOptions"
-        :show-submit-button="computedShowSubmitButton" :show-reset-button="computedShowResetButton"
-        :submit-button-options="computedSubmitButtonOptions" :reset-button-options="computedResetButtonOptions"
-        :submit-button-text="computedSubmitButtonText" :reset-button-text="computedResetButtonText"
-        :action-button="computedActionCustomButtons" :show-advanced-button="computedShowAdvancedButton"
-        :advanced-open="advancedOpen" :table-action="tableAction" :on-submit="submit" :on-reset="reset"
+      <BasicFormAction 
+        v-if="showActionButtonGroup" 
+        :action-col-options="computedActionColOptions"
+        :show-submit-button="computedShowSubmitButton" 
+        :show-reset-button="computedShowResetButton"
+        :submit-button-options="computedSubmitButtonOptions" 
+        :reset-button-options="computedResetButtonOptions"
+        :submit-button-text="computedSubmitButtonText" 
+        :reset-button-text="computedResetButtonText"
+        :action-button="computedActionCustomButtons" 
+        :show-advanced-button="computedShowAdvancedButton"
+        :advanced-open="advancedOpen" 
+        :table-action="tableAction" 
+        :on-submit="submit" 
+        :on-reset="reset"
         :on-toggle-advanced="toggleAdvanced">
         <template slot="action">
-          <slot name="action" />
+          <slot name="action" ></slot>
         </template>
       </BasicFormAction>
     </el-row>

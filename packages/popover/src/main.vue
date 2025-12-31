@@ -51,10 +51,15 @@ export default {
     title: String,
     disabled: Boolean,
     content: String,
-    reference: {},
+    reference: {
+      type: [Object, Element]
+    },
     popperClass: String,
-    width: {},
+    width: {
+      type: [String, Number]
+    },
     visibleArrow: {
+      type: Boolean,
       default: true
     },
     arrowOffset: {
@@ -144,6 +149,21 @@ export default {
     this.cleanup();
   },
 
+  destroyed() {
+    const reference = this.reference;
+
+    off(reference, 'click', this.doToggle);
+    off(reference, 'mouseup', this.doClose);
+    off(reference, 'mousedown', this.doShow);
+    off(reference, 'focusin', this.doShow);
+    off(reference, 'focusout', this.doClose);
+    off(reference, 'mousedown', this.doShow);
+    off(reference, 'mouseup', this.doClose);
+    off(reference, 'mouseleave', this.handleMouseLeave);
+    off(reference, 'mouseenter', this.handleMouseEnter);
+    off(document, 'click', this.handleDocumentClick);
+  },
+
   methods: {
     doToggle() {
       this.showPopper = !this.showPopper;
@@ -218,20 +238,5 @@ export default {
       }
     }
   },
-
-  destroyed() {
-    const reference = this.reference;
-
-    off(reference, 'click', this.doToggle);
-    off(reference, 'mouseup', this.doClose);
-    off(reference, 'mousedown', this.doShow);
-    off(reference, 'focusin', this.doShow);
-    off(reference, 'focusout', this.doClose);
-    off(reference, 'mousedown', this.doShow);
-    off(reference, 'mouseup', this.doClose);
-    off(reference, 'mouseleave', this.handleMouseLeave);
-    off(reference, 'mouseenter', this.handleMouseEnter);
-    off(document, 'click', this.handleDocumentClick);
-  }
 };
 </script>

@@ -2,7 +2,8 @@
   <li class="el-timeline-item">
     <div class="el-timeline-item__tail"></div>
 
-    <div v-if="!$slots.dot"
+    <div 
+      v-if="!$slots.dot"
       class="el-timeline-item__node"
       :class="[
         `el-timeline-item__node--${size || ''}`,
@@ -12,7 +13,8 @@
         backgroundColor: color
       }"
     >
-      <i v-if="icon"
+      <i 
+        v-if="icon"
         class="el-timeline-item__icon"
         :class="icon"
       ></i>
@@ -22,18 +24,20 @@
     </div>
 
     <div class="el-timeline-item__wrapper">
-      <div v-if="!hideTimestamp && placement === 'top'"
+      <div 
+        v-if="!hideTimestamp && placement === 'top'"
         class="el-timeline-item__timestamp is-top">
-        {{timestamp}}
+        {{ timestamp }}
       </div>
 
       <div class="el-timeline-item__content">
         <slot></slot>
       </div>
 
-      <div v-if="!hideTimestamp && placement === 'bottom'"
+      <div 
+        v-if="!hideTimestamp && placement === 'bottom'"
         class="el-timeline-item__timestamp is-bottom">
-        {{timestamp}}
+        {{ timestamp }}
       </div>
     </div>
   </li>

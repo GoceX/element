@@ -7,43 +7,6 @@
   export default {
     name: 'ElMenu',
 
-    render (h) {
-      const component = (
-        <ul
-          role="menubar"
-          key={ +this.collapse }
-          style={{ backgroundColor: this.backgroundColor || '' }}
-          class={{
-            'el-menu--horizontal': this.mode === 'horizontal',
-            'el-menu--collapse': this.collapse,
-            "el-menu": true
-          }}
-        >
-          { this.$slots.default }
-        </ul>
-      );
-
-      if (this.collapseTransition) {
-        return (
-          <el-menu-collapse-transition>
-            { component }
-          </el-menu-collapse-transition>
-        );
-      } else {
-        return component;
-      }
-    },
-
-    componentName: 'ElMenu',
-
-    mixins: [emitter, Migrating],
-
-    provide() {
-      return {
-        rootMenu: this
-      };
-    },
-
     components: {
       'el-menu-collapse-transition': {
         functional: true,
@@ -96,6 +59,8 @@
         }
       }
     },
+
+    mixins: [emitter, Migrating],
 
     props: {
       mode: {
@@ -156,6 +121,15 @@
         if (value) this.openedMenus = [];
         this.broadcast('ElSubmenu', 'toggle-collapse', value);
       }
+    },
+    mounted() {
+      this.initOpenedMenu();
+      this.$on('item-click', this.handleItemClick);
+      this.$on('submenu-click', this.handleSubmenuClick);
+      if (this.mode === 'horizontal') {
+        new Menubar(this.$el); // eslint-disable-line
+      }
+      this.$watch('items', this.updateActiveIndex);
     },
     methods: {
       updateActiveIndex(val) {
@@ -312,14 +286,40 @@
         this.closeMenu(index);
       }
     },
-    mounted() {
-      this.initOpenedMenu();
-      this.$on('item-click', this.handleItemClick);
-      this.$on('submenu-click', this.handleSubmenuClick);
-      if (this.mode === 'horizontal') {
-        new Menubar(this.$el); // eslint-disable-line
+
+    render (h) {
+      const component = (
+        <ul
+          role="menubar"
+          key={ +this.collapse }
+          style={{ backgroundColor: this.backgroundColor || '' }}
+          class={{
+            'el-menu--horizontal': this.mode === 'horizontal',
+            'el-menu--collapse': this.collapse,
+            "el-menu": true
+          }}
+        >
+          { this.$slots.default }
+        </ul>
+      );
+
+      if (this.collapseTransition) {
+        return (
+          <el-menu-collapse-transition>
+            { component }
+          </el-menu-collapse-transition>
+        );
+      } else {
+        return component;
       }
-      this.$watch('items', this.updateActiveIndex);
-    }
+    },
+
+    componentName: 'ElMenu',
+
+    provide() {
+      return {
+        rootMenu: this
+      };
+    },
   };
 </script>

@@ -48,14 +48,6 @@
       }
     },
 
-    data() {
-      return {
-        pointerAtLeftHalf: true,
-        currentValue: this.value,
-        hoverIndex: -1
-      };
-    },
-
     props: {
       value: {
         type: Number,
@@ -131,6 +123,14 @@
         type: String,
         default: '{value}'
       }
+    },
+
+    data() {
+      return {
+        pointerAtLeftHalf: true,
+        currentValue: this.value,
+        hoverIndex: -1
+      };
     },
 
     computed: {
@@ -222,6 +222,12 @@
       value(val) {
         this.currentValue = val;
         this.pointerAtLeftHalf = this.value !== Math.floor(this.value);
+      }
+    },
+
+    created() {
+      if (!this.value) {
+        this.$emit('input', 0);
       }
     },
 
@@ -338,11 +344,5 @@
         this.hoverIndex = -1;
       }
     },
-
-    created() {
-      if (!this.value) {
-        this.$emit('input', 0);
-      }
-    }
   };
 </script>

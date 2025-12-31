@@ -1,7 +1,7 @@
 <template>
   <div class="el-empty">
     <div class="el-empty__image" :style="imageStyle">
-      <img v-if="image" :src="image" ondragstart="return false">
+      <img v-if="image" :src="image" ondragstart="return false"/>
       <slot v-else name="image">
         <img-empty />
       </slot>

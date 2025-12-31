@@ -22,7 +22,10 @@
     mixins: [Emitter],
 
     props: {
-      command: {},
+      command: {
+        type: [String, Number, Object],
+        default: () => {}
+      },
       disabled: Boolean,
       divided: Boolean,
       icon: String

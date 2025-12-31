@@ -16,7 +16,8 @@
         </el-scrollbar>
       </div>
       <div class="el-table-filter__bottom">
-        <button @click="handleConfirm"
+        <button 
+          @click="handleConfirm"
           :class="{ 'is-disabled': filteredValue.length === 0 }"
           :disabled="filteredValue.length === 0">{{ t('el.table.confirmFilter') }}</button>
         <button @click="handleReset">{{ t('el.table.resetFilter') }}</button>
@@ -28,15 +29,17 @@
       v-clickoutside="handleOutsideClick"
       v-show="showPopper">
       <ul class="el-table-filter__list">
-        <li class="el-table-filter__list-item"
-            :class="{ 'is-active': filterValue === undefined || filterValue === null }"
-            @click="handleSelect(null)">{{ t('el.table.clearFilter') }}</li>
-        <li class="el-table-filter__list-item"
-            v-for="filter in filters"
-            :label="filter.value"
-            :key="filter.value"
-            :class="{ 'is-active': isActive(filter) }"
-            @click="handleSelect(filter.value)" >{{ filter.text }}</li>
+        <li 
+          class="el-table-filter__list-item"
+          :class="{ 'is-active': filterValue === undefined || filterValue === null }"
+          @click="handleSelect(null)">{{ t('el.table.clearFilter') }}</li>
+        <li 
+          class="el-table-filter__list-item"
+          v-for="filter in filters"
+          :label="filter.value"
+          :key="filter.value"
+          :class="{ 'is-active': isActive(filter) }"
+          @click="handleSelect(filter.value)" >{{ filter.text }}</li>
       </ul>
     </div>
   </transition>
@@ -55,8 +58,6 @@
   export default {
     name: 'ElTableFilterPanel',
 
-    mixins: [Popper, Locale],
-
     directives: {
       Clickoutside
     },
@@ -67,53 +68,12 @@
       ElScrollbar
     },
 
+    mixins: [Popper, Locale],
+
     props: {
       placement: {
         type: String,
         default: 'bottom-end'
-      }
-    },
-
-    methods: {
-      isActive(filter) {
-        return filter.value === this.filterValue;
-      },
-
-      handleOutsideClick() {
-        setTimeout(() => {
-          this.showPopper = false;
-        }, 16);
-      },
-
-      handleConfirm() {
-        this.confirmFilter(this.filteredValue);
-        this.handleOutsideClick();
-      },
-
-      handleReset() {
-        this.filteredValue = [];
-        this.confirmFilter(this.filteredValue);
-        this.handleOutsideClick();
-      },
-
-      handleSelect(filterValue) {
-        this.filterValue = filterValue;
-
-        if ((typeof filterValue !== 'undefined') && (filterValue !== null)) {
-          this.confirmFilter(this.filteredValue);
-        } else {
-          this.confirmFilter([]);
-        }
-
-        this.handleOutsideClick();
-      },
-
-      confirmFilter(filteredValue) {
-        this.table.store.commit('filterChange', {
-          column: this.column,
-          values: filteredValue
-        });
-        this.table.store.updateAllSelected();
       }
     },
 
@@ -166,6 +126,13 @@
         return true;
       }
     },
+    watch: {
+      showPopper(val) {
+        if (val === true && parseInt(this.popperJS._popper.style.zIndex, 10) < PopupManager.zIndex) {
+          this.popperJS._popper.style.zIndex = PopupManager.nextZIndex();
+        }
+      }
+    },
 
     mounted() {
       this.popperElm = this.$el;
@@ -183,12 +150,48 @@
         }
       });
     },
-    watch: {
-      showPopper(val) {
-        if (val === true && parseInt(this.popperJS._popper.style.zIndex, 10) < PopupManager.zIndex) {
-          this.popperJS._popper.style.zIndex = PopupManager.nextZIndex();
+
+    methods: {
+      isActive(filter) {
+        return filter.value === this.filterValue;
+      },
+
+      handleOutsideClick() {
+        setTimeout(() => {
+          this.showPopper = false;
+        }, 16);
+      },
+
+      handleConfirm() {
+        this.confirmFilter(this.filteredValue);
+        this.handleOutsideClick();
+      },
+
+      handleReset() {
+        this.filteredValue = [];
+        this.confirmFilter(this.filteredValue);
+        this.handleOutsideClick();
+      },
+
+      handleSelect(filterValue) {
+        this.filterValue = filterValue;
+
+        if ((typeof filterValue !== 'undefined') && (filterValue !== null)) {
+          this.confirmFilter(this.filteredValue);
+        } else {
+          this.confirmFilter([]);
         }
+
+        this.handleOutsideClick();
+      },
+
+      confirmFilter(filteredValue) {
+        this.table.store.commit('filterChange', {
+          column: this.column,
+          values: filteredValue
+        });
+        this.table.store.updateAllSelected();
       }
-    }
+    },
   };
 </script>

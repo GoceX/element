@@ -8,7 +8,7 @@
       'selected': itemSelected,
       'is-disabled': disabled || groupDisabled || limitReached,
       'hover': hover
-    }">
+  }">
     <slot>
       <span>{{ currentLabel }}</span>
     </slot>
@@ -20,9 +20,9 @@
   import { getValueByPath, escapeRegexpString } from 'rowinself-ui/src/utils/util';
 
   export default {
-    mixins: [Emitter],
 
     name: 'ElOption',
+    mixins: [Emitter],
 
     componentName: 'ElOption',
 
@@ -30,7 +30,8 @@
 
     props: {
       value: {
-        required: true
+        required: true,
+        type: [String, Number, Object, Boolean]
       },
       label: [String, Number],
       created: Boolean,
@@ -97,6 +98,29 @@
       }
     },
 
+    created() {
+      this.select.options.push(this);
+      this.select.cachedOptions.push(this);
+      this.select.optionsCount++;
+      this.select.filteredOptionsCount++;
+
+      this.$on('queryChange', this.queryChange);
+      this.$on('handleGroupDisabled', this.handleGroupDisabled);
+    },
+
+    beforeDestroy() {
+      const { selected, multiple } = this.select;
+      let selectedOptions = multiple ? selected : [selected];
+      let index = this.select.cachedOptions.indexOf(this);
+      let selectedIndex = selectedOptions.indexOf(this);
+
+      // if option is not selected, remove it from cache
+      if (index > -1 && selectedIndex < 0) {
+        this.select.cachedOptions.splice(index, 1);
+      }
+      this.select.onOptionDestroy(this.select.options.indexOf(this));
+    },
+
     methods: {
       isEqual(a, b) {
         if (!this.isObject) {
@@ -141,28 +165,5 @@
         }
       }
     },
-
-    created() {
-      this.select.options.push(this);
-      this.select.cachedOptions.push(this);
-      this.select.optionsCount++;
-      this.select.filteredOptionsCount++;
-
-      this.$on('queryChange', this.queryChange);
-      this.$on('handleGroupDisabled', this.handleGroupDisabled);
-    },
-
-    beforeDestroy() {
-      const { selected, multiple } = this.select;
-      let selectedOptions = multiple ? selected : [selected];
-      let index = this.select.cachedOptions.indexOf(this);
-      let selectedIndex = selectedOptions.indexOf(this);
-
-      // if option is not selected, remove it from cache
-      if (index > -1 && selectedIndex < 0) {
-        this.select.cachedOptions.splice(index, 1);
-      }
-      this.select.onOptionDestroy(this.select.options.indexOf(this));
-    }
   };
 </script>

@@ -12,13 +12,13 @@
           class="el-image-viewer__btn el-image-viewer__prev"
           :class="{ 'is-disabled': !infinite && isFirst }"
           @click="prev">
-          <i class="el-icon-arrow-left"/>
+          <i class="el-icon-arrow-left"></i>
         </span>
         <span
           class="el-image-viewer__btn el-image-viewer__next"
           :class="{ 'is-disabled': !infinite && isLast }"
           @click="next">
-          <i class="el-icon-arrow-right"/>
+          <i class="el-icon-arrow-right"></i>
         </span>
       </template>
       <!-- ACTIONS -->
@@ -45,7 +45,7 @@
           :style="imgStyle"
           @load="handleImgLoad"
           @error="handleImgError"
-          @mousedown="handleMouseDown">
+          @mousedown="handleMouseDown"/>
       </div>
     </div>
   </transition>
@@ -70,7 +70,7 @@ const Mode = {
 const mousewheelEventName = isFirefox() ? 'DOMMouseScroll' : 'mousewheel';
 
 export default {
-  name: 'elImageViewer',
+  name: 'ElImageViewer',
 
   props: {
     urlList: {
@@ -164,6 +164,21 @@ export default {
           this.loading = true;
         }
       });
+    }
+  },
+  mounted() {
+    this.deviceSupportInstall();
+    if (this.appendToBody) {
+      document.body.appendChild(this.$el);
+    }
+    // add tabindex then wrapper can be focusable via Javascript
+    // focus wrapper so arrow key can't cause inner scroll behavior underneath
+    this.$refs['el-image-viewer__wrapper'].focus();
+  },
+  destroyed() {
+    // if appendToBody is true, remove DOM node after destroy
+    if (this.appendToBody && this.$el && this.$el.parentNode) {
+      this.$el.parentNode.removeChild(this.$el);
     }
   },
   methods: {
@@ -311,20 +326,5 @@ export default {
       transform.enableTransition = enableTransition;
     }
   },
-  mounted() {
-    this.deviceSupportInstall();
-    if (this.appendToBody) {
-      document.body.appendChild(this.$el);
-    }
-    // add tabindex then wrapper can be focusable via Javascript
-    // focus wrapper so arrow key can't cause inner scroll behavior underneath
-    this.$refs['el-image-viewer__wrapper'].focus();
-  },
-  destroyed() {
-    // if appendToBody is true, remove DOM node after destroy
-    if (this.appendToBody && this.$el && this.$el.parentNode) {
-      this.$el.parentNode.removeChild(this.$el);
-    }
-  }
 };
 </script>

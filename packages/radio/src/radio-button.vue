@@ -25,13 +25,13 @@
       @focus="focus = true"
       @blur="focus = false"
       autocomplete="off"
-    >
+    />
     <span
       class="el-radio-button__inner"
       :style="value === label ? activeStyle : null"
       @keydown.stop>
       <slot></slot>
-      <template v-if="!$slots.default">{{label}}</template>
+      <template v-if="!$slots.default">{{ label }}</template>
     </span>
   </label>
 </template>
@@ -53,7 +53,10 @@
     },
 
     props: {
-      label: {},
+      label: {
+        required: true,
+        type: [String, Number, Boolean]
+      },
       disabled: Boolean,
       name: String
     },

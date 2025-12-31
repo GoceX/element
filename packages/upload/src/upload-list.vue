@@ -22,16 +22,18 @@
         <img
           class="el-upload-list__item-thumbnail"
           v-if="file.status !== 'uploading' && ['picture-card', 'picture'].indexOf(listType) > -1"
-          :src="file.url" alt=""
-        >
+          :src="file.url" 
+          alt=""
+        />
         <a class="el-upload-list__item-name" @click="handleClick(file)">
-          <i class="el-icon-document"></i>{{file.name}}
+          <i class="el-icon-document"></i>{{ file.name }}
         </a>
         <label class="el-upload-list__item-status-label">
-          <i :class="{
-            'el-icon-upload-success': true,
-            'el-icon-circle-check': listType === 'text',
-            'el-icon-check': ['picture-card', 'picture'].indexOf(listType) > -1
+          <i 
+            :class="{
+              'el-icon-upload-success': true,
+              'el-icon-circle-check': listType === 'text',
+              'el-icon-check': ['picture-card', 'picture'].indexOf(listType) > -1
           }"></i>
         </label>
         <i class="el-icon-close" v-if="!disabled" @click="$emit('remove', file)"></i>
@@ -40,8 +42,7 @@
           v-if="file.status === 'uploading'"
           :type="listType === 'picture-card' ? 'circle' : 'line'"
           :stroke-width="listType === 'picture-card' ? 6 : 2"
-          :percentage="parsePercentage(file.percentage)">
-        </el-progress>
+          :percentage="parsePercentage(file.percentage)"/>
         <span class="el-upload-list__item-actions" v-if="listType === 'picture-card'">
           <span
             class="el-upload-list__item-preview"
@@ -69,15 +70,9 @@
   export default {
 
     name: 'ElUploadList',
+    components: { ElProgress },
 
     mixins: [Locale],
-
-    data() {
-      return {
-        focusing: false
-      };
-    },
-    components: { ElProgress },
 
     props: {
       files: {
@@ -92,6 +87,12 @@
       },
       handlePreview: Function,
       listType: String
+    },
+
+    data() {
+      return {
+        focusing: false
+      };
     },
     methods: {
       parsePercentage(val) {

@@ -9,7 +9,8 @@
     ]"
     :id="id"
   >
-    <span class="el-checkbox__input"
+    <span 
+      class="el-checkbox__input"
       :class="{
         'is-disabled': isDisabled,
         'is-checked': isChecked,
@@ -33,7 +34,7 @@
         v-model="model"
         @change="handleChange"
         @focus="focus = true"
-        @blur="focus = false">
+        @blur="focus = false"/>
       <input
         v-else
         class="el-checkbox__original"
@@ -45,11 +46,11 @@
         v-model="model"
         @change="handleChange"
         @focus="focus = true"
-        @blur="focus = false">
+        @blur="focus = false"/>
     </span>
     <span class="el-checkbox__label" v-if="$slots.default || label">
       <slot></slot>
-      <template v-if="!$slots.default">{{label}}</template>
+      <template v-if="!$slots.default">{{ label }}</template>
     </span>
   </label>
 </template>
@@ -72,6 +73,21 @@
 
     componentName: 'ElCheckbox',
 
+    props: {
+      value: [String, Number, Boolean, Object],
+      label: [String, Number, Boolean, Object],
+      indeterminate: Boolean,
+      disabled: Boolean,
+      checked: Boolean,
+      name: String,
+      trueLabel: [String, Number],
+      falseLabel: [String, Number],
+      id: String, /* 当indeterminate为真时，为controls提供相关连的checkbox的id，表明元素间的控制关系*/
+      controls: String, /* 当indeterminate为真时，为controls提供相关连的checkbox的id，表明元素间的控制关系*/
+      border: Boolean,
+      size: String
+    },
+
     data() {
       return {
         selfModel: false,
@@ -91,12 +107,12 @@
         set(val) {
           if (this.isGroup) {
             this.isLimitExceeded = false;
-            (this._checkboxGroup.min !== undefined &&
-              val.length < this._checkboxGroup.min &&
+            (this.checkboxGroup.min !== undefined &&
+              val.length < this.checkboxGroup.min &&
               (this.isLimitExceeded = true));
 
-            (this._checkboxGroup.max !== undefined &&
-              val.length > this._checkboxGroup.max &&
+            (this.checkboxGroup.max !== undefined &&
+              val.length > this.checkboxGroup.max &&
               (this.isLimitExceeded = true));
 
             this.isLimitExceeded === false &&
@@ -118,26 +134,29 @@
         }
       },
 
-      isGroup() {
+      checkboxGroup() {
         let parent = this.$parent;
         while (parent) {
           if (parent.$options.componentName !== 'ElCheckboxGroup') {
             parent = parent.$parent;
           } else {
-            this._checkboxGroup = parent;
-            return true;
+            return parent;
           }
         }
-        return false;
+        return null;
+      },
+
+      isGroup() {
+        return !!this.checkboxGroup;
       },
 
       store() {
-        return this._checkboxGroup ? this._checkboxGroup.value : this.value;
+        return this.checkboxGroup ? this.checkboxGroup.value : this.value;
       },
 
       /* used to make the isDisabled judgment under max/min props */
       isLimitDisabled() {
-        const { max, min } = this._checkboxGroup;
+        const { max, min } = this.checkboxGroup;
         return !!(max || min) &&
           (this.model.length >= max && !this.isChecked) ||
           (this.model.length <= min && this.isChecked);
@@ -145,7 +164,7 @@
 
       isDisabled() {
         return this.isGroup
-          ? this._checkboxGroup.disabled || this.disabled || (this.elForm || {}).disabled || this.isLimitDisabled
+          ? this.checkboxGroup.disabled || this.disabled || (this.elForm || {}).disabled || this.isLimitDisabled
           : this.disabled || (this.elForm || {}).disabled;
       },
 
@@ -156,24 +175,24 @@
       checkboxSize() {
         const temCheckboxSize = this.size || this._elFormItemSize || (this.$ELEMENT || {}).size;
         return this.isGroup
-          ? this._checkboxGroup.checkboxGroupSize || temCheckboxSize
+          ? this.checkboxGroup.checkboxGroupSize || temCheckboxSize
           : temCheckboxSize;
       }
     },
 
-    props: {
-      value: {},
-      label: {},
-      indeterminate: Boolean,
-      disabled: Boolean,
-      checked: Boolean,
-      name: String,
-      trueLabel: [String, Number],
-      falseLabel: [String, Number],
-      id: String, /* 当indeterminate为真时，为controls提供相关连的checkbox的id，表明元素间的控制关系*/
-      controls: String, /* 当indeterminate为真时，为controls提供相关连的checkbox的id，表明元素间的控制关系*/
-      border: Boolean,
-      size: String
+    watch: {
+      value(value) {
+        this.dispatch('ElFormItem', 'el.form.change', value);
+      }
+    },
+
+    created() {
+      this.checked && this.addToStore();
+    },
+    mounted() { // 为indeterminate元素 添加aria-controls 属性
+      if (this.indeterminate) {
+        this.$el.setAttribute('aria-controls', this.controls);
+      }
     },
 
     methods: {
@@ -203,20 +222,5 @@
         });
       }
     },
-
-    created() {
-      this.checked && this.addToStore();
-    },
-    mounted() { // 为indeterminate元素 添加aria-controls 属性
-      if (this.indeterminate) {
-        this.$el.setAttribute('aria-controls', this.controls);
-      }
-    },
-
-    watch: {
-      value(value) {
-        this.dispatch('ElFormItem', 'el.form.change', value);
-      }
-    }
   };
 </script>

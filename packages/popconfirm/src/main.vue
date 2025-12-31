@@ -4,35 +4,35 @@
     v-model="visible"
     trigger="click"
   >
-  <div :class="['el-popconfirm', customClass]">
-    <p class="el-popconfirm__main">
-    <i
-      v-if="!hideIcon"
-      :class="icon"
-      class="el-popconfirm__icon"
-      :style="{color: iconColor}"
-    ></i>
-      {{title}}
-    </p>
-    <div class="el-popconfirm__action">
-      <el-button 
-        size="mini" 
-        :type="cancelButtonType" 
-        @click="cancel"
-      >
-        {{ displayCancelButtonText }}
-      </el-button>
-      <el-button 
-        size="mini" 
-        :type="confirmButtonType" 
-        @click="confirm"
-      >
-        {{ displayConfirmButtonText }}
-      </el-button>
+    <div :class="['el-popconfirm', customClass]">
+      <p class="el-popconfirm__main">
+        <i
+          v-if="!hideIcon"
+          :class="icon"
+          class="el-popconfirm__icon"
+          :style="{color: iconColor}"
+        ></i>
+        {{ title }}
+      </p>
+      <div class="el-popconfirm__action">
+        <el-button 
+          size="mini" 
+          :type="cancelButtonType" 
+          @click="cancel"
+        >
+          {{ displayCancelButtonText }}
+        </el-button>
+        <el-button 
+          size="mini" 
+          :type="confirmButtonType" 
+          @click="confirm"
+        >
+          {{ displayConfirmButtonText }}
+        </el-button>
+      </div>
     </div>
-  </div>
-  <slot name="reference" slot="reference"></slot>
-</el-popover>
+    <slot name="reference" slot="reference"></slot>
+  </el-popover>
 </template>
 
 <script>
@@ -42,6 +42,10 @@ import {t} from 'rowinself-ui/src/locale';
 
 export default {
   name: 'ElPopconfirm',
+  components: {
+    ElPopover,
+    ElButton
+  },
   props: {
     customClass: {
       type: String,
@@ -76,10 +80,6 @@ export default {
       type: Boolean,
       default: false
     }
-  },
-  components: {
-    ElPopover,
-    ElButton
   },
   data() {
     return {

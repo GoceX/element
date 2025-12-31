@@ -9,13 +9,13 @@ function noop() {}
 export default {
   name: 'ElUpload',
 
-  mixins: [Migrating],
-
   components: {
     ElProgress,
     UploadList,
     Upload
   },
+
+  mixins: [Migrating],
 
   provide() {
     return {
@@ -148,6 +148,14 @@ export default {
     }
   },
 
+  beforeDestroy() {
+    this.uploadFiles.forEach(file => {
+      if (file.url && file.url.indexOf('blob:') === 0) {
+        URL.revokeObjectURL(file.url);
+      }
+    });
+  },
+
   methods: {
     handleStart(rawFile) {
       rawFile.uid = Date.now() + this.tempIndex++;
@@ -255,14 +263,6 @@ export default {
         }
       };
     }
-  },
-
-  beforeDestroy() {
-    this.uploadFiles.forEach(file => {
-      if (file.url && file.url.indexOf('blob:') === 0) {
-        URL.revokeObjectURL(file.url);
-      }
-    });
   },
 
   render(h) {

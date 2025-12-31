@@ -42,24 +42,24 @@
 
     <div v-else ref="trigger" class="el-color-picker__trigger" @click="handleTrigger">
       <span class="el-color-picker__color" :class="{ 'is-alpha': showAlpha }">
-        <span class="el-color-picker__color-inner"
+        <span 
+          class="el-color-picker__color-inner"
           :style="{
             backgroundColor: displayedColor
-          }"></span>
+        }"></span>
         <span class="el-color-picker__empty el-icon-close" v-if="!value && !showPanelColor"></span>
       </span>
       <span class="el-color-picker__icon el-icon-arrow-down" v-show="value || showPanelColor"></span>
     </div>
     <picker-dropdown
-       ref="dropdown"
-       :class="['el-color-picker__panel', popperClass || '']"
-       v-model="showPicker"
-       @pick="confirmValue"
-       @clear="clearValue"
-       :color="color"
-       :show-alpha="showAlpha"
-       :predefine="predefine">
-    </picker-dropdown>
+      ref="dropdown"
+      :class="['el-color-picker__panel', popperClass || '']"
+      v-model="showPicker"
+      @pick="confirmValue"
+      @clear="clearValue"
+      :color="color"
+      :show-alpha="showAlpha"
+      :predefine="predefine"/>
   </div>
 </template>
 
@@ -72,6 +72,13 @@
 
   export default {
     name: 'ElColorPicker',
+
+    directives: { Clickoutside },
+
+    components: {
+      PickerDropdown,
+      ElInput
+    },
 
     mixins: [Emitter],
 
@@ -99,7 +106,20 @@
       }
     },
 
-    directives: { Clickoutside },
+    data() {
+      const color = new Color({
+        enableAlpha: this.showAlpha,
+        format: this.colorFormat
+      });
+
+      return {
+        color,
+        showPicker: false,
+        showPanelColor: false,
+        inputValue: '',
+        inputFocused: false
+      };
+    },
 
     computed: {
       displayedColor() {
@@ -180,6 +200,15 @@
           this.$emit('active-change', val);
         }
       }
+    },
+
+    mounted() {
+      const value = this.value;
+      if (value) {
+        this.color.fromString(value);
+      }
+      this.popperElm = this.$refs.dropdown.$el;
+      if (this.type === 'input') this.inputValue = typeof value === 'string' ? value : '';
     },
 
     methods: {
@@ -275,34 +304,5 @@
           : `rgb(${ r }, ${ g }, ${ b })`;
       }
     },
-
-    mounted() {
-      const value = this.value;
-      if (value) {
-        this.color.fromString(value);
-      }
-      this.popperElm = this.$refs.dropdown.$el;
-      if (this.type === 'input') this.inputValue = typeof value === 'string' ? value : '';
-    },
-
-    data() {
-      const color = new Color({
-        enableAlpha: this.showAlpha,
-        format: this.colorFormat
-      });
-
-      return {
-        color,
-        showPicker: false,
-        showPanelColor: false,
-        inputValue: '',
-        inputFocused: false
-      };
-    },
-
-    components: {
-      PickerDropdown,
-      ElInput
-    }
   };
 </script>

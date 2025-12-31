@@ -7,14 +7,14 @@ import { generateId } from 'rowinself-ui/src/utils/util';
 export default {
   name: 'ElCascaderMenu',
 
-  mixins: [Locale],
-
-  inject: ['panel'],
-
   components: {
     ElScrollbar,
     CascaderNode
   },
+
+  mixins: [Locale],
+
+  inject: ['panel'],
 
   props: {
     nodes: {

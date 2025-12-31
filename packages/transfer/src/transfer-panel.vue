@@ -19,7 +19,8 @@
         @mouseenter.native="inputHover = true"
         @mouseleave.native="inputHover = false"
         v-if="filterable">
-        <i slot="prefix"
+        <i 
+          slot="prefix"
           :class="['el-input__icon', 'el-icon-' + inputIcon]"
           @click="clearQuery"
         ></i>
@@ -35,7 +36,7 @@
           :disabled="item[disabledProp]"
           :key="item[keyProp]"
           v-for="item in filteredData">
-          <option-content :option="item"></option-content>
+          <option-content :option="item"/>
         </el-checkbox>
       </el-checkbox-group>
       <p
@@ -58,11 +59,8 @@
   import Locale from 'rowinself-ui/src/mixins/locale';
 
   export default {
-    mixins: [Locale],
 
     name: 'ElTransferPanel',
-
-    componentName: 'ElTransferPanel',
 
     components: {
       ElCheckboxGroup,
@@ -92,6 +90,9 @@
         }
       }
     },
+    mixins: [Locale],
+
+    componentName: 'ElTransferPanel',
 
     props: {
       data: {
@@ -118,53 +119,6 @@
         inputHover: false,
         checkChangeByUser: true
       };
-    },
-
-    watch: {
-      checked(val, oldVal) {
-        this.updateAllChecked();
-        if (this.checkChangeByUser) {
-          const movedKeys = val.concat(oldVal)
-            .filter(v => val.indexOf(v) === -1 || oldVal.indexOf(v) === -1);
-          this.$emit('checked-change', val, movedKeys);
-        } else {
-          this.$emit('checked-change', val);
-          this.checkChangeByUser = true;
-        }
-      },
-
-      data() {
-        const checked = [];
-        const filteredDataKeys = this.filteredData.map(item => item[this.keyProp]);
-        this.checked.forEach(item => {
-          if (filteredDataKeys.indexOf(item) > -1) {
-            checked.push(item);
-          }
-        });
-        this.checkChangeByUser = false;
-        this.checked = checked;
-      },
-
-      checkableData() {
-        this.updateAllChecked();
-      },
-
-      defaultChecked: {
-        immediate: true,
-        handler(val, oldVal) {
-          if (oldVal && val.length === oldVal.length &&
-            val.every(item => oldVal.indexOf(item) > -1)) return;
-          const checked = [];
-          const checkableDataKeys = this.checkableData.map(item => item[this.keyProp]);
-          val.forEach(item => {
-            if (checkableDataKeys.indexOf(item) > -1) {
-              checked.push(item);
-            }
-          });
-          this.checkChangeByUser = false;
-          this.checked = checked;
-        }
-      }
     },
 
     computed: {
@@ -225,6 +179,53 @@
 
       hasFooter() {
         return !!this.$slots.default;
+      }
+    },
+
+    watch: {
+      checked(val, oldVal) {
+        this.updateAllChecked();
+        if (this.checkChangeByUser) {
+          const movedKeys = val.concat(oldVal)
+            .filter(v => val.indexOf(v) === -1 || oldVal.indexOf(v) === -1);
+          this.$emit('checked-change', val, movedKeys);
+        } else {
+          this.$emit('checked-change', val);
+          this.checkChangeByUser = true;
+        }
+      },
+
+      data() {
+        const checked = [];
+        const filteredDataKeys = this.filteredData.map(item => item[this.keyProp]);
+        this.checked.forEach(item => {
+          if (filteredDataKeys.indexOf(item) > -1) {
+            checked.push(item);
+          }
+        });
+        this.checkChangeByUser = false;
+        this.checked = checked;
+      },
+
+      checkableData() {
+        this.updateAllChecked();
+      },
+
+      defaultChecked: {
+        immediate: true,
+        handler(val, oldVal) {
+          if (oldVal && val.length === oldVal.length &&
+            val.every(item => oldVal.indexOf(item) > -1)) return;
+          const checked = [];
+          const checkableDataKeys = this.checkableData.map(item => item[this.keyProp]);
+          val.forEach(item => {
+            if (checkableDataKeys.indexOf(item) > -1) {
+              checked.push(item);
+            }
+          });
+          this.checkChangeByUser = false;
+          this.checked = checked;
+        }
       }
     },
 

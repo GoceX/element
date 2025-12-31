@@ -29,13 +29,6 @@
 import { isNumber, chain, multiply, padStart, reduce} from 'rowinself-ui/src/utils/lodash';
 export default {
   name: 'ElStatistic',
-  data() {
-    return {
-      disposeValue: '',
-      timeTask: null,
-      REFRESH_INTERVAL: 1000 / 30
-    };
-  },
   props: {
     decimalSeparator: {
       type: String,
@@ -84,8 +77,12 @@ export default {
       default: 1000
     }
   },
-  created() {
-    this.branch();
+  data() {
+    return {
+      disposeValue: '',
+      timeTask: null,
+      REFRESH_INTERVAL: 1000 / 30
+    };
   },
   watch: {
     value: function() {
@@ -97,6 +94,9 @@ export default {
     mulriple() {
       this.dispose();
     }
+  },
+  created() {
+    this.branch();
   },
   methods: {
     branch() {

@@ -7,14 +7,17 @@
       <slot></slot>
     </span>
     <i v-if="separatorClass" class="el-breadcrumb__separator" :class="separatorClass"></i>
-    <span v-else class="el-breadcrumb__separator" role="presentation">{{separator}}</span>
+    <span v-else class="el-breadcrumb__separator" role="presentation">{{ separator }}</span>
   </span>
 </template>
 <script>
   export default {
     name: 'ElBreadcrumbItem',
     props: {
-      to: {},
+      to: {
+        type: [String, Object],
+        default: ''
+      },
       replace: Boolean
     },
     data() {

@@ -46,7 +46,7 @@
               :type="inputType"
               @keydown.enter.native="handleInputEnter"
               :placeholder="inputPlaceholder"
-              ref="input"></el-input>
+              ref="input"/>
             <div class="el-message-box__errormsg" :style="{ visibility: !!editorErrorMessage ? 'visible' : 'hidden' }">{{ editorErrorMessage }}</div>
           </div>
         </div>
@@ -96,13 +96,20 @@
   };
 
   export default {
+
+    components: {
+      ElInput,
+      ElButton
+    },
     mixins: [Popup, Locale],
 
     props: {
       modal: {
+        type: Boolean,
         default: true
       },
       lockScroll: {
+        type: Boolean,
         default: true
       },
       showClose: {
@@ -110,12 +117,15 @@
         default: true
       },
       closeOnClickModal: {
+        type: Boolean,
         default: true
       },
       closeOnPressEscape: {
+        type: Boolean,
         default: true
       },
       closeOnHashChange: {
+        type: Boolean,
         default: true
       },
       center: {
@@ -128,9 +138,38 @@
       }
     },
 
-    components: {
-      ElInput,
-      ElButton
+    data() {
+      return {
+        uid: 1,
+        title: undefined,
+        message: '',
+        type: '',
+        iconClass: '',
+        customClass: '',
+        showInput: false,
+        inputValue: null,
+        inputPlaceholder: '',
+        inputType: 'text',
+        inputPattern: null,
+        inputValidator: null,
+        inputErrorMessage: '',
+        showConfirmButton: true,
+        showCancelButton: false,
+        action: '',
+        confirmButtonText: '',
+        cancelButtonText: '',
+        confirmButtonLoading: false,
+        cancelButtonLoading: false,
+        confirmButtonClass: '',
+        confirmButtonDisabled: false,
+        cancelButtonClass: '',
+        editorErrorMessage: null,
+        callback: null,
+        dangerouslyUseHTMLString: false,
+        focusAfterClosed: null,
+        isOnComposition: false,
+        distinguishCancelAndClose: false
+      };
     },
 
     computed: {
@@ -145,6 +184,62 @@
       cancelButtonClasses() {
         return `${ this.cancelButtonClass }`;
       }
+    },
+
+    watch: {
+      inputValue: {
+        immediate: true,
+        handler(val) {
+          this.$nextTick(_ => {
+            if (this.$type === 'prompt' && val !== null) {
+              this.validate();
+            }
+          });
+        }
+      },
+
+      visible(val) {
+        if (val) {
+          this.uid++;
+          if (this.$type === 'alert' || this.$type === 'confirm') {
+            this.$nextTick(() => {
+              this.$refs.confirm.$el.focus();
+            });
+          }
+          this.focusAfterClosed = document.activeElement;
+          messageBox = new Dialog(this.$el, this.focusAfterClosed, this.getFirstFocus());
+        }
+
+        // prompt
+        if (this.$type !== 'prompt') return;
+        if (val) {
+          setTimeout(() => {
+            if (this.$refs.input && this.$refs.input.$el) {
+              this.getInputElement().focus();
+            }
+          }, 500);
+        } else {
+          this.editorErrorMessage = '';
+          removeClass(this.getInputElement(), 'invalid');
+        }
+      }
+    },
+
+    mounted() {
+      this.$nextTick(() => {
+        if (this.closeOnHashChange) {
+          window.addEventListener('hashchange', this.close);
+        }
+      });
+    },
+
+    beforeDestroy() {
+      if (this.closeOnHashChange) {
+        window.removeEventListener('hashchange', this.close);
+      }
+      setTimeout(() => {
+        messageBox.closeDialog();
+      });
     },
 
     methods: {
@@ -238,95 +333,5 @@
         this.handleAction('close');
       }
     },
-
-    watch: {
-      inputValue: {
-        immediate: true,
-        handler(val) {
-          this.$nextTick(_ => {
-            if (this.$type === 'prompt' && val !== null) {
-              this.validate();
-            }
-          });
-        }
-      },
-
-      visible(val) {
-        if (val) {
-          this.uid++;
-          if (this.$type === 'alert' || this.$type === 'confirm') {
-            this.$nextTick(() => {
-              this.$refs.confirm.$el.focus();
-            });
-          }
-          this.focusAfterClosed = document.activeElement;
-          messageBox = new Dialog(this.$el, this.focusAfterClosed, this.getFirstFocus());
-        }
-
-        // prompt
-        if (this.$type !== 'prompt') return;
-        if (val) {
-          setTimeout(() => {
-            if (this.$refs.input && this.$refs.input.$el) {
-              this.getInputElement().focus();
-            }
-          }, 500);
-        } else {
-          this.editorErrorMessage = '';
-          removeClass(this.getInputElement(), 'invalid');
-        }
-      }
-    },
-
-    mounted() {
-      this.$nextTick(() => {
-        if (this.closeOnHashChange) {
-          window.addEventListener('hashchange', this.close);
-        }
-      });
-    },
-
-    beforeDestroy() {
-      if (this.closeOnHashChange) {
-        window.removeEventListener('hashchange', this.close);
-      }
-      setTimeout(() => {
-        messageBox.closeDialog();
-      });
-    },
-
-    data() {
-      return {
-        uid: 1,
-        title: undefined,
-        message: '',
-        type: '',
-        iconClass: '',
-        customClass: '',
-        showInput: false,
-        inputValue: null,
-        inputPlaceholder: '',
-        inputType: 'text',
-        inputPattern: null,
-        inputValidator: null,
-        inputErrorMessage: '',
-        showConfirmButton: true,
-        showCancelButton: false,
-        action: '',
-        confirmButtonText: '',
-        cancelButtonText: '',
-        confirmButtonLoading: false,
-        cancelButtonLoading: false,
-        confirmButtonClass: '',
-        confirmButtonDisabled: false,
-        cancelButtonClass: '',
-        editorErrorMessage: null,
-        callback: null,
-        dangerouslyUseHTMLString: false,
-        focusAfterClosed: null,
-        isOnComposition: false,
-        distinguishCancelAndClose: false
-      };
-    }
   };
 </script>

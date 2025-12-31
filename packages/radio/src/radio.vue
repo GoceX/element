@@ -14,7 +14,8 @@
     :tabindex="tabIndex"
     @keydown.space.stop.prevent="model = isDisabled ? model : label"
   >
-    <span class="el-radio__input"
+    <span 
+      class="el-radio__input"
       :class="{
         'is-disabled': isDisabled,
         'is-checked': model === label
@@ -35,11 +36,11 @@
         :disabled="isDisabled"
         tabindex="-1"
         autocomplete="off"
-      >
+      />
     </span>
     <span class="el-radio__label" @keydown.stop>
       <slot></slot>
-      <template v-if="!$slots.default">{{label}}</template>
+      <template v-if="!$slots.default">{{ label }}</template>
     </span>
   </label>
 </template>
@@ -64,8 +65,8 @@
     componentName: 'ElRadio',
 
     props: {
-      value: {},
-      label: {},
+      value: [String, Number, Boolean],
+      label: [String, Number, Boolean],
       disabled: Boolean,
       name: String,
       border: Boolean,
@@ -78,21 +79,23 @@
       };
     },
     computed: {
-      isGroup() {
+      radioGroup() {
         let parent = this.$parent;
         while (parent) {
           if (parent.$options.componentName !== 'ElRadioGroup') {
             parent = parent.$parent;
           } else {
-            this._radioGroup = parent;
-            return true;
+            return parent;
           }
         }
-        return false;
+        return null;
+      },
+      isGroup() {
+        return !!this.radioGroup;
       },
       model: {
         get() {
-          return this.isGroup ? this._radioGroup.value : this.value;
+          return this.isGroup ? this.radioGroup.value : this.value;
         },
         set(val) {
           if (this.isGroup) {
@@ -109,12 +112,12 @@
       radioSize() {
         const temRadioSize = this.size || this._elFormItemSize || (this.$ELEMENT || {}).size;
         return this.isGroup
-          ? this._radioGroup.radioGroupSize || temRadioSize
+          ? this.radioGroup.radioGroupSize || temRadioSize
           : temRadioSize;
       },
       isDisabled() {
         return this.isGroup
-          ? this._radioGroup.disabled || this.disabled || (this.elForm || {}).disabled
+          ? this.radioGroup.disabled || this.disabled || (this.elForm || {}).disabled
           : this.disabled || (this.elForm || {}).disabled;
       },
       tabIndex() {

@@ -71,6 +71,13 @@
         }
       }
     },
+    mounted() {
+      this.startTimer();
+      document.addEventListener('keydown', this.keydown);
+    },
+    beforeDestroy() {
+      document.removeEventListener('keydown', this.keydown);
+    },
 
     methods: {
       handleAfterLeave() {
@@ -106,12 +113,5 @@
         }
       }
     },
-    mounted() {
-      this.startTimer();
-      document.addEventListener('keydown', this.keydown);
-    },
-    beforeDestroy() {
-      document.removeEventListener('keydown', this.keydown);
-    }
   };
 </script>

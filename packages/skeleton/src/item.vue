@@ -9,14 +9,14 @@
 
   export default {
     name: 'ElSkeletonItem',
+    components: {
+      [ImgPlaceholder.name]: ImgPlaceholder
+    },
     props: {
       variant: {
         type: String,
         default: 'text'
       }
     },
-    components: {
-      [ImgPlaceholder.name]: ImgPlaceholder
-    }
   };
 </script>

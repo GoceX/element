@@ -11,14 +11,14 @@
 
     componentName: 'ElDropdown',
 
-    mixins: [Emitter, Migrating],
-
     directives: { Clickoutside },
 
     components: {
       ElButton,
       ElButtonGroup
     },
+
+    mixins: [Emitter, Migrating],
 
     provide() {
       return {
@@ -46,6 +46,7 @@
         default: 'bottom-end'
       },
       visibleArrow: {
+        type: Boolean,
         default: true
       },
       showTimeout: {
@@ -85,10 +86,6 @@
       }
     },
 
-    mounted() {
-      this.$on('menu-item-click', this.handleMenuItemClick);
-    },
-
     watch: {
       visible(val) {
         this.broadcast('ElDropdownMenu', 'visible', val);
@@ -104,6 +101,10 @@
           }
         }
       }
+    },
+
+    mounted() {
+      this.$on('menu-item-click', this.handleMenuItemClick);
     },
 
     methods: {

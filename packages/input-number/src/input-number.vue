@@ -7,7 +7,7 @@
       { 'is-disabled': inputNumberDisabled },
       { 'is-without-controls': !controls },
       { 'is-controls-right': controlsAtRight }
-    ]">
+  ]">
     <span
       class="el-input-number__decrease"
       role="button"
@@ -41,8 +41,7 @@
       @blur="handleBlur"
       @focus="handleFocus"
       @input="handleInput"
-      @change="handleInputChange">
-    </el-input>
+      @change="handleInputChange"/>
   </div>
 </template>
 <script>
@@ -52,6 +51,12 @@
 
   export default {
     name: 'ElInputNumber',
+    directives: {
+      repeatClick: RepeatClick
+    },
+    components: {
+      ElInput
+    },
     mixins: [Focus('input')],
     inject: {
       elForm: {
@@ -60,12 +65,6 @@
       elFormItem: {
         default: ''
       }
-    },
-    directives: {
-      repeatClick: RepeatClick
-    },
-    components: {
-      ElInput
     },
     props: {
       step: {
@@ -84,7 +83,7 @@
         type: Number,
         default: -Infinity
       },
-      value: {},
+      value: [Number, String],
       disabled: Boolean,
       size: String,
       controls: {
@@ -110,34 +109,6 @@
         currentValue: 0,
         userInput: null
       };
-    },
-    watch: {
-      value: {
-        immediate: true,
-        handler(value) {
-          let newVal = value === undefined ? value : Number(value);
-          if (newVal !== undefined) {
-            if (isNaN(newVal)) {
-              return;
-            }
-
-            if (this.stepStrictly) {
-              const stepPrecision = this.getPrecision(this.step);
-              const precisionFactor = Math.pow(10, stepPrecision);
-              newVal = Math.round(newVal / this.step) * precisionFactor * this.step / precisionFactor;
-            }
-
-            if (this.precision !== undefined) {
-              newVal = this.toPrecision(newVal, this.precision);
-            }
-          }
-          if (newVal >= this.max) newVal = this.max;
-          if (newVal <= this.min) newVal = this.min;
-          this.currentValue = newVal;
-          this.userInput = null;
-          this.$emit('input', newVal);
-        }
-      }
     },
     computed: {
       minDisabled() {
@@ -191,6 +162,47 @@
 
         return currentValue;
       }
+    },
+    watch: {
+      value: {
+        immediate: true,
+        handler(value) {
+          let newVal = value === undefined ? value : Number(value);
+          if (newVal !== undefined) {
+            if (isNaN(newVal)) {
+              return;
+            }
+
+            if (this.stepStrictly) {
+              const stepPrecision = this.getPrecision(this.step);
+              const precisionFactor = Math.pow(10, stepPrecision);
+              newVal = Math.round(newVal / this.step) * precisionFactor * this.step / precisionFactor;
+            }
+
+            if (this.precision !== undefined) {
+              newVal = this.toPrecision(newVal, this.precision);
+            }
+          }
+          if (newVal >= this.max) newVal = this.max;
+          if (newVal <= this.min) newVal = this.min;
+          this.currentValue = newVal;
+          this.userInput = null;
+          this.$emit('input', newVal);
+        }
+      }
+    },
+    mounted() {
+      let innerInput = this.$refs.input.$refs.input;
+      innerInput.setAttribute('role', 'spinbutton');
+      innerInput.setAttribute('aria-valuemax', this.max);
+      innerInput.setAttribute('aria-valuemin', this.min);
+      innerInput.setAttribute('aria-valuenow', this.currentValue);
+      innerInput.setAttribute('aria-disabled', this.inputNumberDisabled);
+    },
+    updated() {
+      if (!this.$refs || !this.$refs.input) return;
+      const innerInput = this.$refs.input.$refs.input;
+      innerInput.setAttribute('aria-valuenow', this.currentValue);
     },
     methods: {
       toPrecision(num, precision) {
@@ -266,18 +278,5 @@
         this.$refs.input.select();
       }
     },
-    mounted() {
-      let innerInput = this.$refs.input.$refs.input;
-      innerInput.setAttribute('role', 'spinbutton');
-      innerInput.setAttribute('aria-valuemax', this.max);
-      innerInput.setAttribute('aria-valuemin', this.min);
-      innerInput.setAttribute('aria-valuenow', this.currentValue);
-      innerInput.setAttribute('aria-disabled', this.inputNumberDisabled);
-    },
-    updated() {
-      if (!this.$refs || !this.$refs.input) return;
-      const innerInput = this.$refs.input.$refs.input;
-      innerInput.setAttribute('aria-valuenow', this.currentValue);
-    }
   };
 </script>

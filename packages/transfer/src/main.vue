@@ -53,12 +53,12 @@
   export default {
     name: 'ElTransfer',
 
-    mixins: [Emitter, Locale, Migrating],
-
     components: {
       TransferPanel,
       ElButton
     },
+
+    mixins: [Emitter, Locale, Migrating],
 
     props: {
       data: {

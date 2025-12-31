@@ -64,7 +64,7 @@ const webpackConfig = {
       {
         enforce: 'pre',
         test: /\.(vue|jsx?)$/,
-        exclude: /node_modules/,
+        exclude: [/node_modules/, path.resolve(__dirname, '../examples')],
         loader: 'eslint-loader',
         options: {
           cache: true

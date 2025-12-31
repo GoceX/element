@@ -8,8 +8,8 @@
     <div
       v-if="slots().default && props.direction !== 'vertical'"
       :class="['el-divider__text', `is-${props.contentPosition}`]"
-     >
-      <slot />
+    >
+      <slot ></slot>
     </div>
   </div>
 </template>

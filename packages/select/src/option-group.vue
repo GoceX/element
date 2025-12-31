@@ -13,9 +13,9 @@
   import Emitter from 'rowinself-ui/src/mixins/emitter';
 
   export default {
-    mixins: [Emitter],
 
     name: 'ElOptionGroup',
+    mixins: [Emitter],
 
     componentName: 'ElOptionGroup',
 
@@ -39,14 +39,6 @@
       }
     },
 
-    methods: {
-      queryChange() {
-        this.visible = this.$children &&
-          Array.isArray(this.$children) &&
-          this.$children.some(option => option.visible === true);
-      }
-    },
-
     created() {
       this.$on('queryChange', this.queryChange);
     },
@@ -55,6 +47,14 @@
       if (this.disabled) {
         this.broadcast('ElOption', 'handleGroupDisabled', this.disabled);
       }
-    }
+    },
+
+    methods: {
+      queryChange() {
+        this.visible = this.$children &&
+          Array.isArray(this.$children) &&
+          this.$children.some(option => option.visible === true);
+      }
+    },
   };
 </script>

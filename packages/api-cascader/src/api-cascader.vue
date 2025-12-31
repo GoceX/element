@@ -1,5 +1,5 @@
 <template>
-  <el-cascader v-bind="$attrs" v-on="$listeners" :options="items"></el-cascader>
+  <el-cascader v-bind="$attrs" v-on="$listeners" :options="items"/>
 </template>
 
 <script>
@@ -8,8 +8,8 @@ import { getValueByPath } from 'rowinself-ui/src/utils/util';
 
 export default {
   name: 'ElApiCascader',
-  inheritAttrs: false,
   components: { ElCascader: Cascader },
+  inheritAttrs: false,
   props: {
     api: { type: Function, required: true },
     params: { type: Object, default: () => ({}) },

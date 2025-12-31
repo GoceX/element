@@ -2,7 +2,7 @@
   <div
     class="el-tree-node"
     @click.stop="handleClick"
-    @contextmenu="($event) => this.handleContextMenu($event)"
+    @contextmenu="($event) => handleContextMenu($event)"
     v-show="node.visible"
     :class="{
       'is-expanded': expanded,
@@ -23,7 +23,8 @@
     @drop.stop="handleDrop"
     ref="node"
   >
-    <div class="el-tree-node__content"
+    <div 
+      class="el-tree-node__content"
       :style="{ 'padding-left': (node.level - 1) * tree.indent + 'px' }">
       <span
         @click.stop="handleExpandIconClick"
@@ -41,13 +42,12 @@
         :disabled="!!node.disabled"
         @click.native.stop
         @change="handleCheckChange"
-      >
-      </el-checkbox>
+      />
       <span
         v-if="node.loading"
         class="el-tree-node__loading-icon el-icon-loading">
       </span>
-      <node-content :node="node"></node-content>
+      <node-content :node="node"/>
     </div>
     <el-collapse-transition>
       <div
@@ -64,8 +64,7 @@
           :show-checkbox="showCheckbox"
           :key="getNodeKey(child)"
           :node="child"
-          @node-expand="handleChildNodeExpand">
-        </el-tree-node>
+          @node-expand="handleChildNodeExpand"/>
       </div>
     </el-collapse-transition>
   </div>
@@ -81,26 +80,6 @@
     name: 'ElTreeNode',
 
     componentName: 'ElTreeNode',
-
-    mixins: [emitter],
-
-    props: {
-      node: {
-        default() {
-          return {};
-        }
-      },
-      props: {},
-      renderContent: Function,
-      renderAfterExpand: {
-        type: Boolean,
-        default: true
-      },
-      showCheckbox: {
-        type: Boolean,
-        default: false
-      }
-    },
 
     components: {
       ElCollapseTransition,
@@ -124,6 +103,29 @@
                 : <span class="el-tree-node__label">{ node.label }</span>
           );
         }
+      }
+    },
+
+    mixins: [emitter],
+
+    props: {
+      node: {
+        type: Object,
+        default() {
+          return {};
+        }
+      },
+      props: {
+        type: Object
+      },
+      renderContent: Function,
+      renderAfterExpand: {
+        type: Boolean,
+        default: true
+      },
+      showCheckbox: {
+        type: Boolean,
+        default: false
       }
     },
 
@@ -151,6 +153,41 @@
         if (val) {
           this.childNodeRendered = true;
         }
+      }
+    },
+
+    created() {
+      const parent = this.$parent;
+
+      if (parent.isTree) {
+        this.tree = parent;
+      } else {
+        this.tree = parent.tree;
+      }
+
+      const tree = this.tree;
+      if (!tree) {
+        console.warn('Can not find node\'s tree.');
+      }
+
+      const props = tree.props || {};
+      const childrenKey = props['children'] || 'children';
+
+      this.$watch(`node.data.${childrenKey}`, () => {
+        this.node.updateChildren();
+      });
+
+      if (this.node.expanded) {
+        this.expanded = true;
+        this.childNodeRendered = true;
+      }
+
+      if(this.tree.accordion) {
+        this.$on('tree-node-expand', node => {
+          if(this.node !== node) {
+            this.node.collapse();
+          }
+        });
       }
     },
 
@@ -240,40 +277,5 @@
         this.tree.$emit('tree-node-drag-end', event, this);
       }
     },
-
-    created() {
-      const parent = this.$parent;
-
-      if (parent.isTree) {
-        this.tree = parent;
-      } else {
-        this.tree = parent.tree;
-      }
-
-      const tree = this.tree;
-      if (!tree) {
-        console.warn('Can not find node\'s tree.');
-      }
-
-      const props = tree.props || {};
-      const childrenKey = props['children'] || 'children';
-
-      this.$watch(`node.data.${childrenKey}`, () => {
-        this.node.updateChildren();
-      });
-
-      if (this.node.expanded) {
-        this.expanded = true;
-        this.childNodeRendered = true;
-      }
-
-      if(this.tree.accordion) {
-        this.$on('tree-node-expand', node => {
-          if(this.node !== node) {
-            this.node.collapse();
-          }
-        });
-      }
-    }
   };
 </script>

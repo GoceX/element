@@ -65,7 +65,7 @@
         @input="debouncedQueryChange"
         v-if="filterable"
         :style="{ 'flex-grow': '1', width: inputLength / (inputWidth - 32) + '%', 'max-width': inputWidth - 42 + 'px' }"
-        ref="input">
+        ref="input"/>
     </div>
     <el-input
       ref="reference"
@@ -120,8 +120,7 @@
           <el-option
             :value="query"
             created
-            v-if="showNewOption">
-          </el-option>
+            v-if="showNewOption"/>
           <slot></slot>
         </el-scrollbar>
         <template v-if="emptyText && (!allowCreate || loading || (allowCreate && options.length === 0 ))">
@@ -153,11 +152,21 @@
   import { isKorean } from 'rowinself-ui/src/utils/shared';
 
   export default {
-    mixins: [Emitter, Locale, Focus('reference'), NavigationMixin],
-
     name: 'ElSelect',
 
     componentName: 'ElSelect',
+
+    components: {
+      ElInput,
+      ElSelectMenu,
+      ElOption,
+      ElTag,
+      ElScrollbar
+    },
+
+    directives: { Clickoutside },
+
+    mixins: [Emitter, Locale, Focus('reference'), NavigationMixin],
 
     inject: {
       elForm: {
@@ -175,88 +184,12 @@
       };
     },
 
-    computed: {
-      _elFormItemSize() {
-        return (this.elFormItem || {}).elFormItemSize;
-      },
-
-      readonly() {
-        return !this.filterable || this.multiple || (!isIE() && !isEdge() && !this.visible);
-      },
-
-      showClose() {
-        let hasValue = this.multiple
-          ? Array.isArray(this.value) && this.value.length > 0
-          : this.value !== undefined && this.value !== null && this.value !== '';
-        let criteria = this.clearable &&
-          !this.selectDisabled &&
-          this.inputHovering &&
-          hasValue;
-        return criteria;
-      },
-
-      iconClass() {
-        return this.remote && this.filterable ? '' : (this.visible ? 'arrow-up is-reverse' : 'arrow-up');
-      },
-
-      debounce() {
-        return this.remote ? 300 : 0;
-      },
-
-      emptyText() {
-        if (this.loading) {
-          return this.loadingText || this.t('el.select.loading');
-        } else {
-          if (this.remote && this.query === '' && this.options.length === 0) return false;
-          if (this.filterable && this.query && this.options.length > 0 && this.filteredOptionsCount === 0) {
-            return this.noMatchText || this.t('el.select.noMatch');
-          }
-          if (this.options.length === 0) {
-            return this.noDataText || this.t('el.select.noData');
-          }
-        }
-        return null;
-      },
-
-      showNewOption() {
-        let hasExistingOption = this.options.filter(option => !option.created)
-          .some(option => option.currentLabel === this.query);
-        return this.filterable && this.allowCreate && this.query !== '' && !hasExistingOption;
-      },
-
-      selectSize() {
-        return this.size || this._elFormItemSize || (this.$ELEMENT || {}).size;
-      },
-
-      selectDisabled() {
-        return this.disabled || (this.elForm || {}).disabled;
-      },
-
-      collapseTagSize() {
-        return ['small', 'mini'].indexOf(this.selectSize) > -1
-          ? 'mini'
-          : 'small';
-      },
-      propPlaceholder() {
-        return typeof this.placeholder !== 'undefined' ? this.placeholder : this.t('el.select.placeholder');
-      }
-    },
-
-    components: {
-      ElInput,
-      ElSelectMenu,
-      ElOption,
-      ElTag,
-      ElScrollbar
-    },
-
-    directives: { Clickoutside },
-
     props: {
       name: String,
       id: String,
       value: {
-        required: true
+        required: true,
+        type: [String, Number, Array, Object, Boolean]
       },
       autocomplete: {
         type: String,
@@ -332,6 +265,73 @@
         isOnComposition: false,
         isSilentBlur: false
       };
+    },
+
+    computed: {
+      _elFormItemSize() {
+        return (this.elFormItem || {}).elFormItemSize;
+      },
+
+      readonly() {
+        return !this.filterable || this.multiple || (!isIE() && !isEdge() && !this.visible);
+      },
+
+      showClose() {
+        let hasValue = this.multiple
+          ? Array.isArray(this.value) && this.value.length > 0
+          : this.value !== undefined && this.value !== null && this.value !== '';
+        let criteria = this.clearable &&
+          !this.selectDisabled &&
+          this.inputHovering &&
+          hasValue;
+        return criteria;
+      },
+
+      iconClass() {
+        return this.remote && this.filterable ? '' : (this.visible ? 'arrow-up is-reverse' : 'arrow-up');
+      },
+
+      debounce() {
+        return this.remote ? 300 : 0;
+      },
+
+      emptyText() {
+        if (this.loading) {
+          return this.loadingText || this.t('el.select.loading');
+        } else {
+          if (this.remote && this.query === '' && this.options.length === 0) return false;
+          if (this.filterable && this.query && this.options.length > 0 && this.filteredOptionsCount === 0) {
+            return this.noMatchText || this.t('el.select.noMatch');
+          }
+          if (this.options.length === 0) {
+            return this.noDataText || this.t('el.select.noData');
+          }
+        }
+        return null;
+      },
+
+      showNewOption() {
+        let hasExistingOption = this.options.filter(option => !option.created)
+          .some(option => option.currentLabel === this.query);
+        return this.filterable && this.allowCreate && this.query !== '' && !hasExistingOption;
+      },
+
+      selectSize() {
+        return this.size || this._elFormItemSize || (this.$ELEMENT || {}).size;
+      },
+
+      selectDisabled() {
+        return this.disabled || (this.elForm || {}).disabled;
+      },
+
+      collapseTagSize() {
+        return ['small', 'mini'].indexOf(this.selectSize) > -1
+          ? 'mini'
+          : 'small';
+      },
+      propPlaceholder() {
+        return typeof this.placeholder !== 'undefined' ? this.placeholder : this.t('el.select.placeholder');
+      }
     },
 
     watch: {
@@ -440,6 +440,58 @@
           this.checkDefaultFirstOption();
         }
       }
+    },
+
+    created() {
+      this.cachedPlaceHolder = this.currentPlaceholder = this.propPlaceholder;
+      if (this.multiple && !Array.isArray(this.value)) {
+        this.$emit('input', []);
+      }
+      if (!this.multiple && Array.isArray(this.value)) {
+        this.$emit('input', '');
+      }
+
+      this.debouncedOnInputChange = debounce(this.debounce, () => {
+        this.onInputChange();
+      });
+
+      this.debouncedQueryChange = debounce(this.debounce, (e) => {
+        this.handleQueryChange(e.target.value);
+      });
+
+      this.$on('handleOptionClick', this.handleOptionSelect);
+      this.$on('setSelected', this.setSelected);
+    },
+
+    mounted() {
+      if (this.multiple && Array.isArray(this.value) && this.value.length > 0) {
+        this.currentPlaceholder = '';
+      }
+      addResizeListener(this.$el, this.handleResize);
+
+      const reference = this.$refs.reference;
+      if (reference && reference.$el) {
+        const sizeMap = {
+          medium: 36,
+          small: 32,
+          mini: 28
+        };
+        const input = reference.$el.querySelector('input');
+        this.initialInputHeight = input.getBoundingClientRect().height || sizeMap[this.selectSize];
+      }
+      if (this.remote && this.multiple) {
+        this.resetInputHeight();
+      }
+      this.$nextTick(() => {
+        if (reference && reference.$el) {
+          this.inputWidth = reference.$el.getBoundingClientRect().width;
+        }
+      });
+      this.setSelected();
+    },
+
+    beforeDestroy() {
+      if (this.$el && this.handleResize) removeResizeListener(this.$el, this.handleResize);
     },
 
     methods: {
@@ -844,57 +896,5 @@
         }
       }
     },
-
-    created() {
-      this.cachedPlaceHolder = this.currentPlaceholder = this.propPlaceholder;
-      if (this.multiple && !Array.isArray(this.value)) {
-        this.$emit('input', []);
-      }
-      if (!this.multiple && Array.isArray(this.value)) {
-        this.$emit('input', '');
-      }
-
-      this.debouncedOnInputChange = debounce(this.debounce, () => {
-        this.onInputChange();
-      });
-
-      this.debouncedQueryChange = debounce(this.debounce, (e) => {
-        this.handleQueryChange(e.target.value);
-      });
-
-      this.$on('handleOptionClick', this.handleOptionSelect);
-      this.$on('setSelected', this.setSelected);
-    },
-
-    mounted() {
-      if (this.multiple && Array.isArray(this.value) && this.value.length > 0) {
-        this.currentPlaceholder = '';
-      }
-      addResizeListener(this.$el, this.handleResize);
-
-      const reference = this.$refs.reference;
-      if (reference && reference.$el) {
-        const sizeMap = {
-          medium: 36,
-          small: 32,
-          mini: 28
-        };
-        const input = reference.$el.querySelector('input');
-        this.initialInputHeight = input.getBoundingClientRect().height || sizeMap[this.selectSize];
-      }
-      if (this.remote && this.multiple) {
-        this.resetInputHeight();
-      }
-      this.$nextTick(() => {
-        if (reference && reference.$el) {
-          this.inputWidth = reference.$el.getBoundingClientRect().width;
-        }
-      });
-      this.setSelected();
-    },
-
-    beforeDestroy() {
-      if (this.$el && this.handleResize) removeResizeListener(this.$el, this.handleResize);
-    }
   };
 </script>

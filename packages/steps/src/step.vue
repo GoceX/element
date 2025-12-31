@@ -7,7 +7,7 @@
       isSimple && 'is-simple',
       isLast && !space && !isCenter && 'is-flex',
       isCenter && !isVertical && !isSimple && 'is-center'
-     ]">
+  ]">
     <!-- icon & line -->
     <div
       class="el-step__head"
@@ -72,18 +72,6 @@ export default {
     };
   },
 
-  beforeCreate() {
-    this.$parent.steps.push(this);
-  },
-
-  beforeDestroy() {
-    const steps = this.$parent.steps;
-    const index = steps.indexOf(this);
-    if (index >= 0) {
-      steps.splice(index, 1);
-    }
-  },
-
   computed: {
     currentStatus() {
       return this.status || this.internalStatus;
@@ -134,6 +122,29 @@ export default {
     }
   },
 
+  beforeCreate() {
+    this.$parent.steps.push(this);
+  },
+
+  beforeDestroy() {
+    const steps = this.$parent.steps;
+    const index = steps.indexOf(this);
+    if (index >= 0) {
+      steps.splice(index, 1);
+    }
+  },
+
+  mounted() {
+    const unwatch = this.$watch('index', val => {
+      this.$watch('$parent.active', this.updateStatus, { immediate: true });
+      this.$watch('$parent.processStatus', () => {
+        const activeIndex = this.$parent.active;
+        this.updateStatus(activeIndex);
+      }, { immediate: true });
+      unwatch();
+    });
+  },
+
   methods: {
     updateStatus(val) {
       const prevChild = this.$parent.$children[this.index - 1];
@@ -169,16 +180,5 @@ export default {
       this.lineStyle = style;
     }
   },
-
-  mounted() {
-    const unwatch = this.$watch('index', val => {
-      this.$watch('$parent.active', this.updateStatus, { immediate: true });
-      this.$watch('$parent.processStatus', () => {
-        const activeIndex = this.$parent.active;
-        this.updateStatus(activeIndex);
-      }, { immediate: true });
-      unwatch();
-    });
-  }
 };
 </script>

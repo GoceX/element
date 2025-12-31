@@ -37,6 +37,10 @@
       }
     },
 
+    created() {
+      this.$on('item-click', this.handleItemClick);
+    },
+
     methods: {
       setActiveNames(activeNames) {
         activeNames = [].concat(activeNames);
@@ -65,9 +69,5 @@
         }
       }
     },
-
-    created() {
-      this.$on('item-click', this.handleItemClick);
-    }
   };
 </script>

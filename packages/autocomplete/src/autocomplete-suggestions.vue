@@ -28,15 +28,9 @@
 
     componentName: 'ElAutocompleteSuggestions',
 
-    data() {
-      return {
-        parent: this.$parent,
-        dropdownWidth: ''
-      };
-    },
-
     props: {
       options: {
+        type: Object,
         default() {
           return {
             gpuAcceleration: false
@@ -46,10 +40,11 @@
       id: String
     },
 
-    methods: {
-      select(item) {
-        this.dispatch('ElAutocomplete', 'item-click', item);
-      }
+    data() {
+      return {
+        parent: this.$parent,
+        dropdownWidth: ''
+      };
     },
 
     updated() {
@@ -71,6 +66,12 @@
         this.dropdownWidth = inputWidth + 'px';
         this.showPopper = val;
       });
-    }
+    },
+
+    methods: {
+      select(item) {
+        this.dispatch('ElAutocomplete', 'item-click', item);
+      }
+    },
   };
 </script>

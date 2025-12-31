@@ -1,7 +1,9 @@
 <template>
-  <form class="el-form" :class="[
-    labelPosition ? 'el-form--label-' + labelPosition : '',
-    { 'el-form--inline': inline }
+  <form 
+    class="el-form" 
+    :class="[
+      labelPosition ? 'el-form--label-' + labelPosition : '',
+      { 'el-form--inline': inline }
   ]">
     <slot></slot>
   </form>
@@ -47,6 +49,19 @@
         default: false
       }
     },
+    data() {
+      return {
+        fields: [],
+        potentialLabelWidthArr: [] // use this array to calculate auto width
+      };
+    },
+    computed: {
+      autoLabelWidth() {
+        if (!this.potentialLabelWidthArr.length) return 0;
+        const max = Math.max(...this.potentialLabelWidthArr);
+        return max ? `${max}px` : '';
+      }
+    },
     watch: {
       rules() {
         // remove then add event listeners on form-item after form rules change
@@ -59,19 +74,6 @@
           this.validate(() => {});
         }
       }
-    },
-    computed: {
-      autoLabelWidth() {
-        if (!this.potentialLabelWidthArr.length) return 0;
-        const max = Math.max(...this.potentialLabelWidthArr);
-        return max ? `${max}px` : '';
-      }
-    },
-    data() {
-      return {
-        fields: [],
-        potentialLabelWidthArr: [] // use this array to calculate auto width
-      };
     },
     created() {
       this.$on('el.form.addField', (field) => {

@@ -26,6 +26,8 @@ const doFlattenColumns = (columns) => {
 };
 
 export default Vue.extend({
+
+  mixins: [expand, current, tree],
   data() {
     return {
       states: {
@@ -71,8 +73,6 @@ export default Vue.extend({
       }
     };
   },
-
-  mixins: [expand, current, tree],
 
   methods: {
     // 检查 rowKey 是否存在

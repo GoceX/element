@@ -15,7 +15,7 @@
     },
 
     props: {
-      value: {},
+      value: Array,
       disabled: Boolean,
       min: Number,
       max: Number,

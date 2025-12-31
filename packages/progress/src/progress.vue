@@ -17,7 +17,7 @@
     <div class="el-progress-bar" v-if="type === 'line'">
       <div class="el-progress-bar__outer" :style="{height: strokeWidth + 'px', backgroundColor:defineBackColor}">
         <div class="el-progress-bar__inner" :style="barStyle">
-          <div class="el-progress-bar__innerText" :style="{color:textColor}" v-if="showText && textInside">{{content}}</div>
+          <div class="el-progress-bar__innerText" :style="{color:textColor}" v-if="showText && textInside">{{ content }}</div>
         </div>
       </div>
     </div>
@@ -29,7 +29,7 @@
           :stroke="defineBackColor"
           :stroke-width="relativeStrokeWidth"
           fill="none"
-          :style="trailPathStyle"></path>
+          :style="trailPathStyle"/>
         <path
           class="el-progress-circle__path"
           :d="trackPath"
@@ -37,7 +37,7 @@
           fill="none"
           :stroke-linecap="strokeLinecap"
           :stroke-width="percentage ? relativeStrokeWidth : 0"
-          :style="circlePathStyle"></path>
+          :style="circlePathStyle"/>
       </svg>
     </div>
     <div
@@ -45,7 +45,7 @@
       v-if="showText && !textInside"
       :style="{fontSize: progressTextSize + 'px', color:textColor}"
     >
-      <template v-if="!status">{{content}}</template>
+      <template v-if="!status">{{ content }}</template>
       <i v-else :class="iconClass"></i>
     </div>
   </div>

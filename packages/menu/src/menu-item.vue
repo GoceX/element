@@ -1,5 +1,6 @@
 <template>
-  <li class="el-menu-item"
+  <li 
+    class="el-menu-item"
     role="menuitem"
     tabindex="-1"
     :style="[paddingStyle, itemStyle, { backgroundColor }]"
@@ -38,9 +39,9 @@
 
     componentName: 'ElMenuItem',
 
-    mixins: [Menu, Emitter],
-
     components: { ElTooltip },
+
+    mixins: [Menu, Emitter],
 
     props: {
       index: {
@@ -84,6 +85,14 @@
         return this.parentMenu !== this.rootMenu;
       }
     },
+    mounted() {
+      this.parentMenu.addItem(this);
+      this.rootMenu.addItem(this);
+    },
+    beforeDestroy() {
+      this.parentMenu.removeItem(this);
+      this.rootMenu.removeItem(this);
+    },
     methods: {
       onMouseEnter() {
         if (this.mode === 'horizontal' && !this.rootMenu.backgroundColor) return;
@@ -100,13 +109,5 @@
         }
       }
     },
-    mounted() {
-      this.parentMenu.addItem(this);
-      this.rootMenu.addItem(this);
-    },
-    beforeDestroy() {
-      this.parentMenu.removeItem(this);
-      this.rootMenu.removeItem(this);
-    }
   };
 </script>

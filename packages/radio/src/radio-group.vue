@@ -31,7 +31,9 @@
     mixins: [Emitter],
 
     props: {
-      value: {},
+      value: {
+        type: [String, Number, Boolean]
+      },
       size: String,
       fill: String,
       textColor: String,
@@ -49,6 +51,11 @@
       },
       radioGroupSize() {
         return this.size || this._elFormItemSize || (this.$ELEMENT || {}).size;
+      }
+    },
+    watch: {
+      value(value) {
+        this.dispatch('ElFormItem', 'el.form.change', [this.value]);
       }
     },
 
@@ -120,10 +127,5 @@
         }
       }
     },
-    watch: {
-      value(value) {
-        this.dispatch('ElFormItem', 'el.form.change', [this.value]);
-      }
-    }
   };
 </script>

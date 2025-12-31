@@ -13,8 +13,8 @@
   export default {
     name: 'ElCard',
     props: {
-      header: {},
-      bodyStyle: {},
+      header: String,
+      bodyStyle: [Object, String],
       shadow: {
         type: String
       }

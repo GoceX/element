@@ -14,7 +14,7 @@
 
     <el-input
       ref="input"
-      v-model="multiple ? presentText : inputValue"
+      :value="multiple ? presentText : inputValue"
       :size="realSize"
       :placeholder="placeholder"
       :readonly="readonly"
@@ -23,7 +23,7 @@
       :class="{ 'is-focus': dropDownVisible }"
       @focus="handleFocus"
       @blur="handleBlur"
-      @input="handleInput">
+      @input="val => { if (multiple) { presentText = val; } else { inputValue = val; } handleInput(val); }">
       <template slot="suffix">
         <i
           v-if="clearBtnVisible"
@@ -62,7 +62,7 @@
         :placeholder="presentTags.length ? '' : placeholder"
         @input="e => handleInput(inputValue, e)"
         @click.stop="toggleDropDownVisible(true)"
-        @keydown.delete="handleDelete">
+        @keydown.delete="handleDelete"/>
     </div>
 
     <transition name="el-zoom-in-top" @after-leave="handleDropdownLeave">
@@ -79,7 +79,7 @@
           :border="false"
           :render-label="$scopedSlots.default"
           @expand-change="handleExpandChange"
-          @close="toggleDropDownVisible(false)"></el-cascader-panel>
+          @close="toggleDropDownVisible(false)"/>
         <el-scrollbar
           ref="suggestionPanel"
           v-if="filterable"
@@ -178,6 +178,13 @@ export default {
 
   directives: { Clickoutside },
 
+  components: {
+    ElInput,
+    ElTag,
+    ElScrollbar,
+    ElCascaderPanel
+  },
+
   mixins: [PopperMixin, Emitter, Locale, Migrating],
 
   inject: {
@@ -189,15 +196,8 @@ export default {
     }
   },
 
-  components: {
-    ElInput,
-    ElTag,
-    ElScrollbar,
-    ElCascaderPanel
-  },
-
   props: {
-    value: {},
+    value: { required: true, type: [String, Number, Array, Object] },
     options: Array,
     props: Object,
     size: String,

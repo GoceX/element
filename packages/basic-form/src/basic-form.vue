@@ -6,7 +6,7 @@
     - 事件透传使用 v-on="$listeners" 保持兼容
   -->
   <component :is="innerComponent" v-bind="passThroughProps" v-on="$listeners">
-    <slot />
+    <slot ></slot>
   </component>
 </template>
 <script>

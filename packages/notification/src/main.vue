@@ -88,6 +88,19 @@
         }
       }
     },
+    mounted() {
+      if (this.duration > 0) {
+        this.timer = setTimeout(() => {
+          if (!this.closed) {
+            this.close();
+          }
+        }, this.duration);
+      }
+      document.addEventListener('keydown', this.keydown);
+    },
+    beforeDestroy() {
+      document.removeEventListener('keydown', this.keydown);
+    },
 
     methods: {
       destroyElement() {
@@ -134,19 +147,6 @@
         }
       }
     },
-    mounted() {
-      if (this.duration > 0) {
-        this.timer = setTimeout(() => {
-          if (!this.closed) {
-            this.close();
-          }
-        }, this.duration);
-      }
-      document.addEventListener('keydown', this.keydown);
-    },
-    beforeDestroy() {
-      document.removeEventListener('keydown', this.keydown);
-    }
   };
 </script>
 

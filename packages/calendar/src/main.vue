@@ -71,13 +71,13 @@ const oneDay = 86400000;
 export default {
   name: 'ElCalendar',
 
-  mixins: [Locale],
-
   components: {
     DateTable,
     ElButton,
     ElButtonGroup
   },
+
+  mixins: [Locale],
 
   props: {
     value: [Date, String, Number],
@@ -106,45 +106,11 @@ export default {
     };
   },
 
-  methods: {
-    pickDay(day) {
-      this.realSelectedDay = day;
-    },
-
-    selectDate(type) {
-      if (validTypes.indexOf(type) === -1) {
-        throw new Error(`invalid type ${type}`);
-      }
-      let day = '';
-      if (type === 'prev-month') {
-        day = `${this.prevMonthDatePrefix}-01`;
-      } else if (type === 'next-month') {
-        day = `${this.nextMonthDatePrefix}-01`;
-      } else {
-        day = this.formatedToday;
-      }
-
-      if (day === this.formatedDate) return;
-      this.pickDay(day);
-    },
-
-    toDate(val) {
-      if (!val) {
-        throw new Error('invalid val');
-      }
-      return val instanceof Date ? val : new Date(val);
-    },
-
-    rangeValidator(date, isStart) {
-      const firstDayOfWeek = this.realFirstDayOfWeek;
-      const expected = isStart ? firstDayOfWeek : (firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1);
-      const message = `${isStart ? 'start' : 'end'} of range should be ${weekDays[expected]}.`;
-      if (date.getDay() !== expected) {
-        console.warn('[ElementCalendar]', message, 'Invalid range will be ignored.');
-        return false;
-      }
-      return true;
-    }
+  data() {
+    return {
+      selectedDay: '',
+      now: new Date()
+    };
   },
 
   computed: {
@@ -270,11 +236,45 @@ export default {
     }
   },
 
-  data() {
-    return {
-      selectedDay: '',
-      now: new Date()
-    };
-  }
+  methods: {
+    pickDay(day) {
+      this.realSelectedDay = day;
+    },
+
+    selectDate(type) {
+      if (validTypes.indexOf(type) === -1) {
+        throw new Error(`invalid type ${type}`);
+      }
+      let day = '';
+      if (type === 'prev-month') {
+        day = `${this.prevMonthDatePrefix}-01`;
+      } else if (type === 'next-month') {
+        day = `${this.nextMonthDatePrefix}-01`;
+      } else {
+        day = this.formatedToday;
+      }
+
+      if (day === this.formatedDate) return;
+      this.pickDay(day);
+    },
+
+    toDate(val) {
+      if (!val) {
+        throw new Error('invalid val');
+      }
+      return val instanceof Date ? val : new Date(val);
+    },
+
+    rangeValidator(date, isStart) {
+      const firstDayOfWeek = this.realFirstDayOfWeek;
+      const expected = isStart ? firstDayOfWeek : (firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1);
+      const message = `${isStart ? 'start' : 'end'} of range should be ${weekDays[expected]}.`;
+      if (date.getDay() !== expected) {
+        console.warn('[ElementCalendar]', message, 'Invalid range will be ignored.');
+        return false;
+      }
+      return true;
+    }
+  },
 };
 </script>

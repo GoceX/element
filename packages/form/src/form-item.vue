@@ -1,19 +1,21 @@
 <template>
-  <div class="el-form-item" :class="[{
-      'el-form-item--feedback': elForm && elForm.statusIcon,
-      'is-error': validateState === 'error',
-      'is-validating': validateState === 'validating',
-      'is-success': validateState === 'success',
-      'is-required': isRequired || required,
-      'is-no-asterisk': elForm && elForm.hideRequiredAsterisk
-    },
-    sizeClass ? 'el-form-item--' + sizeClass : ''
+  <div 
+    class="el-form-item" 
+    :class="[{
+               'el-form-item--feedback': elForm && elForm.statusIcon,
+               'is-error': validateState === 'error',
+               'is-validating': validateState === 'validating',
+               'is-success': validateState === 'success',
+               'is-required': isRequired || required,
+               'is-no-asterisk': elForm && elForm.hideRequiredAsterisk
+             },
+             sizeClass ? 'el-form-item--' + sizeClass : ''
   ]">
     <label-wrap
       :is-auto-width="mergedLabelStyle && mergedLabelStyle.width === 'auto'"
       :update-all="form.labelWidth === 'auto'">
       <label :for="labelFor" class="el-form-item__label" :style="mergedLabelStyle" v-if="label || $slots.label">
-        <slot name="label">{{label + form.labelSuffix}}</slot>
+        <slot name="label">{{ label + form.labelSuffix }}</slot>
       </label>
     </label-wrap>
     <div class="el-form-item__content" :style="contentStyle">
@@ -31,7 +33,7 @@
                 : (elForm && elForm.inlineMessage || false)
             }"
           >
-            {{validateMessage}}
+            {{ validateMessage }}
           </div>
         </slot>
       </transition>
@@ -48,6 +50,10 @@
     name: 'ElFormItem',
 
     componentName: 'ElFormItem',
+    components: {
+      // use this component to calculate auto width
+      LabelWrap
+    },
 
     mixins: [emitter],
 
@@ -82,26 +88,14 @@
       },
       size: String
     },
-    components: {
-      // use this component to calculate auto width
-      LabelWrap
-    },
-    watch: {
-      error: {
-        immediate: true,
-        handler(value) {
-          this.validateMessage = value;
-          this.validateState = value ? 'error' : '';
-        }
-      },
-      validateStatus(value) {
-        this.validateState = value;
-      },
-      rules(value) {
-        if ((!value || value.length === 0) && this.required === undefined) {
-          this.clearValidate();
-        }
-      }
+    data() {
+      return {
+        validateState: '',
+        validateMessage: '',
+        validateDisabled: false,
+        validator: {},
+        computedLabelWidth: ''
+      };
     },
     computed: {
       labelFor() {
@@ -143,13 +137,22 @@
         let parent = this.$parent;
         let parentName = parent.$options.componentName;
         while (parentName !== 'ElForm') {
-          if (parentName === 'ElFormItem') {
-            this.isNested = true;
-          }
           parent = parent.$parent;
           parentName = parent.$options.componentName;
         }
         return parent;
+      },
+      isNested() {
+        let parent = this.$parent;
+        let parentName = parent.$options.componentName;
+        while (parentName !== 'ElForm') {
+          if (parentName === 'ElFormItem') {
+            return true;
+          }
+          parent = parent.$parent;
+          parentName = parent.$options.componentName;
+        }
+        return false;
       },
       fieldValue() {
         const model = this.form.model;
@@ -192,15 +195,40 @@
         return this.elFormItemSize || (this.$ELEMENT || {}).size;
       }
     },
-    data() {
-      return {
-        validateState: '',
-        validateMessage: '',
-        validateDisabled: false,
-        validator: {},
-        isNested: false,
-        computedLabelWidth: ''
-      };
+    watch: {
+      error: {
+        immediate: true,
+        handler(value) {
+          this.validateMessage = value;
+          this.validateState = value ? 'error' : '';
+        }
+      },
+      validateStatus(value) {
+        this.validateState = value;
+      },
+      rules(value) {
+        if ((!value || value.length === 0) && this.required === undefined) {
+          this.clearValidate();
+        }
+      }
+    },
+    mounted() {
+      if (this.prop) {
+        this.dispatch('ElForm', 'el.form.addField', [this]);
+
+        let initialValue = this.fieldValue;
+        if (Array.isArray(initialValue)) {
+          initialValue = [].concat(initialValue);
+        }
+        Object.defineProperty(this, 'initialValue', {
+          value: initialValue
+        });
+
+        this.addValidateEvents();
+      }
+    },
+    beforeDestroy() {
+      this.dispatch('ElForm', 'el.form.removeField', [this]);
     },
     methods: {
       validate(trigger, callback = noop) {
@@ -314,23 +342,5 @@
         this.$off();
       }
     },
-    mounted() {
-      if (this.prop) {
-        this.dispatch('ElForm', 'el.form.addField', [this]);
-
-        let initialValue = this.fieldValue;
-        if (Array.isArray(initialValue)) {
-          initialValue = [].concat(initialValue);
-        }
-        Object.defineProperty(this, 'initialValue', {
-          value: initialValue
-        });
-
-        this.addValidateEvents();
-      }
-    },
-    beforeDestroy() {
-      this.dispatch('ElForm', 'el.form.removeField', [this]);
-    }
   };
 </script>

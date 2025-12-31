@@ -44,13 +44,108 @@
       disabled: Boolean
     },
 
+    data() {
+      return {
+        current: null,
+        showPrevMore: false,
+        showNextMore: false,
+        quicknextIconClass: 'el-icon-more',
+        quickprevIconClass: 'el-icon-more'
+      };
+    },
+
+    computed: {
+      pagers() {
+        const pagerCount = this.pagerCount;
+        const halfPagerCount = (pagerCount - 1) / 2;
+
+        const currentPage = Number(this.currentPage);
+        const pageCount = Number(this.pageCount);
+
+        let showPrevMore = false;
+        let showNextMore = false;
+
+        if (pageCount > pagerCount) {
+          if (currentPage > pagerCount - halfPagerCount) {
+            showPrevMore = true;
+          }
+
+          if (currentPage < pageCount - halfPagerCount) {
+            showNextMore = true;
+          }
+        }
+
+        const array = [];
+
+        if (showPrevMore && !showNextMore) {
+          const startPage = pageCount - (pagerCount - 2);
+          for (let i = startPage; i < pageCount; i++) {
+            array.push(i);
+          }
+        } else if (!showPrevMore && showNextMore) {
+          for (let i = 2; i < pagerCount; i++) {
+            array.push(i);
+          }
+        } else if (showPrevMore && showNextMore) {
+          const offset = Math.floor(pagerCount / 2) - 1;
+          for (let i = currentPage - offset ; i <= currentPage + offset; i++) {
+            array.push(i);
+          }
+        } else {
+          for (let i = 2; i < pageCount; i++) {
+            array.push(i);
+          }
+        }
+
+        return array;
+      }
+    },
+
     watch: {
       showPrevMore(val) {
         if (!val) this.quickprevIconClass = 'el-icon-more';
       },
-
       showNextMore(val) {
         if (!val) this.quicknextIconClass = 'el-icon-more';
+      },
+      currentPage: {
+        immediate: true,
+        handler(currentPage) {
+          const pagerCount = this.pagerCount;
+          const halfPagerCount = (pagerCount - 1) / 2;
+          const pageCount = Number(this.pageCount);
+          let showPrevMore = false;
+          let showNextMore = false;
+
+          if (pageCount > pagerCount) {
+            if (currentPage > pagerCount - halfPagerCount) {
+              showPrevMore = true;
+            }
+            if (currentPage < pageCount - halfPagerCount) {
+              showNextMore = true;
+            }
+          }
+          this.showPrevMore = showPrevMore;
+          this.showNextMore = showNextMore;
+        }
+      },
+      pageCount(pageCount) {
+        const pagerCount = this.pagerCount;
+        const halfPagerCount = (pagerCount - 1) / 2;
+        const currentPage = Number(this.currentPage);
+        let showPrevMore = false;
+        let showNextMore = false;
+
+        if (pageCount > pagerCount) {
+          if (currentPage > pagerCount - halfPagerCount) {
+            showPrevMore = true;
+          }
+          if (currentPage < pageCount - halfPagerCount) {
+            showNextMore = true;
+          }
+        }
+        this.showPrevMore = showPrevMore;
+        this.showNextMore = showNextMore;
       }
     },
 
@@ -99,65 +194,5 @@
         }
       }
     },
-
-    computed: {
-      pagers() {
-        const pagerCount = this.pagerCount;
-        const halfPagerCount = (pagerCount - 1) / 2;
-
-        const currentPage = Number(this.currentPage);
-        const pageCount = Number(this.pageCount);
-
-        let showPrevMore = false;
-        let showNextMore = false;
-
-        if (pageCount > pagerCount) {
-          if (currentPage > pagerCount - halfPagerCount) {
-            showPrevMore = true;
-          }
-
-          if (currentPage < pageCount - halfPagerCount) {
-            showNextMore = true;
-          }
-        }
-
-        const array = [];
-
-        if (showPrevMore && !showNextMore) {
-          const startPage = pageCount - (pagerCount - 2);
-          for (let i = startPage; i < pageCount; i++) {
-            array.push(i);
-          }
-        } else if (!showPrevMore && showNextMore) {
-          for (let i = 2; i < pagerCount; i++) {
-            array.push(i);
-          }
-        } else if (showPrevMore && showNextMore) {
-          const offset = Math.floor(pagerCount / 2) - 1;
-          for (let i = currentPage - offset ; i <= currentPage + offset; i++) {
-            array.push(i);
-          }
-        } else {
-          for (let i = 2; i < pageCount; i++) {
-            array.push(i);
-          }
-        }
-
-        this.showPrevMore = showPrevMore;
-        this.showNextMore = showNextMore;
-
-        return array;
-      }
-    },
-
-    data() {
-      return {
-        current: null,
-        showPrevMore: false,
-        showNextMore: false,
-        quicknextIconClass: 'el-icon-more',
-        quickprevIconClass: 'el-icon-more'
-      };
-    }
   };
 </script>

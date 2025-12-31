@@ -53,6 +53,27 @@
       }
     },
 
+    updated() {
+      this.update();
+    },
+
+    mounted() {
+      addResizeListener(this.$el, this.update);
+      document.addEventListener('visibilitychange', this.visibilityChangeHandler);
+      window.addEventListener('blur', this.windowBlurHandler);
+      window.addEventListener('focus', this.windowFocusHandler);
+      setTimeout(() => {
+        this.scrollToActiveTab();
+      }, 0);
+    },
+
+    beforeDestroy() {
+      if (this.$el && this.update) removeResizeListener(this.$el, this.update);
+      document.removeEventListener('visibilitychange', this.visibilityChangeHandler);
+      window.removeEventListener('blur', this.windowBlurHandler);
+      window.removeEventListener('focus', this.windowFocusHandler);
+    },
+
     methods: {
       scrollPrev() {
         const containerSize = this.$refs.navScroll[`offset${firstUpperCase(this.sizeName)}`];
@@ -189,10 +210,6 @@
       }
     },
 
-    updated() {
-      this.update();
-    },
-
     render(h) {
       const {
         type,
@@ -273,22 +290,5 @@
         </div>
       );
     },
-
-    mounted() {
-      addResizeListener(this.$el, this.update);
-      document.addEventListener('visibilitychange', this.visibilityChangeHandler);
-      window.addEventListener('blur', this.windowBlurHandler);
-      window.addEventListener('focus', this.windowFocusHandler);
-      setTimeout(() => {
-        this.scrollToActiveTab();
-      }, 0);
-    },
-
-    beforeDestroy() {
-      if (this.$el && this.update) removeResizeListener(this.$el, this.update);
-      document.removeEventListener('visibilitychange', this.visibilityChangeHandler);
-      window.removeEventListener('blur', this.windowBlurHandler);
-      window.removeEventListener('focus', this.windowFocusHandler);
-    }
   };
 </script>

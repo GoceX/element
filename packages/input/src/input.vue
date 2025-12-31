@@ -1,16 +1,17 @@
 <template>
-  <div :class="[
-    type === 'textarea' ? 'el-textarea' : 'el-input',
-    inputSize ? 'el-input--' + inputSize : '',
-    {
-      'is-disabled': inputDisabled,
-      'is-exceed': inputExceed,
-      'el-input-group': $slots.prepend || $slots.append,
-      'el-input-group--append': $slots.append,
-      'el-input-group--prepend': $slots.prepend,
-      'el-input--prefix': $slots.prefix || prefixIcon,
-      'el-input--suffix': $slots.suffix || suffixIcon || clearable || showPassword
-    }
+  <div 
+    :class="[
+      type === 'textarea' ? 'el-textarea' : 'el-input',
+      inputSize ? 'el-input--' + inputSize : '',
+      {
+        'is-disabled': inputDisabled,
+        'is-exceed': inputExceed,
+        'el-input-group': $slots.prepend || $slots.append,
+        'el-input-group--append': $slots.append,
+        'el-input-group--prepend': $slots.prepend,
+        'el-input--prefix': $slots.prefix || prefixIcon,
+        'el-input--suffix': $slots.suffix || suffixIcon || clearable || showPassword
+      }
     ]"
     @mouseenter="hovering = true"
     @mouseleave="hovering = false"
@@ -38,13 +39,14 @@
         @blur="handleBlur"
         @change="handleChange"
         :aria-label="label"
-      >
+      />
       <!-- 前置内容 -->
       <span class="el-input__prefix" v-if="$slots.prefix || prefixIcon">
         <slot name="prefix"></slot>
-        <i class="el-input__icon"
-           v-if="prefixIcon"
-           :class="prefixIcon">
+        <i 
+          class="el-input__icon"
+          v-if="prefixIcon"
+          :class="prefixIcon">
         </i>
       </span>
       <!-- 后置内容 -->
@@ -54,17 +56,20 @@
         <span class="el-input__suffix-inner">
           <template v-if="!showClear || !showPwdVisible || !isWordLimitVisible">
             <slot name="suffix"></slot>
-            <i class="el-input__icon"
+            <i 
+              class="el-input__icon"
               v-if="suffixIcon"
               :class="suffixIcon">
             </i>
           </template>
-          <i v-if="showClear"
+          <i 
+            v-if="showClear"
             class="el-input__icon el-icon-circle-close el-input__clear"
             @mousedown.prevent
             @click="clear"
           ></i>
-          <i v-if="showPwdVisible"
+          <i 
+            v-if="showPwdVisible"
             class="el-input__icon el-icon-view el-input__clear"
             @click="handlePasswordVisible"
           ></i>
@@ -74,7 +79,8 @@
             </span>
           </span>
         </span>
-        <i class="el-input__icon"
+        <i 
+          class="el-input__icon"
           v-if="validateState"
           :class="['el-input__validateIcon', validateIcon]">
         </i>
@@ -132,16 +138,6 @@
       }
     },
 
-    data() {
-      return {
-        textareaCalcStyle: {},
-        hovering: false,
-        focused: false,
-        isComposing: false,
-        passwordVisible: false
-      };
-    },
-
     props: {
       value: [String, Number],
       size: String,
@@ -190,6 +186,16 @@
         default: false
       },
       tabindex: String
+    },
+
+    data() {
+      return {
+        textareaCalcStyle: {},
+        hovering: false,
+        focused: false,
+        isComposing: false,
+        passwordVisible: false
+      };
     },
 
     computed: {
@@ -282,6 +288,20 @@
           this.updateIconOffset();
         });
       }
+    },
+
+    created() {
+      this.$on('inputSelect', this.select);
+    },
+
+    mounted() {
+      this.setNativeInputValue();
+      this.resizeTextarea();
+      this.updateIconOffset();
+    },
+
+    updated() {
+      this.$nextTick(this.updateIconOffset);
     },
 
     methods: {
@@ -422,19 +442,5 @@
           (this.validateState && this.needStatusIcon);
       }
     },
-
-    created() {
-      this.$on('inputSelect', this.select);
-    },
-
-    mounted() {
-      this.setNativeInputValue();
-      this.resizeTextarea();
-      this.updateIconOffset();
-    },
-
-    updated() {
-      this.$nextTick(this.updateIconOffset);
-    }
   };
 </script>

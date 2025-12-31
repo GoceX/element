@@ -18,7 +18,7 @@
       :false-value="inactiveValue"
       :disabled="switchDisabled"
       @keydown.enter="switchValue"
-    >
+    />
     <span
       :class="['el-switch__label', 'el-switch__label--left', !checked ? 'is-active' : '']"
       v-if="inactiveIconClass || inactiveText">
@@ -102,11 +102,6 @@
         coreWidth: this.width
       };
     },
-    created() {
-      if (!~[this.activeValue, this.inactiveValue].indexOf(this.value)) {
-        this.$emit('input', this.inactiveValue);
-      }
-    },
     computed: {
       checked() {
         return this.value === this.activeValue;
@@ -125,6 +120,19 @@
           this.dispatch('ElFormItem', 'el.form.change', [this.value]);
         }
       }
+    },
+    created() {
+      if (!~[this.activeValue, this.inactiveValue].indexOf(this.value)) {
+        this.$emit('input', this.inactiveValue);
+      }
+    },
+    mounted() {
+      /* istanbul ignore if */
+      this.coreWidth = this.width || 50;
+      if (this.activeColor || this.inactiveColor) {
+        this.setBackgroundColor();
+      }
+      this.$refs.input.checked = this.checked;
     },
     methods: {
       handleChange(event) {
@@ -162,13 +170,5 @@
         };
       }
     },
-    mounted() {
-      /* istanbul ignore if */
-      this.coreWidth = this.width || 50;
-      if (this.activeColor || this.inactiveColor) {
-        this.setBackgroundColor();
-      }
-      this.$refs.input.checked = this.checked;
-    }
   };
 </script>

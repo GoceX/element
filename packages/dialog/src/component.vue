@@ -117,6 +117,19 @@
       };
     },
 
+    computed: {
+      style() {
+        let style = {};
+        if (!this.fullscreen) {
+          style.marginTop = this.top;
+          if (this.width) {
+            style.width = this.width;
+          }
+        }
+        return style;
+      }
+    },
+
     watch: {
       visible(val) {
         if (val) {
@@ -141,16 +154,20 @@
       }
     },
 
-    computed: {
-      style() {
-        let style = {};
-        if (!this.fullscreen) {
-          style.marginTop = this.top;
-          if (this.width) {
-            style.width = this.width;
-          }
+    mounted() {
+      if (this.visible) {
+        this.rendered = true;
+        this.open();
+        if (this.appendToBody) {
+          document.body.appendChild(this.$el);
         }
-        return style;
+      }
+    },
+
+    destroyed() {
+      // if appendToBody is true, remove DOM node after destroy
+      if (this.appendToBody && this.$el && this.$el.parentNode) {
+        this.$el.parentNode.removeChild(this.$el);
       }
     },
 
@@ -191,22 +208,5 @@
         this.$emit('closed');
       }
     },
-
-    mounted() {
-      if (this.visible) {
-        this.rendered = true;
-        this.open();
-        if (this.appendToBody) {
-          document.body.appendChild(this.$el);
-        }
-      }
-    },
-
-    destroyed() {
-      // if appendToBody is true, remove DOM node after destroy
-      if (this.appendToBody && this.$el && this.$el.parentNode) {
-        this.$el.parentNode.removeChild(this.$el);
-      }
-    }
   };
 </script>

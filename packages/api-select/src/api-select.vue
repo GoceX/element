@@ -39,10 +39,10 @@ import { getValueByPath } from 'rowinself-ui/src/utils/util';
 
 export default {
   name: 'ElApiSelect',
-  inheritAttrs: false,
   components: { ElSelect: Select, ElOption: Option, ElOptionGroup: OptionGroup },
+  inheritAttrs: false,
   props: {
-    value: {},
+    value: { required: true, type: [String, Number, Object, Array, Boolean] },
     api: { type: Function, default: null },
     params: { type: Object, default: () => ({}) },
     resultField: { type: String, default: '' },

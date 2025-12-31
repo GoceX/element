@@ -1,12 +1,13 @@
 <template>
   <div class="el-color-hue-slider" :class="{ 'is-vertical': vertical }">
     <div class="el-color-hue-slider__bar" @click="handleClick" ref="bar"></div>
-    <div class="el-color-hue-slider__thumb"
-         :style="{
-           left: thumbLeft + 'px',
-           top: thumbTop + 'px'
-         }"
-         ref="thumb">
+    <div 
+      class="el-color-hue-slider__thumb"
+      :style="{
+        left: thumbLeft + 'px',
+        top: thumbTop + 'px'
+      }"
+      ref="thumb">
     </div>
   </div>
 </template>
@@ -15,11 +16,12 @@
   import draggable from '../draggable';
 
   export default {
-    name: 'el-color-hue-slider',
+    name: 'ElColorHueSlider',
 
     props: {
       color: {
-        required: true
+        required: true,
+        type: Object
       },
 
       vertical: Boolean
@@ -43,6 +45,23 @@
       hueValue() {
         this.update();
       }
+    },
+
+    mounted() {
+      const { bar, thumb } = this.$refs;
+
+      const dragConfig = {
+        drag: (event) => {
+          this.handleDrag(event);
+        },
+        end: (event) => {
+          this.handleDrag(event);
+        }
+      };
+
+      draggable(bar, dragConfig);
+      draggable(thumb, dragConfig);
+      this.update();
     },
 
     methods: {
@@ -102,22 +121,5 @@
         this.thumbTop = this.getThumbTop();
       }
     },
-
-    mounted() {
-      const { bar, thumb } = this.$refs;
-
-      const dragConfig = {
-        drag: (event) => {
-          this.handleDrag(event);
-        },
-        end: (event) => {
-          this.handleDrag(event);
-        }
-      };
-
-      draggable(bar, dragConfig);
-      draggable(thumb, dragConfig);
-      this.update();
-    }
   };
 </script>

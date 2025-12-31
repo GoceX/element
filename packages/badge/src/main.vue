@@ -12,7 +12,7 @@
             'is-fixed': $slots.default,
             'is-dot': isDot
           }
-        ]">
+      ]">
       </sup>
     </transition>
   </div>

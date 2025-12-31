@@ -8,24 +8,31 @@ export default {
 
   inject: ['elForm', 'elFormItem'],
 
-  render() {
-    const slots = this.$slots.default;
-    if (!slots) return null;
-    if (this.isAutoWidth) {
-      const autoLabelWidth = this.elForm.autoLabelWidth;
-      const style = {};
-      if (autoLabelWidth && autoLabelWidth !== 'auto') {
-        const marginLeft = parseInt(autoLabelWidth, 10) - this.computedWidth;
-        if (marginLeft) {
-          style.marginLeft = marginLeft + 'px';
-        }
+  data() {
+    return {
+      computedWidth: 0
+    };
+  },
+
+  watch: {
+    computedWidth(val, oldVal) {
+      if (this.updateAll) {
+        this.elForm.registerLabelWidth(val, oldVal);
+        this.elFormItem.updateComputedLabelWidth(val);
       }
-      return (<div class="el-form-item__label-wrap" style={style}>
-        { slots }
-      </div>);
-    } else {
-      return slots[0];
     }
+  },
+
+  mounted() {
+    this.updateLabelWidth('update');
+  },
+
+  updated() {
+    this.updateLabelWidth('update');
+  },
+
+  beforeDestroy() {
+    this.updateLabelWidth('remove');
   },
 
   methods: {
@@ -48,31 +55,24 @@ export default {
     }
   },
 
-  watch: {
-    computedWidth(val, oldVal) {
-      if (this.updateAll) {
-        this.elForm.registerLabelWidth(val, oldVal);
-        this.elFormItem.updateComputedLabelWidth(val);
+  render() {
+    const slots = this.$slots.default;
+    if (!slots) return null;
+    if (this.isAutoWidth) {
+      const autoLabelWidth = this.elForm.autoLabelWidth;
+      const style = {};
+      if (autoLabelWidth && autoLabelWidth !== 'auto') {
+        const marginLeft = parseInt(autoLabelWidth, 10) - this.computedWidth;
+        if (marginLeft) {
+          style.marginLeft = marginLeft + 'px';
+        }
       }
+      return (<div class="el-form-item__label-wrap" style={style}>
+        { slots }
+      </div>);
+    } else {
+      return slots[0];
     }
   },
-
-  data() {
-    return {
-      computedWidth: 0
-    };
-  },
-
-  mounted() {
-    this.updateLabelWidth('update');
-  },
-
-  updated() {
-    this.updateLabelWidth('update');
-  },
-
-  beforeDestroy() {
-    this.updateLabelWidth('remove');
-  }
 };
 </script>

@@ -18,8 +18,8 @@ const EL_TREE_PROP_KEYS = Object.keys(EL_TREE_PROPS);
 
 export default {
   name: 'ElApiTree',
-  inheritAttrs: false,
   components: { ElTree: Tree },
+  inheritAttrs: false,
   props: {
     ...EL_TREE_PROPS,
     api: { type: Function, required: true },

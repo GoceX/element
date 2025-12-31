@@ -9,7 +9,7 @@
       }"
       class="el-backtop">
       <slot>
-        <el-icon name="caret-top"></el-icon>
+        <el-icon name="caret-top"/>
       </slot>
     </div>
   </transition>
@@ -65,6 +65,10 @@ export default {
     this.container.addEventListener('scroll', this.throttledScrollHandler);
   },
 
+  beforeDestroy() {
+    this.container.removeEventListener('scroll', this.throttledScrollHandler);
+  },
+
   methods: {
     init() {
       this.container = document;
@@ -102,9 +106,5 @@ export default {
       rAF(frameFunc);
     }
   },
-
-  beforeDestroy() {
-    this.container.removeEventListener('scroll', this.throttledScrollHandler);
-  }
 };
 </script>

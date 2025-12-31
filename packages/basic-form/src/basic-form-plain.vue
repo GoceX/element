@@ -64,7 +64,7 @@
         :on-reset="reset"
         :on-toggle-advanced="toggleAdvanced"
       >
-        <template slot="action"><slot name="action" /></template>
+        <template slot="action"><slot name="action" ></slot></template>
       </BasicFormAction>
     </el-row>
   </el-form>

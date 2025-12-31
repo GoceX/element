@@ -10,3 +10,4 @@ coverage
 *.scss
 *.woff
 *.ttf
+examples/**/*

@@ -1,18 +1,20 @@
 <template>
   <div class="el-color-alpha-slider" :class="{ 'is-vertical': vertical }">
-    <div class="el-color-alpha-slider__bar"
-         @click="handleClick"
-         ref="bar"
-         :style="{
-           background: background
-         }">
+    <div 
+      class="el-color-alpha-slider__bar"
+      @click="handleClick"
+      ref="bar"
+      :style="{
+        background: background
+    }">
     </div>
-    <div class="el-color-alpha-slider__thumb"
-         ref="thumb"
-         :style="{
-           left: thumbLeft + 'px',
-           top: thumbTop + 'px'
-         }">
+    <div 
+      class="el-color-alpha-slider__thumb"
+      ref="thumb"
+      :style="{
+        left: thumbLeft + 'px',
+        top: thumbTop + 'px'
+    }">
     </div>
   </div>
 </template>
@@ -21,13 +23,22 @@
   import draggable from '../draggable';
 
   export default {
-    name: 'el-color-alpha-slider',
+    name: 'ElColorAlphaSlider',
 
     props: {
       color: {
-        required: true
+        required: true,
+        type: Object
       },
       vertical: Boolean
+    },
+
+    data() {
+      return {
+        thumbLeft: 0,
+        thumbTop: 0,
+        background: null
+      };
     },
 
     watch: {
@@ -38,6 +49,23 @@
       'color.value'() {
         this.update();
       }
+    },
+
+    mounted() {
+      const { bar, thumb } = this.$refs;
+
+      const dragConfig = {
+        drag: (event) => {
+          this.handleDrag(event);
+        },
+        end: (event) => {
+          this.handleDrag(event);
+        }
+      };
+
+      draggable(bar, dragConfig);
+      draggable(thumb, dragConfig);
+      this.update();
     },
 
     methods: {
@@ -103,30 +131,5 @@
         this.background = this.getBackground();
       }
     },
-
-    data() {
-      return {
-        thumbLeft: 0,
-        thumbTop: 0,
-        background: null
-      };
-    },
-
-    mounted() {
-      const { bar, thumb } = this.$refs;
-
-      const dragConfig = {
-        drag: (event) => {
-          this.handleDrag(event);
-        },
-        end: (event) => {
-          this.handleDrag(event);
-        }
-      };
-
-      draggable(bar, dragConfig);
-      draggable(thumb, dragConfig);
-      this.update();
-    }
   };
 </script>

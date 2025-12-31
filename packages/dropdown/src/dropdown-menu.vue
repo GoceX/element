@@ -34,6 +34,15 @@
 
     inject: ['dropdown'],
 
+    watch: {
+      'dropdown.placement': {
+        immediate: true,
+        handler(val) {
+          this.currentPlacement = val;
+        }
+      }
+    },
+
     created() {
       this.$on('updatePopper', () => {
         if (this.showPopper) this.updatePopper();
@@ -50,14 +59,5 @@
       // issue link https://github.com/ElemeFE/element/issues/14345
       this.dropdown.initDomOperation();
     },
-
-    watch: {
-      'dropdown.placement': {
-        immediate: true,
-        handler(val) {
-          this.currentPlacement = val;
-        }
-      }
-    }
   };
 </script>
