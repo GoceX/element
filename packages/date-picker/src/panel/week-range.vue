@@ -23,29 +23,59 @@
           <div class="el-picker-panel__content el-date-range-picker__content is-left">
             <div class="el-date-range-picker__content-part" @mousedown.prevent>
               <div class="el-date-range-picker__header">
-                <button
-                  type="button"
-                  @click="leftPrevYear"
-                  class="el-picker-panel__icon-btn el-icon-d-arrow-left"></button>
-                <button
-                  type="button"
-                  @click="leftPrevMonth"
-                  class="el-picker-panel__icon-btn el-icon-arrow-left"></button>
-                <button
-                  type="button"
-                  @click="leftNextYear"
-                  v-if="unlinkPanels"
-                  :disabled="!enableYearArrow"
-                  :class="{ 'is-disabled': !enableYearArrow }"
-                  class="el-picker-panel__icon-btn el-icon-d-arrow-right"></button>
-                <button
-                  type="button"
-                  @click="leftNextMonth"
-                  v-if="unlinkPanels"
-                  :disabled="!enableMonthArrow"
-                  :class="{ 'is-disabled': !enableMonthArrow }"
-                  class="el-picker-panel__icon-btn el-icon-arrow-right"></button>
-                <div>{{ leftLabel }}</div>
+                <slot 
+                  name="left-header"
+                  :year="leftYear"
+                  :month="leftMonth"
+                  :year-options="leftYearOptions"
+                  :month-options="monthOptions"
+                  :handle-year-change="handleLeftYearChange"
+                  :handle-month-change="handleLeftMonthChange"
+                >
+                  <!-- 年份下拉 -->
+                  <span class="el-date-picker__header-label" style="margin: 0 5px">
+                    <el-select
+                      :value="leftYear"
+                      @input="handleLeftYearChange"
+                      size="mini"
+                      filterable
+                      allow-create
+                      default-first-option
+                      :popper-append-to-body="false"
+                      style="width: 110px;">
+                      <el-option
+                        v-for="y in leftYearOptions"
+                        :key="y"
+                        :value="y"
+                        :label="y + ' ' + t('el.datepicker.year')"/>
+                    </el-select>
+                  </span>
+                  <!-- 月份下拉 -->
+                  <span
+                    class="el-date-picker__header-label"
+                    style="margin: 0 5px">
+                    <el-select
+                      :value="leftMonth"
+                      @input="handleLeftMonthChange"
+                      size="mini"
+                      :popper-append-to-body="false"
+                      style="width: 90px;">
+                      <el-option
+                        v-for="m in monthOptions"
+                        :key="m.value"
+                        :value="m.value"
+                        :label="m.label"/>
+                    </el-select>
+                  </span>
+                  <!-- 今天按钮 -->
+                  <el-button
+                    type="text"
+                    size="mini"
+                    @click="$emit('handle-today')"
+                    style="margin-left: 5px;">
+                    {{ t('el.datepicker.today') }}
+                  </el-button>
+                </slot>
               </div>
               <date-table
                 selection-mode="week-range"
@@ -58,35 +88,65 @@
                 :cell-class-name="cellClassName"
                 @changerange="handleChangeRange"
                 :first-day-of-week="firstDayOfWeek"
-                @pick="handleRangePick"/>
+                @pick="handleRangePick"
+              />
             </div>
           </div>
           <div class="el-picker-panel__content el-date-range-picker__content is-right">
             <div class="el-date-range-picker__content-part" @mousedown.prevent>
               <div class="el-date-range-picker__header">
-                <button
-                  type="button"
-                  @click="rightPrevYear"
-                  v-if="unlinkPanels"
-                  :disabled="!enableYearArrow"
-                  :class="{ 'is-disabled': !enableYearArrow }"
-                  class="el-picker-panel__icon-btn el-icon-d-arrow-left"></button>
-                <button
-                  type="button"
-                  @click="rightPrevMonth"
-                  v-if="unlinkPanels"
-                  :disabled="!enableMonthArrow"
-                  :class="{ 'is-disabled': !enableMonthArrow }"
-                  class="el-picker-panel__icon-btn el-icon-arrow-left"></button>
-                <button
-                  type="button"
-                  @click="rightNextYear"
-                  class="el-picker-panel__icon-btn el-icon-d-arrow-right"></button>
-                <button
-                  type="button"
-                  @click="rightNextMonth"
-                  class="el-picker-panel__icon-btn el-icon-arrow-right"></button>
-                <div>{{ rightLabel }}</div>
+                <slot 
+                  name="right-header"
+                  :year="rightYear"
+                  :month="rightMonth"
+                  :year-options="rightYearOptions"
+                  :month-options="monthOptions"
+                  :handle-year-change="handleRightYearChange"
+                  :handle-month-change="handleRightMonthChange">
+                  <!-- 年份下拉 -->
+                  <span class="el-date-picker__header-label" style="margin: 0 5px">
+                    <el-select
+                      :value="rightYear"
+                      @input="handleRightYearChange"
+                      size="mini"
+                      filterable
+                      allow-create
+                      default-first-option
+                      :popper-append-to-body="false"
+                      style="width: 110px;">
+                      <el-option
+                        v-for="y in rightYearOptions"
+                        :key="y"
+                        :value="y"
+                        :label="y + ' ' + t('el.datepicker.year')"/>
+                    </el-select>
+                  </span>
+                  <!-- 月份下拉 -->
+                  <span
+                    class="el-date-picker__header-label"
+                    style="margin: 0 5px">
+                    <el-select
+                      :value="rightMonth"
+                      @input="handleRightMonthChange"
+                      size="mini"
+                      :popper-append-to-body="false"
+                      style="width: 90px;">
+                      <el-option
+                        v-for="m in monthOptions"
+                        :key="m.value"
+                        :value="m.value"
+                        :label="m.label"/>
+                    </el-select>
+                  </span>
+                  <!-- 今天按钮 -->
+                  <el-button
+                    type="text"
+                    size="mini"
+                    @click="$emit('handle-today')"
+                    style="margin-left: 5px;">
+                    {{ t('el.datepicker.today') }}
+                  </el-button>
+                </slot>
               </div>
               <date-table
                 selection-mode="week-range"
@@ -99,7 +159,8 @@
                 :cell-class-name="cellClassName"
                 @changerange="handleChangeRange"
                 :first-day-of-week="firstDayOfWeek"
-                @pick="handleRangePick"/>
+                @pick="handleRangePick"
+              />
             </div>
           </div>
         </div>
@@ -125,6 +186,8 @@
   import DateTable from '../basic/date-table';
   import ElInput from 'rowinself-ui/packages/input';
   import ElButton from 'rowinself-ui/packages/button';
+  import ElSelect from 'rowinself-ui/packages/select';
+  import ElOption from 'rowinself-ui/packages/option';
 
   const calcDefaultValue = (defaultValue) => {
     if (Array.isArray(defaultValue)) {
@@ -138,7 +201,7 @@
 
   export default {
     directives: { Clickoutside },
-    components: { DateTable, ElInput, ElButton },
+    components: { DateTable, ElInput, ElButton,ElSelect,ElOption },
     mixins: [Locale],
 
     data() {
@@ -215,6 +278,32 @@
 
       enableYearArrow() {
         return this.unlinkPanels && this.rightYear * 12 + this.rightMonth - (this.leftYear * 12 + this.leftMonth + 1) >= 12;
+      },
+
+      leftYearOptions() {
+        const year = this.leftYear;
+        const options = [];
+        for (let i = year - 10; i <= year + 10; i++) {
+          options.push(i);
+        }
+        return options;
+      },
+
+      rightYearOptions() {
+        // Options for right year select
+        const year = this.rightYear;
+        const options = [];
+        for (let i = year - 10; i <= year + 10; i++) {
+          options.push(i);
+        }
+        return options;
+      },
+
+      monthOptions() {
+        return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(i => ({
+          value: i - 1,
+          label: this.t(`el.datepicker.month${i}`)
+        }));
       }
     },
 
@@ -443,6 +532,22 @@
 
       rightPrevMonth() {
         this.rightDate = prevMonth(this.rightDate);
+      },
+
+      handleLeftYearChange(year) {
+        this.leftDate = modifyDate(this.leftDate, year, this.leftMonth, this.leftMonthDate);
+      },
+
+      handleLeftMonthChange(month) {
+        this.leftDate = modifyDate(this.leftDate, this.leftYear, month, this.leftMonthDate);
+      },
+
+      handleRightYearChange(year) {
+        this.rightDate = modifyDate(this.rightDate, year, this.rightMonth, this.rightMonthDate);
+      },
+
+      handleRightMonthChange(month) {
+        this.rightDate = modifyDate(this.rightDate, this.rightYear, month, this.rightMonthDate);
       },
 
       handleConfirm(visible = false) {

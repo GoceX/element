@@ -225,11 +225,16 @@ export default {
     this.panel = getPanel(this.type);
     if (this.type === 'date' && this.showTime) {
         this.panel = DatePanel;
-        this.picker.isRangePicker = true;
     }
   },
 
   methods: {
+    mountPicker() {
+      PickerMixin.methods.mountPicker.call(this);
+      if (this.type === 'date' && this.showTime && this.picker) {
+        this.picker.isRangePicker = true;
+      }
+    },
     syncSplitValue() {
       if (!this.picker) return;
       let index = this.focusedInputIndex;

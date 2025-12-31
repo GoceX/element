@@ -3,9 +3,10 @@
     <div
       v-show="visible"
       class="el-picker-panel el-date-range-picker el-popper"
-      :class="[{
-        'has-sidebar': $slots.sidebar || shortcuts
-    }, popperClass]">
+      :class="[
+        { 'has-sidebar': $slots.sidebar || shortcuts },
+        popperClass]"
+    >
       <div class="el-picker-panel__body-wrapper">
         <slot name="sidebar" class="el-picker-panel__sidebar"></slot>
         <div class="el-picker-panel__sidebar" v-if="shortcuts">
@@ -14,22 +15,24 @@
             class="el-picker-panel__shortcut"
             v-for="(shortcut, key) in shortcuts"
             :key="key"
-            @click="handleShortcutClick(shortcut)">{{ shortcut.text }}</button>
+            @click="handleShortcutClick(shortcut)"
+          >
+            {{ shortcut.text }}
+          </button>
         </div>
         <div class="el-picker-panel__body">
-          <div class="el-picker-panel__content el-date-range-picker__content is-left" @mousedown.prevent>
+          <div class="el-date-range-picker__content-part el-picker-panel__year-content" @mousedown.prevent>  
             <div class="el-date-range-picker__header">
               <button
                 type="button"
                 @click="leftPrevYear"
-                class="el-picker-panel__icon-btn el-icon-d-arrow-left"></button>
+                class="el-picker-panel__icon-btn el-icon-d-arrow-left"
+              ></button>
               <button
                 type="button"
-                v-if="unlinkPanels"
                 @click="leftNextYear"
-                :disabled="!enableYearArrow"
-                :class="{ 'is-disabled': !enableYearArrow }"
-                class="el-picker-panel__icon-btn el-icon-d-arrow-right"></button>
+                class="el-picker-panel__icon-btn el-icon-d-arrow-right"
+              ></button>
               <div>{{ leftLabel }}</div>
             </div>
             <year-table
@@ -41,21 +44,21 @@
               :range-state="rangeState"
               :disabled-date="disabledDate"
               @changerange="handleChangeRange"
-              @pick="handleRangePick"/>
+              @pick="handleRangePick"
+            />
           </div>
-          <div class="el-picker-panel__content el-date-range-picker__content is-right" @mousedown.prevent>
+          <div class="el-date-range-picker__content-part el-picker-panel__year-content" @mousedown.prevent>  
             <div class="el-date-range-picker__header">
               <button
                 type="button"
-                v-if="unlinkPanels"
                 @click="rightPrevYear"
-                :disabled="!enableYearArrow"
-                :class="{ 'is-disabled': !enableYearArrow }"
-                class="el-picker-panel__icon-btn el-icon-d-arrow-left"></button>
+                class="el-picker-panel__icon-btn el-icon-d-arrow-left"
+              ></button>
               <button
                 type="button"
                 @click="rightNextYear"
-                class="el-picker-panel__icon-btn el-icon-d-arrow-right"></button>
+                class="el-picker-panel__icon-btn el-icon-d-arrow-right"
+              ></button>
               <div>{{ rightLabel }}</div>
             </div>
             <year-table
@@ -67,7 +70,8 @@
               :range-state="rangeState"
               :disabled-date="disabledDate"
               @changerange="handleChangeRange"
-              @pick="handleRangePick"/>
+              @pick="handleRangePick"
+            />
           </div>
         </div>
       </div>
@@ -158,6 +162,14 @@
 
       enableYearArrow() {
         return this.unlinkPanels && this.rightYear > this.leftYear + 12;
+      },
+
+      leftNextYearDisabled() {
+        return this.leftYear + 12 >= this.rightYear;
+      },
+
+      rightPrevYearDisabled() {
+        return this.rightYear <= this.leftYear + 12;
       }
     },
 
@@ -171,12 +183,12 @@
           this.maxDate = isDate(newVal[1]) ? new Date(newVal[1]) : null;
           if (this.minDate) {
             this.leftDate = this.minDate;
-            if (this.unlinkPanels && this.maxDate) {
+            if (this.maxDate) {
               const minDateYear = this.minDate.getFullYear();
               const maxDateYear = this.maxDate.getFullYear();
-              this.rightDate = minDateYear === maxDateYear
-                ? nextYear(this.maxDate, 12)
-                : this.maxDate;
+              this.rightDate = (maxDateYear > minDateYear + 11)
+                ? this.maxDate
+                : nextYear(this.leftDate, 12);
             } else {
               this.rightDate = nextYear(this.leftDate, 12);
             }
@@ -312,25 +324,25 @@
       // leftPrev*, rightNext* need to take care of `unlinkPanels`
       leftPrevYear() {
         this.leftDate = prevYear(this.leftDate, 12);
-        if (!this.unlinkPanels) {
-          this.rightDate = prevYear(this.rightDate, 12);
-        }
       },
 
       rightNextYear() {
-        if (!this.unlinkPanels) {
-          this.leftDate = nextYear(this.leftDate, 12);
-        }
         this.rightDate = nextYear(this.rightDate, 12);
       },
 
       // leftNext*, rightPrev* are called when `unlinkPanels` is true
       leftNextYear() {
         this.leftDate = nextYear(this.leftDate, 12);
+        if (this.leftYear + 12 >= this.rightYear) {
+          this.leftDate = prevYear(this.rightDate, 12);
+        }
       },
 
       rightPrevYear() {
         this.rightDate = prevYear(this.rightDate, 12);
+        if (this.rightYear <= this.leftYear + 12) {
+          this.rightDate = nextYear(this.leftDate, 12);
+        }
       },
 
       handleConfirm(visible = false) {
