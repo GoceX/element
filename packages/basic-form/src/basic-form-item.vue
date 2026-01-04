@@ -30,7 +30,7 @@
       <component 
         v-else 
         :is="componentTag(schema.component)" 
-        v-model="formModel[schema.field]" 
+        v-model="modelValue" 
         v-bind="finalComponentProps"
         :disabled="computeDisabled(schema)" 
         v-on="finalListeners(schema)">
@@ -158,6 +158,20 @@ export default {
     itemCtx() {
       const schema = this.schema || {};
       return { model: this.formModel, field: schema.field, schema: schema, h: this.$createElement };
+    },
+    /**
+     * 代理 v-model 绑定值：
+     * - 处理 undefined 情况：部分组件（如 ElSelect）required: true 且不支持 undefined，
+     *   此处统一回退到 null（通常被视为无值且满足 Object 类型检查）。
+     */
+    modelValue: {
+      get() {
+        const val = this.formModel[this.schema.field];
+        return val === undefined ? null : val;
+      },
+      set(val) {
+        this.$set(this.formModel, this.schema.field, val);
+      }
     }
   },
   methods: {}

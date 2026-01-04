@@ -15,6 +15,22 @@
       return {
         schemas: [
           {
+            field: 'time',
+            component: 'DateRangePicker',
+            label: '时间',
+            defaultValue: '',
+            rules: [{ required: true, message: '必填', trigger: 'blur' }],
+            componentProps: {
+              type: 'date',
+              rangeSeparator: '至',
+              startPlaceholder: '开始日期',
+              endPlaceholder: '结束日期',      
+              format: 'yyyy-MM-dd',
+              valueFormat: 'yyyy-MM-dd'
+            },
+            colProps: { span: 12 }
+          },
+          {
             field: 'field',
             component: 'Input',
             label: '字段',

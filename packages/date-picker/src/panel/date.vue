@@ -10,7 +10,8 @@
       :class="[{
         'has-sidebar': $slots.sidebar || (shortcuts && shortcuts.length),
         'has-time': showTime
-    }, popperClass]">
+      }, popperClass]"
+    >
       <div class="el-picker-panel__body-wrapper">
         <!-- 侧边栏插槽 -->
         <slot name="sidebar" class="el-picker-panel__sidebar"></slot>
@@ -522,11 +523,40 @@
         this.emit(now);
       },
 
+      /**
+       * 处理点击“今天”/“本周”按钮的逻辑
+       * @description 根据 selectionMode 不同，执行不同的选中逻辑
+       * 当 selectionMode 为 'dates' (多选日期) 时，点击“今天”会将当前日期添加到选中列表中，并且不关闭面板
+       */
       handleToday() {
         const now = new Date();
+        // 检查今天是否被禁用或在可选范围内
+        // checkDateWithinRange 用于检查时间范围，对于仅日期选择通常返回 true
         if ((!this.disabledDate || !this.disabledDate(now)) && this.checkDateWithinRange(now)) {
-          this.date = now;
-          // this.emit(now, true);
+          // 如果是多日期选择模式 (type="dates")
+          if (this.selectionMode === 'dates') {
+            // 确保 value 是数组，如果不是则初始化为空数组，避免引用问题
+            const newDates = Array.isArray(this.value) ? [...this.value] : [];
+            const nowTime = clearTime(now).getTime();
+            
+            // 检查今天是否已经选中，避免重复添加
+            const exists = newDates.some(d => clearTime(new Date(d)).getTime() === nowTime);
+            
+            // 如果未选中，则添加到数组中
+            if (!exists) {
+              newDates.push(now);
+            }
+            
+            // 触发 pick 事件，传递选中的日期数组
+            // 第二个参数 true 表示保持面板打开，不关闭
+            this.emit(newDates, true);
+          } else {
+            // 单选模式 (date, week 等)
+            this.date = new Date(now);
+            // 触发 pick 事件，选中当前日期
+            // 如果 showTime 为 true，则不关闭面板；否则关闭
+            this.emit(now, this.showTime);
+          }
         }
       },
 

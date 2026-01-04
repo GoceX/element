@@ -44,14 +44,14 @@
                   :label="m.label"/>
               </el-select>
             </span>
-            <!-- 今天按钮 -->
+            <!-- 今天/本周按钮 -->
             <el-button
               type="text"
               size="mini"
               @click="$emit('handle-today')"
               v-show="currentView === 'date'"
               style="margin-left: 5px;">
-              {{ t('el.datepicker.today') }}
+              {{ selectionMode === 'week' ? t('el.datepicker.week') : t('el.datepicker.today') }}
             </el-button>
           </slot>
         </div>

@@ -2,7 +2,7 @@
   "name": "rowinself-ui",
   "version": "1.0.8",
   "description": "A Component Library for Vue.js.",
-  "main": "lib/rowinself-ui.common.js",
+  "main": "lib/index.js",
   "files": [
     "lib",
     "src",

@@ -50,9 +50,9 @@
                   <el-button
                     type="text"
                     size="mini"
-                    @click="$emit('handle-today')"
+                    @click="handleLeftMonth"
                     style="margin-left: 5px;">
-                    {{ t('el.datepicker.today') }}
+                    {{ t('el.datepicker.month') }}
                   </el-button>
                 </slot>
               </div>
@@ -102,9 +102,9 @@
                   <el-button
                     type="text"
                     size="mini"
-                    @click="$emit('handle-today')"
+                    @click="handleRightMonth"
                     style="margin-left: 5px;">
-                    {{ t('el.datepicker.today') }}
+                    {{ t('el.datepicker.month') }}
                   </el-button>
                 </slot>
               </div>
@@ -293,6 +293,76 @@
     },
 
     methods: {
+      /**
+       * 处理左侧面板本月按钮点击事件
+       * 设置开始日期为本月
+       */
+      handleLeftMonth() {
+        const now = new Date();
+        now.setDate(1); // 设置为当月1号
+        now.setHours(0, 0, 0, 0); // 重置时间
+
+        // 校验本月是否被禁用
+        if (typeof this.disabledDate === 'function' && this.disabledDate(now)) {
+          return;
+        }
+        
+        this.minDate = new Date(now);
+        
+        // 更新左侧面板年份为当前年
+        this.leftDate = new Date(now);
+        // 如果未解耦面板，更新右侧面板为下一年
+        if (!this.unlinkPanels) {
+          this.rightDate = nextYear(this.leftDate);
+        }
+
+        // 如果结束日期存在，且小于开始日期，则重置结束日期为开始日期
+        if (this.maxDate && this.maxDate < this.minDate) {
+          this.maxDate = new Date(now);
+        }
+
+        // 如果已经有结束日期，则触发选中事件（保持面板打开）
+        if (this.maxDate) {
+          this.$emit('pick', [this.minDate, this.maxDate], true);
+        } else {
+          // 否则进入选择状态，不关闭面板
+          this.rangeState.selecting = true;
+          this.emitInputPreview();
+        }
+      },
+
+      /**
+       * 处理右侧面板本月按钮点击事件
+       * 设置结束日期为本月
+       */
+      handleRightMonth() {
+        const now = new Date();
+        now.setDate(1); // 设置为当月1号
+        now.setHours(0, 0, 0, 0); // 重置时间
+
+        // 校验本月是否被禁用
+        if (typeof this.disabledDate === 'function' && this.disabledDate(now)) {
+          return;
+        }
+        
+        this.maxDate = new Date(now);
+        
+        // 更新右侧面板年份为当前年
+        this.rightDate = new Date(now);
+        // 如果未解耦面板，更新左侧面板为上一年
+        if (!this.unlinkPanels) {
+          this.leftDate = prevYear(this.rightDate);
+        }
+
+        // 如果开始日期不存在，或者开始日期大于结束日期，则重置开始日期为结束日期
+        if (!this.minDate || this.minDate > this.maxDate) {
+          this.minDate = new Date(now);
+        }
+
+        // 触发选中事件（保持面板打开）
+        this.$emit('pick', [this.minDate, this.maxDate], true);
+      },
+
       handleClear() {
         this.minDate = null;
         this.maxDate = null;

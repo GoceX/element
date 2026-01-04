@@ -9,7 +9,7 @@
 
   &.el-input,
   &.el-input__inner {
-    width: auto;
+    width: 100%;
   }
 
   @include m((monthrange)) {
@@ -125,6 +125,8 @@
     align-items: center;
     padding: 3px 10px;
     justify-content: space-between;
+    // fix: google browser height 1px bug
+    line-height: 1;
   }
 
   .el-range-input {
@@ -141,7 +143,7 @@
 
   @include m(medium) {
     &.el-input__inner {
-      height: $--input-medium-height;
+      height: $--input-medium-height - 1px;
     }
 
     .el-range-separator {

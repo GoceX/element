@@ -72,7 +72,7 @@
                   <el-button
                     type="text"
                     size="mini"
-                    @click="$emit('handle-today')"
+                    @click="handleLeftToday"
                     style="margin-left: 5px;">
                     {{ t('el.datepicker.today') }}
                   </el-button>
@@ -155,7 +155,7 @@
                   <el-button
                     type="text"
                     size="mini"
-                    @click="$emit('handle-today')"
+                    @click="handleRightToday"
                     style="margin-left: 5px;">
                     {{ t('el.datepicker.today') }}
                   </el-button>
@@ -451,6 +451,70 @@
 
       handleRightMonthChange(month) {
         this.rightDate = modifyDate(this.rightDate, this.rightYear, month, this.rightMonthDate);
+      },
+
+      /**
+       * 处理左侧面板今天按钮点击事件
+       * 设置开始日期为今天
+       */
+      handleLeftToday() {
+        const now = new Date();
+        // 校验今天是否被禁用
+        if (typeof this.disabledDate === 'function' && this.disabledDate(now)) {
+          return;
+        }
+        
+        this.minDate = new Date(now);
+        
+        // 更新左侧面板日期为今天
+        this.leftDate = new Date(now);
+        // 如果未解耦面板，更新右侧面板日期为下个月
+        if (!this.unlinkPanels) {
+          this.rightDate = nextMonth(this.leftDate);
+        }
+
+        // 如果结束日期存在，且小于开始日期，则重置结束日期为开始日期
+        if (this.maxDate && this.maxDate < this.minDate) {
+          this.maxDate = new Date(now);
+        }
+
+        // 如果已经有结束日期，则触发选中事件（保持面板打开）
+        if (this.maxDate) {
+          this.$emit('pick', [this.minDate, this.maxDate], true);
+        } else {
+          // 否则进入选择状态，不关闭面板
+          this.rangeState.selecting = true;
+          this.emitInputPreview();
+        }
+      },
+
+      /**
+       * 处理右侧面板今天按钮点击事件
+       * 设置结束日期为今天
+       */
+      handleRightToday() {
+        const now = new Date();
+        // 校验今天是否被禁用
+        if (typeof this.disabledDate === 'function' && this.disabledDate(now)) {
+          return;
+        }
+        
+        this.maxDate = new Date(now);
+        
+        // 更新右侧面板日期为今天
+        this.rightDate = new Date(now);
+        // 如果未解耦面板，更新左侧面板日期为上个月
+        if (!this.unlinkPanels) {
+          this.leftDate = prevMonth(this.rightDate);
+        }
+
+        // 如果开始日期不存在，或者开始日期大于结束日期，则重置开始日期为结束日期
+        if (!this.minDate || this.minDate > this.maxDate) {
+          this.minDate = new Date(now);
+        }
+
+        // 触发选中事件（保持面板打开）
+        this.$emit('pick', [this.minDate, this.maxDate], true);
       },
 
       handleClear() {

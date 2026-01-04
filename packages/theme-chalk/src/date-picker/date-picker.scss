@@ -49,6 +49,9 @@
   @include e(header) {
     margin: 12px;
     text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 
     @include m(bordered) {
       margin-bottom: 0;
