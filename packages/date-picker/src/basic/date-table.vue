@@ -15,14 +15,15 @@
       <tr
         class="el-date-table__row"
         v-for="(row, key) in rows"
-        :class="{ current: isWeekActive(row[1]) }"
+        :class="{ 'is-current': isWeekActive(row[1]) }"
         :key="key">
         <td
           v-for="(cell, key) in row"
+          class="el-date-table__cell"
           :class="getCellClasses(cell)"
           :key="key">
-          <div>
-            <span>
+          <div class="el-date-table__cell-inner">
+            <span class="el-date-table__cell-text">
               {{ cell.text }}
             </span>
           </div>
@@ -199,7 +200,7 @@
             const isToday = time === now;
 
             if (isToday) {
-              cell.type = 'today';
+              cell.type = 'is-today';
             }
 
             if (i >= 0 && i <= 1) {
@@ -209,14 +210,14 @@
                 cell.text = count++;
               } else {
                 cell.text = dateCountOfLastMonth - (numberOfDaysFromPreviousMonth - j % 7) + 1 + i * 7;
-                cell.type = 'prev-month';
+                cell.type = 'is-prev-month';
               }
             } else {
               if (count <= dateCountOfMonth) {
                 cell.text = count++;
               } else {
                 cell.text = count++ - dateCountOfMonth;
-                cell.type = 'next-month';
+                cell.type = 'is-next-month';
               }
             }
 
@@ -292,35 +293,35 @@
         const defaultValue = this.defaultValue ? Array.isArray(this.defaultValue) ? this.defaultValue : [this.defaultValue] : [];
 
         let classes = [];
-        if ((cell.type === 'normal' || cell.type === 'today') && !cell.disabled) {
-          classes.push('available');
-          if (cell.type === 'today') {
-            classes.push('today');
+        if ((cell.type === 'normal' || cell.type === 'is-today') && !cell.disabled) {
+          classes.push('is-available');
+          if (cell.type === 'is-today') {
+            classes.push('is-today');
           }
         } else {
           classes.push(cell.type);
         }
 
         if (cell.type === 'normal' && defaultValue.some(date => this.cellMatchesDate(cell, date))) {
-          classes.push('default');
+          classes.push('is-default');
         }
 
-        if (selectionMode === 'day' && (cell.type === 'normal' || cell.type === 'today') && this.cellMatchesDate(cell, this.value)) {
-          classes.push('current');
+        if (selectionMode === 'day' && (cell.type === 'normal' || cell.type === 'is-today') && this.cellMatchesDate(cell, this.value)) {
+          classes.push('is-current');
           if (this.isRangePicker) {
             classes.push('is-range-picker-preview');
           }
         }
 
-        if (cell.inRange && ((cell.type === 'normal' || cell.type === 'today') || this.selectionMode === 'week' || this.selectionMode === 'week-range')) {
-          classes.push('in-range');
+        if (cell.inRange && ((cell.type === 'normal' || cell.type === 'is-today') || this.selectionMode === 'week' || this.selectionMode === 'week-range')) {
+          classes.push('is-in-range');
 
           if (cell.start) {
-            classes.push('start-date');
+            classes.push('is-start-date');
           }
 
           if (cell.end) {
-            classes.push('end-date');
+            classes.push('is-end-date');
           }
 
           if (this.rangeState.selecting && this.rangeState.endDate && this.cellMatchesDate(cell, this.rangeState.endDate)) {
@@ -329,11 +330,11 @@
         }
 
         if (cell.disabled) {
-          classes.push('disabled');
+          classes.push('is-disabled');
         }
 
         if (cell.selected) {
-          classes.push('selected');
+          classes.push('is-selected');
         }
 
         if (cell.customClass) {
@@ -362,12 +363,12 @@
         const year = newDate.getFullYear();
         const month = newDate.getMonth();
 
-        if (cell.type === 'prev-month') {
+        if (cell.type === 'is-prev-month') {
           newDate.setMonth(month === 0 ? 11 : month - 1);
           newDate.setFullYear(month === 0 ? year - 1 : year);
         }
 
-        if (cell.type === 'next-month') {
+        if (cell.type === 'is-next-month') {
           newDate.setMonth(month === 11 ? 0 : month + 1);
           newDate.setFullYear(month === 11 ? year + 1 : year);
         }
@@ -442,11 +443,6 @@
                 endDate: endDate
               }
             });
-          } else if (this.isRangePicker && this.selectionMode === 'day') {
-             // Real-time preview for RangePicker with type="date"
-             if (endDate) {
-                this.$emit('pick', { date: endDate, visible: true });
-             }
           }
         }
       },

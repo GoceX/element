@@ -87,7 +87,8 @@ export default {
   },
 
   props: {
-    value: { required: true, type: [String, Number, Array, Object] },
+    // eslint-disable-next-line vue/require-prop-types
+    value: { required: true },
     options: Array,
     props: Object,
     border: {

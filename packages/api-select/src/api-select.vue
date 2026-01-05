@@ -42,7 +42,9 @@ export default {
   components: { ElSelect: Select, ElOption: Option, ElOptionGroup: OptionGroup },
   inheritAttrs: false,
   props: {
-    value: { required: true, type: [String, Number, Object, Array, Boolean] },
+    // eslint-disable-next-line vue/require-prop-types
+    value: { required: true, },
+    // value: { required: true, type: [String, Number, Object, Array, Boolean] },
     api: { type: Function, default: null },
     params: { type: Object, default: () => ({}) },
     resultField: { type: String, default: '' },

@@ -1,69 +1,69 @@
 <template>
-  <table @click="handleYearTableClick" @mousemove="handleMouseMove" class="el-year-table">
+  <table @click="handleYearTableClick" @mousemove="handleMouseMove" class="el-year-table" :class="{ 'is-selecting': rangeState.selecting }">
     <tbody>
       <tr>
-        <td class="available" :class="getCellStyle(startYear + 0)">
-          <div>
-            <a class="cell">{{ startYear }}</a>
+        <td class="el-year-table__cell" :class="getCellStyle(startYear + 0)">
+          <div class="el-year-table__cell-inner">
+            <a class="el-year-table__cell-text">{{ startYear }}</a>
           </div>
         </td>
-        <td class="available" :class="getCellStyle(startYear + 1)">
-          <div>
-            <a class="cell">{{ startYear + 1 }}</a>
+        <td class="el-year-table__cell" :class="getCellStyle(startYear + 1)">
+          <div class="el-year-table__cell-inner">
+            <a class="el-year-table__cell-text">{{ startYear + 1 }}</a>
           </div>
         </td>
-        <td class="available" :class="getCellStyle(startYear + 2)">
-          <div>
-            <a class="cell">{{ startYear + 2 }}</a>
+        <td class="el-year-table__cell" :class="getCellStyle(startYear + 2)">
+          <div class="el-year-table__cell-inner">
+            <a class="el-year-table__cell-text">{{ startYear + 2 }}</a>
           </div>
         </td>
-        <td class="available" :class="getCellStyle(startYear + 3)">
-          <div>
-            <a class="cell">{{ startYear + 3 }}</a>
-          </div>
-        </td>
-      </tr>
-      <tr>
-        <td class="available" :class="getCellStyle(startYear + 4)">
-          <div>
-            <a class="cell">{{ startYear + 4 }}</a>
-          </div>
-        </td>
-        <td class="available" :class="getCellStyle(startYear + 5)">
-          <div>
-            <a class="cell">{{ startYear + 5 }}</a>
-          </div>
-        </td>
-        <td class="available" :class="getCellStyle(startYear + 6)">
-          <div>
-            <a class="cell">{{ startYear + 6 }}</a>
-          </div>
-        </td>
-        <td class="available" :class="getCellStyle(startYear + 7)">
-          <div>
-            <a class="cell">{{ startYear + 7 }}</a>
+        <td class="el-year-table__cell" :class="getCellStyle(startYear + 3)">
+          <div class="el-year-table__cell-inner">
+            <a class="el-year-table__cell-text">{{ startYear + 3 }}</a>
           </div>
         </td>
       </tr>
       <tr>
-        <td class="available" :class="getCellStyle(startYear + 8)">
-          <div>
-            <a class="cell">{{ startYear + 8 }}</a>
+        <td class="el-year-table__cell" :class="getCellStyle(startYear + 4)">
+          <div class="el-year-table__cell-inner">
+            <a class="el-year-table__cell-text">{{ startYear + 4 }}</a>
           </div>
         </td>
-        <td class="available" :class="getCellStyle(startYear + 9)">
-          <div>
-            <a class="cell">{{ startYear + 9 }}</a>
+        <td class="el-year-table__cell" :class="getCellStyle(startYear + 5)">
+          <div class="el-year-table__cell-inner">
+            <a class="el-year-table__cell-text">{{ startYear + 5 }}</a>
           </div>
         </td>
-        <td class="available" :class="getCellStyle(startYear + 10)">
-          <div>
-            <a class="cell">{{ startYear + 10 }}</a>
+        <td class="el-year-table__cell" :class="getCellStyle(startYear + 6)">
+          <div class="el-year-table__cell-inner">
+            <a class="el-year-table__cell-text">{{ startYear + 6 }}</a>
           </div>
         </td>
-        <td class="available" :class="getCellStyle(startYear + 11)">
-          <div>
-            <a class="cell">{{ startYear + 11 }}</a>
+        <td class="el-year-table__cell" :class="getCellStyle(startYear + 7)">
+          <div class="el-year-table__cell-inner">
+            <a class="el-year-table__cell-text">{{ startYear + 7 }}</a>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="el-year-table__cell" :class="getCellStyle(startYear + 8)">
+          <div class="el-year-table__cell-inner">
+            <a class="el-year-table__cell-text">{{ startYear + 8 }}</a>
+          </div>
+        </td>
+        <td class="el-year-table__cell" :class="getCellStyle(startYear + 9)">
+          <div class="el-year-table__cell-inner">
+            <a class="el-year-table__cell-text">{{ startYear + 9 }}</a>
+          </div>
+        </td>
+        <td class="el-year-table__cell" :class="getCellStyle(startYear + 10)">
+          <div class="el-year-table__cell-inner">
+            <a class="el-year-table__cell-text">{{ startYear + 10 }}</a>
+          </div>
+        </td>
+        <td class="el-year-table__cell" :class="getCellStyle(startYear + 11)">
+          <div class="el-year-table__cell-inner">
+            <a class="el-year-table__cell-text">{{ startYear + 11 }}</a>
           </div>
         </td>
       </tr>
@@ -131,12 +131,12 @@
         const style = {};
         const today = new Date();
 
-        style.disabled = typeof this.disabledDate === 'function'
+        style['is-disabled'] = typeof this.disabledDate === 'function'
           ? datesInYear(year).every(this.disabledDate)
           : false;
-        style.current = arrayFindIndex(coerceTruthyValueToArray(this.value), date => isDate(date) && date.getFullYear() === year) >= 0;
-        style.today = today.getFullYear() === year;
-        style.default = this.defaultValue && isDate(this.defaultValue) && this.defaultValue.getFullYear() === year;
+        style['is-current'] = arrayFindIndex(coerceTruthyValueToArray(this.value), date => isDate(date) && date.getFullYear() === year) >= 0;
+        style['is-today'] = today.getFullYear() === year;
+        style['is-default'] = this.defaultValue && isDate(this.defaultValue) && this.defaultValue.getFullYear() === year;
 
         if (this.selectionMode === 'range') {
           let minYear = this.minDate ? this.minDate.getFullYear() : -1;
@@ -145,16 +145,17 @@
           if (this.rangeState.selecting && this.rangeState.endDate) {
             const endDateYear = this.rangeState.endDate.getFullYear();
             if (endDateYear < minYear) {
-               maxYear = minYear;
-               minYear = endDateYear;
+              maxYear = minYear;
+              minYear = endDateYear;
             } else {
-               maxYear = endDateYear;
+              maxYear = endDateYear;
             }
           }
 
-          style['in-range'] = minYear >= 0 && maxYear >= 0 && year >= minYear && year <= maxYear;
-          style['start-date'] = minYear >= 0 && year === minYear;
-          style['end-date'] = maxYear >= 0 && year === maxYear;
+          style['is-in-range'] = minYear >= 0 && maxYear >= 0 && year >= minYear && year <= maxYear;
+          style['is-start-date'] = minYear >= 0 && year === minYear;
+          style['is-end-date'] = maxYear >= 0 && year === maxYear;
+          style['is-preview-end'] = this.rangeState.selecting && this.rangeState.endDate && this.rangeState.endDate.getFullYear() === year;
         }
 
         return style;
@@ -169,7 +170,7 @@
           target = target.parentNode;
         }
         if (target.tagName !== 'TD') return;
-        if (hasClass(target, 'disabled')) return;
+        if (hasClass(target, 'is-disabled')) return;
 
         const column = target.cellIndex;
         const row = target.parentNode.rowIndex;

@@ -2,24 +2,24 @@
   <table @click="handleQuarterTableClick" @mousemove="handleMouseMove" class="el-quarter-table">
     <tbody>
       <tr>
-        <td :class="getCellStyle(0)">
-          <div>
-            <a class="cell">{{ t('el.datepicker.quarters.Q1') }}</a>
+        <td class="el-quarter-table__cell" :class="getCellStyle(0)">
+          <div class="el-quarter-table__cell-inner">
+            <a class="el-quarter-table__cell-text">{{ t('el.datepicker.quarters.Q1') }}</a>
           </div>
         </td>
-        <td :class="getCellStyle(1)">
-          <div>
-            <a class="cell">{{ t('el.datepicker.quarters.Q2') }}</a>
+        <td class="el-quarter-table__cell" :class="getCellStyle(1)">
+          <div class="el-quarter-table__cell-inner">
+            <a class="el-quarter-table__cell-text">{{ t('el.datepicker.quarters.Q2') }}</a>
           </div>
         </td>
-        <td :class="getCellStyle(2)">
-          <div>
-            <a class="cell">{{ t('el.datepicker.quarters.Q3') }}</a>
+        <td class="el-quarter-table__cell" :class="getCellStyle(2)">
+          <div class="el-quarter-table__cell-inner">
+            <a class="el-quarter-table__cell-text">{{ t('el.datepicker.quarters.Q3') }}</a>
           </div>
         </td>
-        <td :class="getCellStyle(3)">
-          <div>
-            <a class="cell">{{ t('el.datepicker.quarters.Q4') }}</a>
+        <td class="el-quarter-table__cell" :class="getCellStyle(3)">
+          <div class="el-quarter-table__cell-inner">
+            <a class="el-quarter-table__cell-text">{{ t('el.datepicker.quarters.Q4') }}</a>
           </div>
         </td>
       </tr>
@@ -106,16 +106,16 @@
         const currentQuarter = Math.floor(month / 3);
         const defaultValue = this.defaultValue ? Array.isArray(this.defaultValue) ? this.defaultValue : [this.defaultValue] : [];
 
-        style.disabled = typeof this.disabledDate === 'function'
+        style['is-disabled'] = typeof this.disabledDate === 'function'
           ? datesInQuarter(year, quarter).every(this.disabledDate)
           : false;
 
-        style.current = arrayFindIndex(coerceTruthyValueToArray(this.value), date => 
+        style['is-current'] = arrayFindIndex(coerceTruthyValueToArray(this.value), date => 
           date.getFullYear() === year && Math.floor(date.getMonth() / 3) === quarter
         ) >= 0;
 
-        style.today = today.getFullYear() === year && currentQuarter === quarter;
-        style.default = defaultValue.some(date => 
+        style['is-today'] = today.getFullYear() === year && currentQuarter === quarter;
+        style['is-default'] = defaultValue.some(date => 
           date.getFullYear() === year && Math.floor(date.getMonth() / 3) === quarter
         );
 
@@ -138,22 +138,22 @@
           }
 
           if (minDate && maxDate) {
-             style['in-range'] = 
+             style['is-in-range'] = 
                (minDate <= quarterEndDate && maxDate >= quarterStartDate);
              
              // Check start date (approximate check for quarter)
              const minQuarter = Math.floor(minDate.getMonth() / 3);
              const minYear = minDate.getFullYear();
-             style['start-date'] = minYear === year && minQuarter === quarter;
+             style['is-start-date'] = minYear === year && minQuarter === quarter;
 
              // Check end date
              const maxQuarter = Math.floor(maxDate.getMonth() / 3);
              const maxYear = maxDate.getFullYear();
-             style['end-date'] = maxYear === year && maxQuarter === quarter;
+             style['is-end-date'] = maxYear === year && maxQuarter === quarter;
           } else if (minDate) {
              const minQuarter = Math.floor(minDate.getMonth() / 3);
              const minYear = minDate.getFullYear();
-             style['start-date'] = minYear === year && minQuarter === quarter;
+             style['is-start-date'] = minYear === year && minQuarter === quarter;
           }
         }
 
@@ -172,7 +172,7 @@
         const column = target.cellIndex;
         const quarter = column;
         // Check if disabled
-        if (hasClass(target, 'disabled')) return;
+        if (hasClass(target, 'is-disabled')) return;
         
         const year = this.date.getFullYear();
         const quarterStartMonth = quarter * 3;
@@ -199,7 +199,7 @@
           target = target.parentNode;
         }
 
-        if (hasClass(target, 'disabled')) return;
+        if (hasClass(target, 'is-disabled')) return;
 
         const column = target.cellIndex;
         const quarter = column; // 0, 1, 2, 3

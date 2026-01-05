@@ -65,6 +65,7 @@ import YearRangePanel from '../panel/year-range';
 import QuarterRangePanel from '../panel/quarter-range';
 import TimeRangePanel from '../panel/time-range';
 import WeekRangePanel from '../panel/week-range';
+import { clearTime } from 'rowinself-ui/src/utils/date-util';
 
 /**
  * 根据类型获取对应的范围面板组件
@@ -246,6 +247,23 @@ export default {
       this.picker.value = val;
       if (Array.isArray(this.defaultValue)) {
         this.picker.defaultValue = this.defaultValue[index];
+      }
+
+      // 动态设置 disabledDate 以保证开始日期 <= 结束日期
+      if (this.type === 'date' && this.showTime) {
+        const originalDisabledDate = (this.pickerOptions || {}).disabledDate;
+        this.picker.disabledDate = (date) => {
+          if (originalDisabledDate && originalDisabledDate(date)) {
+            return true;
+          }
+          if (index === 1 && this.partialDates[0]) {
+            return date.getTime() < clearTime(new Date(this.partialDates[0])).getTime();
+          }
+          if (index === 0 && this.partialDates[1]) {
+            return date.getTime() > clearTime(new Date(this.partialDates[1])).getTime();
+          }
+          return false;
+        };
       }
     },
     onPick(date, visible) {

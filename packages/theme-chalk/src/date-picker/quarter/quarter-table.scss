@@ -1,0 +1,106 @@
+@import "../../common/var";
+@import "../../mixins/mixins";
+
+@include b(quarter-table) {
+  font-size: $--font-size-medium;
+  margin: -1px;
+  border-collapse: collapse;
+  user-select: none;
+
+  @include e(cell) {
+    text-align: center;
+    padding: 8px 0px;
+    cursor: pointer;
+
+    @include e(cell-inner) {
+      height: 48px;
+      padding: 6px 0;
+      box-sizing: border-box;
+    }
+
+    @include e(cell-text) {
+      width: 60px;
+      height: 36px;
+      display: block;
+      line-height: 36px;
+      color: $--datepicker-font-color;
+      margin: 0 auto;
+      border-radius: 18px;
+
+      &:hover {
+        color: $--datepicker-hover-font-color;
+      }
+    }
+
+    @include when(today) {
+      .el-quarter-table__cell-text {
+        color: $--color-primary;
+        font-weight: bold;
+      }
+
+      &.is-start-date .el-quarter-table__cell-text,
+      &.is-end-date .el-quarter-table__cell-text {
+        color: $--color-white;
+      }
+    }
+
+    @include when(disabled) {
+      .el-quarter-table__cell-text {
+        background-color: $--background-color-base;
+        cursor: not-allowed;
+        color: $--color-text-placeholder;
+
+        &:hover {
+          color: $--color-text-placeholder;
+        }
+      }
+    }
+
+    // 范围内年份背景
+    @include when(in-range) {
+      .el-quarter-table__cell-inner {
+        background-color: $--datepicker-inrange-background-color;
+
+        &:hover {
+          background-color: $--datepicker-inrange-hover-background-color;
+        }
+      }
+    }
+
+    // 当前选中年份
+    @include when(current) {
+      &:not(.is-disabled) .el-quarter-table__cell-text {
+        color: $--color-white;
+        background-color: $--datepicker-active-color;
+      }
+    }
+
+    // 范围起始圆角
+    @include when(start-date) {
+      .el-quarter-table__cell-inner {
+        color: $--color-white;
+        border-top-left-radius: 24px;
+        border-bottom-left-radius: 24px;
+      }
+
+      .el-quarter-table__cell-text {
+        color: $--color-white;
+        background-color: $--datepicker-active-color;
+      }
+    }
+
+    // 范围结束圆角
+    @include when(end-date) {
+      .el-quarter-table__cell-inner {
+        color: $--color-white;
+        border-top-right-radius: 24px;
+        border-bottom-right-radius: 24px;
+      }
+
+      .el-quarter-table__cell-text {
+        color: $--color-white;
+        background-color: $--datepicker-active-color;
+      }
+    }
+  }
+}

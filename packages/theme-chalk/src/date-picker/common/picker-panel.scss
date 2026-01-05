@@ -1,15 +1,28 @@
-@import "../common/var";
+@import "../../common/var";
+
+// 这是一个 SCSS 文件，用于定义日期选择器面板的样式
+// 遵循 BEM (Block Element Modifier) 命名规范
 
 @include b(picker-panel) {
+  // 面板基础文本颜色
   color: $--color-text-regular;
+  // 面板边框
   border: 1px solid $--datepicker-border-color;
+  // 面板阴影
   box-shadow: $--box-shadow-light;
+  // 面板背景色
   background: $--color-white;
+  // 面板圆角
   border-radius: $--border-radius-base;
+  // 行高
   line-height: 30px;
+  // 外边距
   margin: 5px 0;
 
+  // 面板主体及包装器样式
   @include e((body, body-wrapper)) {
+
+    // 清除浮动
     &::after {
       content: "";
       display: table;
@@ -17,11 +30,13 @@
     }
   }
 
+  // 面板内容区域样式
   @include e(content) {
     position: relative;
     margin: 15px;
   }
 
+  // 面板底部区域样式（通常包含确认按钮等）
   @include e(footer) {
     border-top: 1px solid $--datepicker-inner-border-color;
     padding: 4px;
@@ -31,6 +46,7 @@
     font-size: 0;
   }
 
+  // 快捷选项样式（如：昨天、一周前等）
   @include e(shortcut) {
     display: block;
     width: 100%;
@@ -44,16 +60,19 @@
     outline: none;
     cursor: pointer;
 
+    // 悬停效果
     &:hover {
       color: $--datepicker-hover-font-color;
     }
 
+    // 激活状态
     &.active {
       background-color: #e6f1fe;
       color: $--datepicker-active-color;
     }
   }
 
+  // 面板内的普通按钮样式
   @include e(btn) {
     border: 1px solid #dcdcdc;
     color: #333;
@@ -65,12 +84,14 @@
     outline: none;
     font-size: 12px;
 
+    // 禁用状态
     &[disabled] {
       color: #cccccc;
       cursor: not-allowed;
     }
   }
 
+  // 图标按钮样式（如：上个月、下一年等翻页按钮）
   @include e(icon-btn) {
     font-size: $--font-size-medium;
     color: $--datepicker-icon-color;
@@ -80,10 +101,12 @@
     outline: none;
     line-height: 30px;
 
+    // 悬停效果
     &:hover {
       color: $--datepicker-hover-font-color;
     }
 
+    // 禁用状态
     @include when(disabled) {
       color: $--font-color-disabled-base;
 
@@ -93,17 +116,19 @@
     }
   }
 
+  // 链接按钮样式
   @include e(link-btn) {
     vertical-align: middle;
   }
 }
 
+// 侧边栏样式（用于放置快捷选项）
 .el-picker-panel *[slot=sidebar],
 .el-picker-panel__sidebar {
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 80px;
+  width: 90px;
   border-right: 1px solid $--datepicker-inner-border-color;
   box-sizing: border-box;
   padding-top: 6px;
@@ -111,7 +136,8 @@
   overflow: auto;
 }
 
+// 带有侧边栏时的内容区域偏移
 .el-picker-panel *[slot=sidebar]+.el-picker-panel__body,
 .el-picker-panel__sidebar+.el-picker-panel__body {
-  margin-left: 80px;
+  margin-left: 90px;
 }

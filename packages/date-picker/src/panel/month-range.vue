@@ -4,11 +4,11 @@
       v-show="visible"
       class="el-picker-panel el-date-range-picker el-popper"
       :class="[{
-        'has-sidebar': $slots.sidebar || shortcuts
+        'has-sidebar': $slots.sidebar || (shortcuts && shortcuts.length)
     }, popperClass]">
       <div class="el-picker-panel__body-wrapper">
         <slot name="sidebar" class="el-picker-panel__sidebar"></slot>
-        <div class="el-picker-panel__sidebar" v-if="shortcuts">
+        <div class="el-picker-panel__sidebar" v-if="shortcuts && shortcuts.length">
           <button
             type="button"
             class="el-picker-panel__shortcut"
@@ -17,8 +17,8 @@
             @click="handleShortcutClick(shortcut)">{{ shortcut.text }}</button>
         </div>
         <div class="el-picker-panel__body">
-          <div class="el-picker-panel__content el-date-range-picker__content is-left">
-            <div class="el-date-range-picker__content-part" @mousedown.prevent>  
+          <div class="el-date-range-picker__content is-left">
+            <div class="el-date-range-picker__content-part el-picker-panel__month-content" @mousedown.prevent>  
               <div class="el-date-range-picker__header">
                 <slot 
                   name="left-header"
@@ -29,16 +29,16 @@
                   :handle-year-change="handleLeftYearChange"
                 >
                   <!-- 年份下拉 -->
-                  <span class="el-date-picker__header-label" style="margin: 0 5px">
+                  <span class="el-date-picker__header-label">
                     <el-select
+                      class="is-year"
                       :value="leftYear"
                       @input="handleLeftYearChange"
                       size="mini"
                       filterable
                       allow-create
                       default-first-option
-                      :popper-append-to-body="false"
-                      style="width: 110px;">
+                      :popper-append-to-body="false">
                       <el-option
                         v-for="y in leftYearOptions"
                         :key="y"
@@ -50,8 +50,7 @@
                   <el-button
                     type="text"
                     size="mini"
-                    @click="handleLeftMonth"
-                    style="margin-left: 5px;">
+                    @click="handleLeftMonth">
                     {{ t('el.datepicker.month') }}
                   </el-button>
                 </slot>
@@ -69,8 +68,8 @@
               />
             </div>
           </div>
-          <div class="el-picker-panel__content el-date-range-picker__content is-right">
-            <div class="el-date-range-picker__content-part" @mousedown.prevent>  
+          <div class="el-date-range-picker__content is-right">
+            <div class="el-date-range-picker__content-part el-picker-panel__month-content" @mousedown.prevent>  
               <div class="el-date-range-picker__header">
                 <slot 
                   name="right-header"

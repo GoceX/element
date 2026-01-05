@@ -30,6 +30,14 @@
       { "id": 24, "username": "xavier", "role": { "name": "访客" }, "status": 1, "loginTime": "2025-12-14 12:12:00", "loginIp": "192.168.0.25" },
       { "id": 25, "username": "yara", "role": { "name": "管理员" }, "status": 1, "loginTime": "2025-12-15 13:13:00", "loginIp": "192.168.0.26" }
     ],
+    "columns": [
+      { "title": "id", "field": "id", "align": "center", "width": 50 },
+      { "title": "用户名", "field": "username", "align": "center", "autoSpan": true, "minWidth": 120 },
+      { "title": "所属角色", "field": "role", "align": "center", "minWidth": 150 },
+      { "title": "状态", "field": "status", "align": "center", "width": 140 },
+      { "title": "最后一次登录时间", "field": "loginTime", "align": "center", "minWidth": 180 },
+      { "title": "登录ip", "field": "loginIp", "align": "center", "minWidth": 240 }
+    ],
     "page": { "totalRowNum":25, "perPage": 1, "pageNum": 10 }
   }
 }

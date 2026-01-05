@@ -485,17 +485,31 @@
         this.$emit('pick', date);
       },
 
-      handleDatePick(value) {
+      handleDatePick(value, sourceVisible) {
         if (this.selectionMode === 'day') {
+          const pickDate = value.date || value;
           let newDate = this.value
-            ? modifyDate(this.value, value.getFullYear(), value.getMonth(), value.getDate())
-            : modifyWithTimeString(value, this.defaultTime);
+            ? modifyDate(this.value, pickDate.getFullYear(), pickDate.getMonth(), pickDate.getDate())
+            : modifyWithTimeString(pickDate, this.defaultTime);
           // change default time while out of selectableRange
           if (!this.checkDateWithinRange(newDate)) {
-            newDate = modifyDate(this.selectableRange[0][0], value.getFullYear(), value.getMonth(), value.getDate());
+            newDate = modifyDate(this.selectableRange[0][0], pickDate.getFullYear(), pickDate.getMonth(), pickDate.getDate());
           }
           this.date = newDate;
-          this.emit(this.date, this.showTime);
+
+          let visible = this.showTime;
+          if (value && value.visible) {
+             visible = true;
+          } else if (sourceVisible !== undefined) {
+             // 修复：对于 RangePicker 且开启 showTime 的情况，点击日期不应关闭面板（sourceVisible=false），
+             // 而是应该保持面板打开（visible=true）以便选择时间，等待用户点击“确定”按钮。
+             if (this.showTime && this.isRangePicker && sourceVisible === false) {
+                 visible = true;
+             } else {
+                 visible = sourceVisible;
+             }
+          }
+          this.emit(this.date, visible);
         } else if (this.selectionMode === 'week') {
           this.emit(value.date);
         } else if (this.selectionMode === 'dates') {

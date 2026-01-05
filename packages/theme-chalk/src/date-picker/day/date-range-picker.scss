@@ -1,4 +1,4 @@
-@import "../common/var";
+@import "../../common/var";
 
 @include b(date-range-picker) {
   width: auto;
@@ -23,6 +23,10 @@
     width: 370px;
   }
 
+  .el-picker-panel__month-content {
+    width: 220px;
+  }
+
   .el-picker-panel__year-content {
     width: 220px;
   }
@@ -44,6 +48,24 @@
       font-size: $--font-size-medium;
       font-weight: 500;
       margin-right: 50px;
+    }
+
+    .el-date-picker__header-label {
+      margin: 0 5px;
+    }
+
+    .el-select {
+      &.is-year {
+        width: 110px;
+      }
+
+      &.is-month {
+        width: 90px;
+      }
+    }
+
+    .el-button {
+      margin-left: 5px;
     }
   }
 

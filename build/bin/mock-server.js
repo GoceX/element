@@ -169,14 +169,14 @@ function handleRequest(req, res) {
             const out = {
               code: target.code != null ? target.code : 0,
               msg: target.msg != null ? target.msg : 'ok',
-              data: {
+              data: Object.assign({}, target.data, {
                 list: sliced,
                 page: {
                   totalRowNum: total,
                   perPage: page,
                   pageNum: size
                 }
-              }
+              })
             };
             sendJson(res, 200, out);
           } else {

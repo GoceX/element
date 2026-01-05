@@ -1,0 +1,133 @@
+@import "../../common/var";
+@import "../../mixins/mixins";
+
+@include b(month-table) {
+  font-size: $--font-size-medium;
+  margin: -1px;
+  border-collapse: collapse;
+  user-select: none;
+  width: 220px;
+
+  @include e(cell) {
+    width: 32px;
+    height: 30px;
+    padding: 8px 0px;
+    box-sizing: border-box;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+
+    @include e(cell-inner) {
+      height: 30px;
+      // padding: 3px 0;
+      // border: 1px solid transparent;
+      box-sizing: border-box;
+      // box-sizing: content-box;
+    }
+
+    @include e(cell-text) {
+      // height: 24px;
+      display: block;
+      line-height: 30px;
+      color: $--datepicker-font-color;
+      margin: 0 auto;
+      border-radius: 14px;
+
+      &:hover {
+        color: $--datepicker-hover-font-color;
+      }
+    }
+
+    @include when(today) {
+      .el-month-table__cell-text {
+        color: $--color-primary;
+        font-weight: bold;
+      }
+
+      &.is-start-date .el-month-table__cell-text,
+      &.is-end-date .el-month-table__cell-text {
+        color: $--color-white;
+      }
+    }
+
+    @include when(disabled) {
+      .el-month-table__cell-text {
+        background-color: $--background-color-base;
+        cursor: not-allowed;
+        color: $--color-text-placeholder;
+
+        &:hover {
+          color: $--color-text-placeholder;
+        }
+      }
+    }
+
+    // 当前选中年份
+    @include when(current) {
+      &:not(.is-disabled) .el-month-table__cell-text {
+        color: $--color-white;
+        background-color: $--datepicker-active-color;
+      }
+    }
+
+    // 范围内年份背景
+    @include when(in-range) {
+      .el-month-table__cell-inner {
+        background-color: $--datepicker-inrange-background-color;
+
+        &:hover {
+          background-color: $--datepicker-inrange-hover-background-color;
+        }
+      }
+    }
+
+    // 范围起始圆角
+    @include when(start-date) {
+      .el-month-table__cell-inner {
+        color: $--color-white;
+        margin-left: 5px;
+        border-top-left-radius: 24px;
+        border-bottom-left-radius: 24px;
+      }
+
+      .el-month-table__cell-text {
+        color: $--color-white;
+        background-color: $--datepicker-active-color;
+        border-top-right-radius: 0px;
+        border-bottom-right-radius: 0px;
+      }
+    }
+
+    // 范围结束圆角
+    @include when(end-date) {
+      .el-month-table__cell-inner {
+        color: $--color-white;
+        margin-right: 5px;
+        border-top-right-radius: 24px;
+        border-bottom-right-radius: 24px;
+      }
+
+      .el-month-table__cell-text {
+        color: $--color-white;
+        background-color: $--datepicker-active-color;
+        border-top-left-radius: 0px;
+        border-bottom-left-radius: 0px;
+      }
+    }
+  }
+
+  @include when(selecting) {
+    .el-month-table__cell.is-in-range:not(.is-start-date):not(.is-end-date) .el-month-table__cell-inner {
+      border-top: 1px dashed $--datepicker-active-color;
+      border-bottom: 1px dashed $--datepicker-active-color;
+      box-sizing: border-box;
+    }
+
+    .el-month-table__cell.is-preview-end .el-month-table__cell-inner {
+      border-top-right-radius: 24px;
+      border-bottom-right-radius: 24px;
+      margin-right: 5px;
+      box-sizing: border-box;
+    }
+  }
+}

@@ -9,7 +9,7 @@
     >
       <div class="el-picker-panel__body-wrapper">
         <slot name="sidebar" class="el-picker-panel__sidebar"></slot>
-        <div class="el-picker-panel__sidebar" v-if="shortcuts">
+        <div class="el-picker-panel__sidebar" v-if="shortcuts && shortcuts.length">
           <button
             type="button"
             class="el-picker-panel__shortcut"

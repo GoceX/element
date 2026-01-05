@@ -1,6 +1,6 @@
 @import "common/var";
-@import "./date-picker/picker.scss";
-@import "./date-picker/date-picker.scss";
+@import "./date-picker/common/picker.scss";
+@import "./date-picker/day/date-picker.scss";
 @import "./scrollbar.scss";
 @import "./popper";
 

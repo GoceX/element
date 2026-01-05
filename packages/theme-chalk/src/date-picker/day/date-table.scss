@@ -1,0 +1,212 @@
+@import "../../common/var";
+@import "../../mixins/mixins";
+
+// 日期表格基础样式
+@include b(date-table) {
+  font-size: $--font-size-medium;
+  user-select: none;
+
+  // 周视图模式
+  @include when(week-mode) {
+    .el-date-table__row {
+      &:hover {
+        .el-date-table__cell-inner {
+          background-color: $--datepicker-inrange-background-color;
+        }
+
+        .el-date-table__cell.is-available:hover {
+          color: $--datepicker-font-color;
+        }
+
+        .el-date-table__cell:first-child .el-date-table__cell-inner {
+          margin-left: 5px;
+          border-top-left-radius: 15px;
+          border-bottom-left-radius: 15px;
+        }
+
+        .el-date-table__cell:last-child .el-date-table__cell-inner {
+          margin-right: 5px;
+          border-top-right-radius: 15px;
+          border-bottom-right-radius: 15px;
+        }
+      }
+
+      &.is-current .el-date-table__cell-inner {
+        background-color: $--datepicker-inrange-background-color;
+      }
+    }
+  }
+
+  // 单元格公共样式
+  @include e(cell) {
+    width: 32px;
+    height: 30px;
+    padding: 4px 0;
+    box-sizing: border-box;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+
+    @include e(cell-inner) {
+      height: 30px;
+      padding: 3px 0;
+      box-sizing: border-box;
+    }
+
+    @include e(cell-text) {
+      width: 24px;
+      height: 24px;
+      display: block;
+      margin: 0 auto;
+      line-height: 24px;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 50%;
+    }
+
+    // 上个月/下个月的日期
+    @include when(next-month) {
+      color: $--datepicker-off-font-color;
+    }
+
+    @include when(prev-month) {
+      color: $--datepicker-off-font-color;
+    }
+
+    // 今日高亮
+    @include when(today) {
+      position: relative;
+
+      .el-date-table__cell-text {
+        color: $--color-primary;
+        font-weight: bold;
+      }
+
+      &.is-start-date .el-date-table__cell-text,
+      &.is-end-date .el-date-table__cell-text {
+        color: $--color-white;
+      }
+    }
+
+    // 可用日期悬停
+    @include when(available) {
+      &:hover {
+        color: $--datepicker-hover-font-color;
+      }
+    }
+
+    // 范围内日期背景
+    @include when(in-range) {
+      .el-date-table__cell-inner {
+        background-color: $--datepicker-inrange-background-color;
+
+        &:hover {
+          background-color: $--datepicker-inrange-hover-background-color;
+        }
+      }
+    }
+
+    // 当前选中的日期
+    @include when(current) {
+      &:not(.is-disabled) .el-date-table__cell-text {
+        color: $--color-white;
+        background-color: $--datepicker-active-color;
+      }
+    }
+
+    // 范围起始/结束日期文字颜色
+    @include when(start-date) {
+      .el-date-table__cell-inner {
+        color: $--color-white;
+      }
+
+      .el-date-table__cell-text {
+        background-color: $--datepicker-active-color;
+      }
+
+      .el-date-table__cell-inner {
+        margin-left: 5px;
+        border-top-left-radius: 15px;
+        border-bottom-left-radius: 15px;
+      }
+    }
+
+    @include when(end-date) {
+      .el-date-table__cell-inner {
+        color: $--color-white;
+      }
+
+      .el-date-table__cell-text {
+        background-color: $--datepicker-active-color;
+      }
+
+      .el-date-table__cell-inner {
+        margin-right: 5px;
+        border-top-right-radius: 15px;
+        border-bottom-right-radius: 15px;
+      }
+    }
+
+    // 禁用状态
+    @include when(disabled) {
+      .el-date-table__cell-inner {
+        background-color: $--background-color-base;
+        opacity: 1;
+        cursor: not-allowed;
+        color: $--color-text-placeholder;
+      }
+    }
+
+    // 选中状态
+    @include when(selected) {
+      .el-date-table__cell-inner {
+        margin-left: 5px;
+        margin-right: 5px;
+        background-color: $--datepicker-inrange-background-color;
+        border-radius: 15px;
+
+        &:hover {
+          background-color: $--datepicker-inrange-hover-background-color;
+        }
+      }
+
+      .el-date-table__cell-text {
+        background-color: $--datepicker-active-color;
+        color: $--color-white;
+        border-radius: 15px;
+      }
+    }
+
+    // 周次列样式
+    @include when(week) {
+      font-size: 80%;
+      color: $--datepicker-header-font-color;
+    }
+  }
+
+  // 正在选择范围时的样式
+  @include when(selecting) {
+
+    // 范围内虚线上下边框
+    .el-date-table__cell.is-in-range:not(.is-start-date):not(.is-end-date) .el-date-table__cell-inner {
+      border-top: 1px dashed $--datepicker-active-color;
+      border-bottom: 1px dashed $--datepicker-active-color;
+    }
+
+    // 预览结束节点虚线边框与圆角
+    .el-date-table__cell.is-preview-end .el-date-table__cell-inner {
+      border-top-right-radius: 15px;
+      border-bottom-right-radius: 15px;
+      margin-right: 5px;
+    }
+  }
+
+  // 表头样式
+  th {
+    padding: 5px;
+    color: $--datepicker-header-font-color;
+    font-weight: 400;
+    border-bottom: solid 1px $--border-color-lighter;
+  }
+}

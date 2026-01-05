@@ -1,10 +1,10 @@
 <template>
-  <table @click="handleMonthTableClick" @mousemove="handleMouseMove" class="el-month-table">
+  <table @click="handleMonthTableClick" @mousemove="handleMouseMove" class="el-month-table" :class="{ 'is-selecting': rangeState.selecting }">
     <tbody>
       <tr v-for="(row, key) in rows" :key="key">
-        <td :class="getCellStyle(cell)" v-for="(cell, key) in row" :key="key">
-          <div>
-            <a class="cell">{{ t('el.datepicker.months.' + months[cell.text]) }}</a>
+        <td class="el-month-table__cell" :class="getCellStyle(cell)" v-for="(cell, key) in row" :key="key">
+          <div class="el-month-table__cell-inner">
+            <a class="el-month-table__cell-text">{{ t('el.datepicker.months.' + months[cell.text]) }}</a>
           </div>
         </td>
       </tr>
@@ -167,22 +167,22 @@
         const today = new Date();
         const month = cell.text;
         const defaultValue = this.defaultValue ? Array.isArray(this.defaultValue) ? this.defaultValue : [this.defaultValue] : [];
-        style.disabled = typeof this.disabledDate === 'function'
+        style['is-disabled'] = typeof this.disabledDate === 'function'
           ? datesInMonth(year, month).every(this.disabledDate)
           : false;
-        style.current = arrayFindIndex(coerceTruthyValueToArray(this.value), date => date.getFullYear() === year && date.getMonth() === month) >= 0;
-        style.today = today.getFullYear() === year && today.getMonth() === month;
-        style.default = defaultValue.some(date => this.cellMatchesDate(cell, date));
+        style['is-current'] = arrayFindIndex(coerceTruthyValueToArray(this.value), date => date.getFullYear() === year && date.getMonth() === month) >= 0;
+        style['is-today'] = today.getFullYear() === year && today.getMonth() === month;
+        style['is-default'] = defaultValue.some(date => this.cellMatchesDate(cell, date));
 
         if (cell.inRange) {
-          style['in-range'] = true;
+          style['is-in-range'] = true;
 
           if (cell.start) {
-            style['start-date'] = true;
+            style['is-start-date'] = true;
           }
 
           if (cell.end) {
-            style['end-date'] = true;
+            style['is-end-date'] = true;
           }
         }
         return style;
@@ -251,7 +251,7 @@
           target = target.parentNode;
         }
         if (target.tagName !== 'TD') return;
-        if (hasClass(target, 'disabled')) return;
+        if (hasClass(target, 'is-disabled')) return;
         const column = target.cellIndex;
         const row = target.parentNode.rowIndex;
         const month = row * 4 + column;

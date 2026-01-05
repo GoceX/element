@@ -1,0 +1,143 @@
+@import "../../common/var";
+@import "../../mixins/mixins";
+
+// 年份表格基础样式
+@include b(year-table) {
+  font-size: $--font-size-medium;
+  margin: -1px;
+  border-collapse: collapse;
+  user-select: none;
+  width: 220px;
+
+  // 图标颜色
+  .el-icon {
+    color: $--datepicker-icon-color;
+  }
+
+  // 单元格公共样式
+  @include e(cell) {
+    width: 32px;
+    height: 30px;
+    padding: 8px 0px;
+    box-sizing: border-box;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+
+    // 内部 div 统一高度与盒模型
+    @include e(cell-inner) {
+      // height: 24px;
+      height: 30px;
+      box-sizing: border-box;
+      // border: 1px solid transparent;
+    }
+
+    // 年份数字（cell）默认样式
+    @include e(cell-text) {
+      // width: 60px;
+      // height: 24px;
+      display: block;
+      // line-height: 24px;
+      color: $--datepicker-font-color;
+      margin: 0 auto;
+      border-radius: 14px;
+
+      &:hover {
+        color: $--datepicker-hover-font-color;
+      }
+    }
+
+    // 今日高亮
+    @include when(today) {
+      .el-year-table__cell-text {
+        color: $--color-primary;
+        font-weight: bold;
+      }
+    }
+
+    // 禁用状态
+    @include when(disabled) {
+      .el-year-table__cell-text {
+        background-color: $--background-color-base;
+        cursor: not-allowed;
+        color: $--color-text-placeholder;
+
+        &:hover {
+          color: $--color-text-placeholder;
+        }
+      }
+    }
+
+    // 当前选中年份
+    @include when(current) {
+      &:not(.is-disabled) .el-year-table__cell-text {
+        color: $--color-white;
+        background-color: $--datepicker-active-color;
+      }
+    }
+
+    // 范围内年份背景
+    @include when(in-range) {
+      .el-year-table__cell-inner {
+        background-color: $--datepicker-inrange-background-color;
+
+        &:hover {
+          background-color: $--datepicker-inrange-hover-background-color;
+        }
+      }
+    }
+
+    // 范围起始圆角
+    @include when(start-date) {
+      .el-year-table__cell-inner {
+        color: $--color-white;
+        margin-left: 5px;
+        border-top-left-radius: 24px;
+        border-bottom-left-radius: 24px;
+      }
+
+      .el-year-table__cell-text {
+        color: $--color-white;
+        background-color: $--datepicker-active-color;
+        border-top-right-radius: 0px;
+        border-bottom-right-radius: 0px;
+      }
+    }
+
+    // 范围结束圆角
+    @include when(end-date) {
+      .el-year-table__cell-inner {
+        color: $--color-white;
+        margin-right: 5px;
+        border-top-right-radius: 24px;
+        border-bottom-right-radius: 24px;
+      }
+
+      .el-year-table__cell-text {
+        color: $--color-white;
+        background-color: $--datepicker-active-color;
+        border-top-left-radius: 0px;
+        border-bottom-left-radius: 0px;
+      }
+    }
+  }
+
+  // 正在选择范围时的虚线样式
+  @include when(selecting) {
+
+    // 范围内虚线上下边框
+    .el-year-table__cell.is-in-range:not(.is-start-date):not(.is-end-date) .el-year-table__cell-inner {
+      border-top: 1px dashed $--datepicker-active-color;
+      border-bottom: 1px dashed $--datepicker-active-color;
+      box-sizing: border-box;
+    }
+
+    // 预览结束节点虚线边框与圆角
+    .el-year-table__cell.is-preview-end .el-year-table__cell-inner {
+      border-top-right-radius: 24px;
+      border-bottom-right-radius: 24px;
+      margin-right: 5px;
+      box-sizing: content-box;
+    }
+  }
+}

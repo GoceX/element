@@ -187,9 +187,10 @@
     props: {
       name: String,
       id: String,
+      // eslint-disable-next-line vue/require-prop-types
       value: {
         required: true,
-        type: [String, Number, Array, Object, Boolean]
+        // type: [String, Number, Array, Object, Boolean,any]
       },
       autocomplete: {
         type: String,

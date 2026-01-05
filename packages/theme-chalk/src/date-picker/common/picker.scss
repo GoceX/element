@@ -1,6 +1,6 @@
-@import "../mixins/mixins";
-@import "../common/var";
-@import "../common/transition";
+@import "../../mixins/mixins";
+@import "../../common/var";
+@import "../../common/transition";
 
 @include b(date-editor) {
   position: relative;
@@ -40,7 +40,7 @@
 
     &.el-input,
     &.el-input__inner {
-      width: auto;
+      width: 100%;
     }
   }
 

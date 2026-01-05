@@ -21,6 +21,9 @@
           {{ record.status == 1 ? '启用' : '禁用' }}
         </el-tag>
       </template>
+      <template v-if="column.field === 'loginTime'">
+        <el-image :preview-src-list="['https://gips3.baidu.com/it/u=4283915297,3700662292&fm=3028&app=3028&f=JPEG&fmt=auto?w=1440&h=2560']" src="https://gips3.baidu.com/it/u=4283915297,3700662292&fm=3028&app=3028&f=JPEG&fmt=auto?w=1440&h=2560" alt="用户头像" style="width: 100px; height: 20px" />
+      </template>
       <template v-if="column.field === 'action'">
         <TableAction :actions="getActionList(record)" />
       </template>
@@ -102,20 +105,27 @@ export default {
           ]
         },
         /** 列配置：对应后端返回的字段 */
-        columns: [
-          { title: 'id', field: 'id', align: 'center', width: 50 },
-          { title: '用户名', field: 'username', align: 'center',autoSpan: true, minWidth: 120 },
-          { title: '所属角色', field: 'role', align: 'center', minWidth: 150 },
-          { title: '状态', field: 'status', align: 'center', width: 140 },
-          { title: '最后一次登录时间', field: 'loginTime', align: 'center', minWidth: 180 },
-          { title: '登录ip', field: 'loginIp', align: 'center', minWidth: 240 },
-          { title: '操作', field: 'action', align: 'center', width: 100, fixed: 'right',
-            resizable: false }
-        ],
+        // columns: [
+        //   { title: 'id', field: 'id', align: 'center', width: 50 },
+        //   { title: '用户名', field: 'username', align: 'center',autoSpan: true, minWidth: 120 },
+        //   { title: '所属角色', field: 'role', align: 'center', minWidth: 150 },
+        //   { title: '状态', field: 'status', align: 'center', width: 140 },
+        //   { title: '最后一次登录时间', field: 'loginTime', align: 'center', minWidth: 180 },
+        //   { title: '登录ip', field: 'loginIp', align: 'center', minWidth: 240 },
+        //   { title: '操作', field: 'action', align: 'center', width: 100, fixed: 'right',
+        //     resizable: false }
+        // ],
         api: this.fetchList,
         immediate: false,
         /* 渲染前数据处理 */
-        afterFetch: (res) => res,
+        afterFetch: (res) => {
+          if (res && res.columns) {
+            res.columns.push({ title: '操作', field: 'action', align: 'center', width: 100, fixed: 'right',
+            resizable: false })
+            this.tableProps.setColumns(res.columns)
+          };        
+          return res
+        },
         /** 基本表格属性：模板通过 v-bind="basicProps" 绑定 */
         striped: true,
         bordered: true,
@@ -126,6 +136,12 @@ export default {
         indexColumnProps: { width: 60,minWidth: '40px' },
         rowSelection: true,
         clickToRowSelect: true,
+        // fetchSetting: {
+        //   listField: 'data.result',
+        //   totalField: 'data.count',
+        //   pageField: 'data.page',
+        //   sizeField: 'data.limit'
+        // }
       }
     };
   },
