@@ -198,7 +198,8 @@ export default {
       return this.$createElement(OverflowCell, { props: { text } });
     }
   },
-  render(h) {
+  render (h) {
+    console.log("::: ",)
     // 分组列：存在 children 时递归渲染子列 并以一个分组列包裹
     const hasChildren = Array.isArray(this.column && this.column.children) && this.column.children.length > 0;
     if (hasChildren) {
@@ -219,7 +220,10 @@ export default {
 
     const scopedSlots = {};
     // 非默认列类型（如 selection/index）不自定义单元格渲染 交由 Element 原生处理
-    if (this.colType !== 'default') {
+    const validTypes = ['selection', 'index', 'expand'];
+    // console.log("::: ",this.colType,validTypes.includes(this.colType))
+    if (validTypes.includes(this.colType)) {
+    // if (this.colType !== 'default') {
       return h(ElTableColumn, { props: this.tableColumnProps, scopedSlots });
     }
     // 优先使用具名插槽 与示例保持一致

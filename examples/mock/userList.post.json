@@ -35,7 +35,7 @@
       { "title": "用户名", "field": "username", "align": "center", "autoSpan": true, "minWidth": 120 },
       { "title": "所属角色", "field": "role", "align": "center", "minWidth": 150 },
       { "title": "状态", "field": "status", "align": "center", "width": 140 },
-      { "title": "最后一次登录时间", "field": "loginTime", "align": "center", "minWidth": 180 },
+      { "title": "最后一次登录时间", "field": "loginTime", "align": "center", "minWidth": 180,"type":"image" },
       { "title": "登录ip", "field": "loginIp", "align": "center", "minWidth": 240 }
     ],
     "page": { "totalRowNum":25, "perPage": 1, "pageNum": 10 }
